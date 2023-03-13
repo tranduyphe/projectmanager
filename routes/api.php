@@ -2,7 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\API\AuthController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -18,5 +18,6 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // });
 // Route::group(['middleware' => ['guest']], function () {
-//     Route::get('/login', '\App\Http\Controllers\API\AuthController@getLogin')->name('login');
+//     Route::post('login', 'App\Http\Controllers\API\AuthController@login');
 // });
+Route::post('/login', [AuthController::class, 'login']);

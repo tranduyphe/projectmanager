@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#4285f4" />
     <meta name="csrf-token" value="{{ csrf_token() }}"/>
     <title>Project Quản Lý Dự Án Gosu</title>
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet" type="text/css">

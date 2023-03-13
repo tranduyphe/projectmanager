@@ -1,24 +1,57 @@
 <template>
-    <div class="container">
-        <div class="text-center" style="margin: 20px 0px 20px 0px;">
-            <span class="text-secondary">Dự Án Quản Lý Công Việc GOSU</span>
-        </div>
-        <!-- <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <div class="collapse navbar-collapse">
-                <div class="navbar-nav">
-                    <router-link to="/" class="nav-item nav-link">Home</router-link>
-                </div>
-            </div>
-        </nav>
-        <br /> -->
-        <router-view></router-view>
+    <!-- <router-view></router-view> -->
+    <div v-if="$route.path == '/'">
+        <login />
+    </div>
+    <div style="" class="d-flex unauthorized" v-else>
+        <admin />
     </div>
 </template>
- 
-<script>
-export default {
-    mounted() {
-        console.log('Component mounted.')
+<script> 
+    import login from './components/account/Login.vue';
+    import admin from './components/backend/Admin.vue';
+    export default {
+        components:{
+            login,
+            admin
+        },
+        computed: {
+            loginResponse() {
+                let output = undefined;
+
+                if (
+                    this.$store.getters.getLoginResponse.authenticated !==
+                        undefined &&
+                    output == undefined
+                ) {
+                    output = this.$store.getters.getLoginResponse;
+                }
+
+                if (
+                    JSON.parse(sessionStorage.getItem('loginResponse')) !==
+                        undefined &&
+                    output == undefined
+                ) {
+                    output = JSON.parse(sessionStorage.getItem('loginResponse'));
+                }
+
+                if (output == undefined) {
+                    output = {
+                        authenticated: false,
+                    };
+                }
+                return output;
+            },
+
+            // authUser() {
+            //     if (this.$store.getters.getAuthUser.id !== undefined) {
+            //         return this.$store.getters.getAuthUser;
+            //     }
+            //     return JSON.parse(sessionStorage.getItem('authUser'));
+            // },
+        },
+        mounted() {
+            console.log(this.loginResponse)
+        }
     }
-}
 </script>
