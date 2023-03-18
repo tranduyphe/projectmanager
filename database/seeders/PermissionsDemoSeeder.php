@@ -21,12 +21,12 @@ class PermissionsDemoSeeder extends Seeder
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
         // create permissions
-        Permission::create(['name' => 'access_admin']);
+        Permission::create(['name' => 'access_administrator']);
         Permission::create(['name' => 'access_leader']);
         Permission::create(['name' => 'access_department']);
         Permission::create(['name' => 'access_user']);
-        $role = Role::create(['name' => 'admin'])
-            ->givePermissionTo(['access_admin', 'access_leader','access_department', 'access_user']);
+        $role = Role::create(['name' => 'administrator'])
+            ->givePermissionTo(['access_administrator', 'access_leader','access_department', 'access_user']);
         $role = Role::create(['name' => 'leader'])
             ->givePermissionTo(['access_leader','access_user', 'access_department']);
         $role = Role::create(['name' => 'department'])
@@ -37,13 +37,25 @@ class PermissionsDemoSeeder extends Seeder
         $admin = User::create([
             'name' => "admin",
             'email' => "admin@gmail.com",
+            'first_name' => "",
+            'last_name' => "",
+            'phone' => "",
+            'gender' => "",
+            'address' => "",
+            'status' => 1,
             'password' => Hash::make('123456'),
         ]);
-        $admin->assignRole('admin');
+        $admin->assignRole('administrator');
 
         $leader = User::create([
             'name' => "leader",
             'email' => "leader@gmail.com",
+            'first_name' => "",
+            'last_name' => "",
+            'phone' => "",
+            'gender' => "",
+            'address' => "",
+            'status' => 1,
             'password' => Hash::make('123456'),
         ]);
         $leader->assignRole('leader');
@@ -51,6 +63,12 @@ class PermissionsDemoSeeder extends Seeder
         $leader = User::create([
             'name' => "department",
             'email' => "department@gmail.com",
+            'first_name' => "",
+            'last_name' => "",
+            'phone' => "",
+            'gender' => "",
+            'address' => "",
+            'status' => 1,
             'password' => Hash::make('123456'),
         ]);
         $leader->assignRole('department');
@@ -58,6 +76,12 @@ class PermissionsDemoSeeder extends Seeder
         $user = User::create([
             'name' => "user",
             'email' => "user@gmail.com",
+            'first_name' => "",
+            'last_name' => "",
+            'phone' => "",
+            'gender' => "",
+            'address' => "",
+            'status' => 1,
             'password' => Hash::make('123456'),
         ]);
         $user->assignRole('user');

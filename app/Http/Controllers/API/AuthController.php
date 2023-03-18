@@ -64,7 +64,19 @@ class AuthController extends Controller
             return response()->json($res, 200);
         }
     }
-
+     /**
+     * lây thông tin user
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function logged(Request $request)
+    {
+        
+        $req = $request->user();
+        $req['roles'] = $req->getRoleNames()->first();
+        return response()->json($req, 200); 
+    }
     /**
      * Display a listing of the resource.
      *

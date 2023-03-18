@@ -1,17 +1,11 @@
-// Variables
-
-//
-// custom-variables
-//
-
-// Vertical Sidebar - Default Light
+// / Vertical Sidebar - Default Light
 $sidebar-bg: #ffffff;
 $sidebar-menu-item-color: #74788d;
 $sidebar-menu-sub-item-color: #7c8a96;
 $sidebar-menu-item-icon-color: #505d69;
-$sidebar-menu-item-hover-color: #5664d2;
+$sidebar-menu-item-hover-color: #383c40;
 $sidebar-menu-item-active-color: #5664d2;
-$sidebar-width:  250px;
+$sidebar-width:  240px;
 $sidebar-collapsed-width:  70px;
 $sidebar-width-sm:  160px;
 
@@ -25,46 +19,47 @@ $sidebar-dark-menu-item-active-color: #d7e4ec;
 
 // Topbar - Deafult Light
 $header-height: 70px;
-$header-bg: #272d3e;
-$header-item-color: #919bae;
+$header-bg: #ffffff;
+$header-item-color: #636e75;
 
 // Topbar - Dark
-$header-dark-bg: #5664d2;
+$header-dark-bg: #252b3b;
 $header-dark-item-color: #e9ecef;
 
 // Topbar Search
-$topbar-search-bg: #2b3244;
+$topbar-search-bg: #f1f5f7;
 
 // Footer
 $footer-height: 60px;
-$footer-bg: #212734;
-$footer-color: #919bae;
+$footer-bg: #fff;
+$footer-color: #74788d;
 
 // Horizontal nav
-$topnav-bg:   #282e3f;
-$menu-item-color: #919bae;
+$topnav-bg:   #fff;
+
+$menu-item-color: #74788d;
 $menu-item-active-color: #5664d2;
 
 // Right Sidebar
 $rightbar-width:  280px;
 
 // Display
-$display-none: block;
-$display-block: none;
+$display-none: none;
+$display-block: block;
 
 // Brand 
-$navbar-brand-box-width: 250px;
+$navbar-brand-box-width: 240px;
 
 // Boxed layout width
 $boxed-layout-width:    1300px;
-$boxed-body-bg:       #2d3447;
+$boxed-body-bg:       #dee7ec;
 
 // Font Weight
 $font-weight-medium: 500;
 $font-weight-semibold: 600;
 
 // apex charts
-$apex-grid-color: #32394e;
+$apex-grid-color: #f8f9fa;
 
 // Custom Font
 $font-family-secondary:      'Inter', sans-serif;

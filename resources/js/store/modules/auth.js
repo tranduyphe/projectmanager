@@ -3,6 +3,7 @@ import Router from '../../router';
 const state = {
     loginResponse: {},
     authUser: {},
+    // authRegister : {}
 };
 
 const getters = {
@@ -32,14 +33,16 @@ const actions = {
                                     'authUser',
                                     JSON.stringify(response.data)
                                 );
-                                Router.push('/admin');
+                                Router.push('/dashboard');
                             }
                         });
                     }
                 });
         });
     },
-
+    register({ commit, getters }, registerData) {
+        console.log(registerData);
+    },
     logout() {
         axios.get('/api/logout').then(() => {
             sessionStorage.removeItem('loginResponse');
