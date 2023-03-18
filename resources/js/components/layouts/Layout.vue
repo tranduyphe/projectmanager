@@ -3,6 +3,11 @@ import Header from "./Header.vue";
 import Footer from "./Footer.vue";
 import SideBar from "./SiderBar.vue";
 export default {
+    components:{
+        Header,
+        Footer,
+        SideBar,
+    },
     mounted() {
         document.body.classList.remove("auth-body-bg");
         if (this.loader === true) {

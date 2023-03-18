@@ -31,11 +31,11 @@ export default {
                 });
         },
     },
-    created: () => {
-        document.body.removeAttribute("data-layout", "horizontal");
-        document.body.removeAttribute("data-topbar", "dark");
-        document.body.setAttribute("data-sidebar", "dark");
-    },
+    // created: () => {
+    //     document.body.removeAttribute("data-layout", "horizontal");
+    //     document.body.removeAttribute("data-topbar", "dark");
+    //     document.body.setAttribute("data-sidebar", "dark");
+    // },
     mounted() {
         document.body.classList.remove("auth-body-bg");
         if (this.loader === true) {

@@ -35,9 +35,9 @@ export default {
         }
     },
     created: () => {
-        document.body.removeAttribute("data-layout", "horizontal");
-        document.body.removeAttribute("data-topbar", "dark");
-        document.body.setAttribute("data-sidebar", "dark");
+        // document.body.removeAttribute("data-layout", "horizontal");
+        // document.body.removeAttribute("data-topbar", "dark");
+        // document.body.setAttribute("data-sidebar", "dark");
         // this.getProjects();
     },
     mounted() {
