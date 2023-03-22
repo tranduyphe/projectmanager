@@ -4,6 +4,7 @@ import Dashboard from '../components/layouts/Dashboard.vue';
 import Login from '../components/account/Login.vue';
 import Register from '../components/account/Register.vue';
 import Layout from '../components/layouts/Layout.vue';
+import LayoutView from '../components/layouts/LayoutView';
 export const routes = [
     // {
     //     name: 'home',
@@ -26,6 +27,11 @@ export const routes = [
         name: 'layouthtml',
         path: '/layouthtml',
         component: Layout,
+    },
+    {
+        name: 'layoutview',
+        path: '/layoutview',
+        component: LayoutView,
     },
     // {
     //     path: '/register',

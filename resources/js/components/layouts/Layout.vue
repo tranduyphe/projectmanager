@@ -85,7 +85,7 @@ export default {
                     <!--  -->
                     <div class="recently-viewed">
                         <div class="recently-viewed-title">
-                             <img src="../../../images/time.png" alt="">
+                            <i class="ri-time-line"></i>
                              <p>Đã xem gần đây</p>
                         </div>
 
@@ -98,7 +98,7 @@ export default {
                                     <div class="item-icon">
                                         <div class="icon-active" title="Có hoạt động mới trong bảng này."></div>
                                         <div class="icon-star" title="Bấm để gắn dấu sao bảng này. Bảng này sẽ được thêm vào danh sách được đánh dấu sao của bạn.">
-                                          <img src="../../../images/star.png" alt=""></div>
+                                            <i class="ri-star-line"></i></div>
                                     </div>
                                    
                                 </li>   
@@ -118,19 +118,19 @@ export default {
 
                              <div class="list_options">
                                  <a class="list_options-item">
-                                    <img src="../../../images/table.png" alt="">
+                                    <i class="ri-layout-line"></i>
                                     <p>Bảng</p>
                                  </a>
                                  <a class="list_options-item">
-                                    <img src="../../../images/time.png" alt="">
+                                    <i class="ri-time-line"></i>
                                     <p>Dạng xem</p>
                                  </a>
                                  <a class="list_options-item">
-                                    <img src="../../../images/user.png" alt="">
+                                    <i class="ri-user-line"></i>
                                     <p>Thành viên</p>
                                  </a>
                                  <a class="list_options-item">
-                                    <img src="../../../images/setting.png" alt="">
+                                    <i class="ri-settings-3-line"></i>
                                     <p>Cài đặt</p>
                                  </a>
                                  <a class="list_options-item">
@@ -147,7 +147,7 @@ export default {
                                     <div class="item-icon">
                                         <div class="icon-active" title="Có hoạt động mới trong bảng này."></div>
                                         <div class="icon-star" title="Bấm để gắn dấu sao bảng này. Bảng này sẽ được thêm vào danh sách được đánh dấu sao của bạn.">
-                                          <img src="../../../images/star.png" alt=""></div>
+                                            <i class="ri-star-line"></i></div>
                                     </div>
                             </div>
 
@@ -203,7 +203,7 @@ export default {
     }
 
     .main-content{
-        margin-left: 241px;
+        margin-left: 260px;
         overflow: hidden;
         width: 75%;
         @media (max-width: 992px) {
@@ -220,9 +220,13 @@ export default {
         margin-left: 35px;
         max-width: 1623px;
         width: 100%;
-        margin-left: 2%;
+        margin-left: 0%;
         .recently-viewed-title{
             display: flex;
+            align-items: center;
+            i{
+                 font-size: 20px;
+            }
             p{
                 padding-left: 9px;
             }
@@ -386,8 +390,12 @@ export default {
                     @media (max-width: 992px) {
                         width: 45%;
                     }
+                    i{
+                        font-size: 20px;
+                    }
                     p{
                         margin: 0;
+                        margin-left: 3px !important;
                     }
                    }
 

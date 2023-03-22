@@ -10,6 +10,11 @@
     ">
         <layouthtml />
     </div>
+    <div v-else-if="
+        $route.path == '/layoutview'
+    ">
+        <layoutview />
+    </div>
     <div style="" class="d-flex unauthorized" v-else-if="
         !loginResponse.authenticated">
         <login />
@@ -23,14 +28,16 @@
     import admin from './components/backend/Admin.vue';
     import register from './components/account/Register.vue';
     import dashboard from './components/layouts/Dashboard.vue';  
-    import layouthtml from './components/layouts/Layout.vue' 
+    import layouthtml from './components/layouts/Layout.vue'; 
+    import layoutview from './components/layouts/LayoutView.vue'; 
     export default {
         components:{
             login,
             admin,
             register,
             dashboard,
-            layouthtml
+            layouthtml,
+            layoutview
         },
         computed: {
             loginResponse() {
