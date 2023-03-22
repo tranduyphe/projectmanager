@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Card;
+use App\Models\Project;
 
 class Tasks extends Model
 {
@@ -18,4 +20,15 @@ class Tasks extends Model
         'title',
         'dealine'
     ];
+
+    // public function card()
+    // {
+    //     return $this->belongsTo(Card::class, 'card_id');
+    // }
+
+    public function projects()
+    {
+        return $this->belongsTo(Project::class, 'project_id');
+    }
+
 }

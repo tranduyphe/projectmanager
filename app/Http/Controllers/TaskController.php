@@ -1,9 +1,12 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Models\Tasks;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Str;
+use App\Models\User;
+use App\Models\Project;
+use App\Models\Card;
+use App\Models\Tasks;
 class TaskController extends Controller
 {
     /**
@@ -23,21 +26,23 @@ class TaskController extends Controller
      */
     public function create(Request $request)
     {
+        $card_id = $request->input('card_id');
+        $title = $request->input('title_'.$card_id); 
+        $slug = Str::slug($title, '-');
         $tasks = new Tasks([
-            'title' => $request->input('title'),
+            'title' => $title,
             'project_id' => 1,
-            'card_id' => 1,
+            'card_id' => $card_id,
             'department_id' => 1,
             'list_user_ids' => "",
-            'slug' => "demo",
+            'slug' => $slug,
             'description' => "",
             'dealine' => date('Y-m-d H:i:s'),
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s'),
         ]);
         $tasks->save();
-        var_dump($tasks->save());
-        return response()->json('logout successfull');
+        return response()->json($tasks);
     }
 
     /**
@@ -59,7 +64,20 @@ class TaskController extends Controller
      */
     public function show($id)
     {
-        //
+
+        $cards = Card::all();
+        $results = [];
+        foreach ($cards as $key => $card) {            
+            $card_id = $card->id;
+            $list_tasks = Tasks::where([
+                ['card_id', '=', $card_id],
+                ['project_id', '=', $id],
+                ['department_id', '=', 1],
+            ])->get();
+            $results[$card_id] = [];
+            $results[$card_id] = $list_tasks;
+        }
+        return response()->json($results);
     }
 
     /**
@@ -80,9 +98,17 @@ class TaskController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
-        //
+        $card_id = $request->input('card_id');
+        $task_id = $request->input('task_id');
+        $action  = $request->input('action');
+        $tasks = Tasks::find($task_id);
+        if ($action == 'move_task') {
+            $tasks->card_id = $card_id;
+        }
+        $tasks->save();
+        return response()->json($tasks->save());
     }
 
     /**

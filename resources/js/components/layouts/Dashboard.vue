@@ -1,13 +1,7 @@
 <script>
-import Header from "./Header.vue";
-import Footer from "./Footer.vue";
-import SideBar from "./SiderBar.vue";
 import AllProject from "../projects/AllProjects.vue";
 export default {
     components: {
-        Header,
-        Footer,
-        SideBar,
         AllProject
     },
     data() {
@@ -54,30 +48,5 @@ export default {
 };
 </script>
 <template>
-    <div>
-        <div id="preloader">
-            <div id="status">
-                <div class="spinner">
-                    <i class="ri-loader-line spin-icon"></i>
-                </div>
-            </div>
-        </div>
-        <!-- Begin page -->
-        <div id="layout-wrapper">
-            <Header />
-            <SideBar />
-            <!-- ============================================================== -->
-            <!-- Start right Content here -->
-            <!-- ============================================================== -->
-            <div class="main-content">
-                <div class="page-content">
-                    <AllProject />
-                </div>
-                <!-- End Page-content -->
-            </div>
-            <!-- end main content-->
-            <Footer />
-        </div>
-        <!-- END layout-wrapper -->
-    </div>
+    <AllProject />
 </template>

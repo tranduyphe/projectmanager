@@ -1,36 +1,20 @@
-<template>
-    <!-- <router-view></router-view> -->
-    <div v-if="
-        $route.path == '/' || $route.path == '/login'
-    ">
-        <login />
-    </div>
-    <div v-else-if="
-        $route.path == '/layouthtml'
-    ">
-        <layouthtml />
-    </div>
-    <div style="" class="d-flex unauthorized" v-else-if="
-        !loginResponse.authenticated">
-        <login />
-    </div>
-    <div style="" class="d-flex unauthorized" v-else>
-        <dashboard />
-    </div>
-</template>
 <script> 
     import login from './components/account/Login.vue';
-    import admin from './components/backend/Admin.vue';
     import register from './components/account/Register.vue';
     import dashboard from './components/layouts/Dashboard.vue';  
-    import layouthtml from './components/layouts/Layout.vue' 
+    import layouthtml from './components/layouts/Layout.vue';
+    import Header from "./components/layouts/Header.vue";
+    import Footer from "./components/layouts/Footer.vue";
+    import SideBar from "./components/layouts/SiderBar.vue";
     export default {
         components:{
             login,
-            admin,
             register,
             dashboard,
-            layouthtml
+            layouthtml,
+            Header,
+            Footer,
+            SideBar
         },
         computed: {
             loginResponse() {
@@ -83,20 +67,61 @@
         mounted() {
             // document.body.classList.remove("auth-body-bg");
             // if (this.loader === true) {
-            // document.getElementById("preloader").style.display = "block";
-            // document.getElementById("status").style.display = "block";
+            //     document.getElementById("preloader").style.display = "block";
+            //     document.getElementById("status").style.display = "block";
 
-            // setTimeout(function () {
-            //     document.getElementById("preloader").style.display = "none";
-            //     document.getElementById("status").style.display = "none";
-            // }, 2500);
+                setTimeout(function () {
+                    document.getElementById("preloader").style.display = "none";
+                    document.getElementById("status").style.display = "none";
+                }, 2500);
             // } else {
             //     document.getElementById("preloader").style.display = "none";
             //     document.getElementById("status").style.display = "none";
             // }
-            // console.log(this.loginResponse)
-            // console.log(this.authUser.roles)
-            // console.log(this.loginResponse.authenticated)
         }
     }
 </script>
+<template>
+    <!-- <router-view></router-view> -->
+    <div v-if="
+        $route.path == '/' || $route.path == '/login'
+    ">
+        <login />
+    </div>
+    <div v-else-if="
+        $route.path == '/layouthtml'
+    ">
+        <layouthtml />
+    </div>
+    <div style="" class="d-flex unauthorized" v-else-if="
+        !loginResponse.authenticated">
+        <login />
+    </div>
+    <div v-else>
+        <div id="preloader">
+            <div id="status">
+                <div class="spinner">
+                    <i class="ri-loader-line spin-icon"></i>
+                </div>
+            </div>
+        </div>
+        <!-- Begin page -->
+        <div id="layout-wrapper">
+            <Header />
+            <SideBar />
+            <!-- ============================================================== -->
+            <!-- Start right Content here -->
+            <!-- ============================================================== -->
+            <div class="main-content">
+                <div class="page-content">
+                    <!-- <dashboard /> -->
+                    <router-view />
+                </div>
+                <!-- End Page-content -->
+            </div>
+            <!-- end main content-->
+            <Footer />
+        </div>
+        <!-- END layout-wrapper -->
+    </div>
+</template>

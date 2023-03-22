@@ -1,30 +1,24 @@
 const state = {
-    listProjects: "",
-    testProject1: 'test',
+    listProjects: [],
+    projectData:{},
     loadingState: false,
 };
 
 const getters = {
     listProjects: state => state.listProjects,
-    testProject: state => state.testProject1,
+    projectData: state => state.projectData,
 };
 const actions = {  
-
     getProjects({ commit }) {
         commit('loadingState', true);
-        var demo = {
-            project:4, 
-            project_2:3
-        };
-        // commit('listProjects');
-        //commit('loadingState', false);
-        // this.listProject = 'list project demo';
-        // return 'listProject';
         axios
         .post('/api/project/store')
         .then(response => {
             if (response.status == 200) {
-                commit('listProjects', response.data);
+                for (const key in response.data) {
+                    const project = response.data[key];
+                    commit('addItemProjects', project);
+                }
                 commit('loadingState', false);
             }
         })
@@ -32,10 +26,16 @@ const actions = {
             console.log(error);
         });
     },
+    async createProject({commit}, data) {
+        let res = await axios.post(`/api/project/create`, data);
+        if (res.status == 200) {
+            commit('addItemProjects', res.data);
+        }
+    }
 };
 
 const mutations = {
-    listProjects: (state, payload) => (state.listProjects = payload),
+    addItemProjects: (state, payload) => (state.listProjects.push(payload)),
     loadingState: (state, payload) => (state.loadingState = payload),
 };
 export default {

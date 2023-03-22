@@ -5,6 +5,7 @@ import Roles from './modules/roles';
 import Permissions from './modules/permissions';
 import Login from './modules/auth';
 import Project from './modules/project';
+import Task from './modules/task';
 
 export const store = createStore({
     modules: {
@@ -12,6 +13,7 @@ export const store = createStore({
         Permissions,
         Login,
         myModule,
-        Project
+        Project,
+        Task
     },
 });

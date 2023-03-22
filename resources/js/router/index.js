@@ -1,9 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import Admin from '../components/backend/Admin.vue';
 import Dashboard from '../components/layouts/Dashboard.vue';
 import Login from '../components/account/Login.vue';
 import Register from '../components/account/Register.vue';
 import Layout from '../components/layouts/Layout.vue';
+import ViewProject from '../components/projects/ViewProject.vue'
 export const routes = [
     // {
     //     name: 'home',
@@ -27,11 +27,11 @@ export const routes = [
         path: '/layouthtml',
         component: Layout,
     },
-    // {
-    //     path: '/register',
-    //     name: 'register',
-    //     component: Register
-    // }
+    {
+        path: '/viewproject/:id',
+        name: 'viewproject',
+        component: ViewProject
+    },
 ];
 const router = createRouter({
     history: createWebHistory(),
