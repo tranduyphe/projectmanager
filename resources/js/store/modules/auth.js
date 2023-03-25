@@ -3,12 +3,13 @@ import Router from '../../router';
 const state = {
     loginResponse: {},
     authUser: {},
-    // authRegister : {}
+    authUserData : {}
 };
 
 const getters = {
     getLoginResponse: state => state.loginResponse,
     getAuthUser: state => state.authUser,
+    authUserData: state => state.authUserData,
 };
 
 const actions = {
@@ -28,7 +29,7 @@ const actions = {
                     if (getters.getLoginResponse.response_type == 'success') {
                         axios.get('/api/user').then(response => {
                             if (response.status == 200) {
-                                commit('mutateAuthUser', response.data);
+                                commit('mutateAuthUser', response.data);                                
                                 sessionStorage.setItem(
                                     'authUser',
                                     JSON.stringify(response.data)
@@ -40,14 +41,22 @@ const actions = {
                 });
         });
     },
-    register({ commit, getters }, registerData) {
-        console.log(registerData);
+
+    auth({ commit }) {
+        commit('mutateAuthUserData', JSON.parse(sessionStorage.getItem('authUser')));
     },
-    logout() {
-        axios.get('/api/logout').then(() => {
+
+    logout() {        
+        document.getElementById("preloader").style.display = "block";
+        document.getElementById("status").style.display = "block";
+        axios.get('/api/logout').then((response) => {
             sessionStorage.removeItem('loginResponse');
             sessionStorage.removeItem('authUser');
             Router.push('/');
+            setTimeout(() => {
+                window.location.reload('/')
+            }, 100);
+            
         });
     },
 };
@@ -55,6 +64,7 @@ const actions = {
 const mutations = {
     mutateLoginResponse: (state, payload) => (state.loginResponse = payload),
     mutateAuthUser: (state, payload) => (state.authUser = payload),
+    mutateAuthUserData: (state, payload) => (state.authUserData = payload),
 };
 
 export default {

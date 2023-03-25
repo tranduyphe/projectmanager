@@ -13,13 +13,12 @@ var path = require('path');
 mix.webpackConfig({
     resolve: {
         alias: {
-            '@resources': path.resolve(__dirname, 'resources/')
+            '@': path.resolve(__dirname, 'resources/')
         }
     }
 });
 mix.js("resources/js/app.js", "public/js")
     .vue()
-    // .sass('resources/assets/sass/app.scss', 'public/css')
     .postCss("resources/css/app.css", "public/css", [
         //
     ]);

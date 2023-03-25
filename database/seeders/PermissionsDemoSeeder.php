@@ -22,15 +22,15 @@ class PermissionsDemoSeeder extends Seeder
 
         // create permissions
         Permission::create(['name' => 'access_administrator']);
+        Permission::create(['name' => 'access_manager']);
         Permission::create(['name' => 'access_leader']);
-        Permission::create(['name' => 'access_department']);
         Permission::create(['name' => 'access_user']);
         $role = Role::create(['name' => 'administrator'])
             ->givePermissionTo(['access_administrator', 'access_leader','access_department', 'access_user']);
+            $role = Role::create(['name' => 'manager'])
+            ->givePermissionTo(['access_manager', 'access_leader', 'access_user']);
         $role = Role::create(['name' => 'leader'])
-            ->givePermissionTo(['access_leader','access_user', 'access_department']);
-        $role = Role::create(['name' => 'department'])
-            ->givePermissionTo(['access_department', 'access_user']);
+            ->givePermissionTo(['access_leader','access_user']);
         $role = Role::create(['name' => 'user'])
             ->givePermissionTo(['access_user']);
 
@@ -46,7 +46,7 @@ class PermissionsDemoSeeder extends Seeder
             'password' => Hash::make('123456'),
         ]);
         $admin->assignRole('administrator');
-
+        
         $leader = User::create([
             'name' => "leader",
             'email' => "leader@gmail.com",
@@ -61,8 +61,8 @@ class PermissionsDemoSeeder extends Seeder
         $leader->assignRole('leader');
 
         $leader = User::create([
-            'name' => "department",
-            'email' => "department@gmail.com",
+            'name' => "manager",
+            'email' => "manager@gmail.com",
             'first_name' => "",
             'last_name' => "",
             'phone' => "",
@@ -71,7 +71,7 @@ class PermissionsDemoSeeder extends Seeder
             'status' => 1,
             'password' => Hash::make('123456'),
         ]);
-        $leader->assignRole('department');
+        $leader->assignRole('manager');
 
         $user = User::create([
             'name' => "user",

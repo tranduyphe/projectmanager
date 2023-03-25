@@ -2,16 +2,18 @@
     import login from './components/account/Login.vue';
     import register from './components/account/Register.vue';
     import dashboard from './components/layouts/Dashboard.vue';  
-    import layouthtml from './components/layouts/Layout.vue';
+    import layouthtml from './components/layouts/Layout.vue';    
     import Header from "./components/layouts/Header.vue";
     import Footer from "./components/layouts/Footer.vue";
     import SideBar from "./components/layouts/SiderBar.vue";
+    import htmldemo from "./components/layouts/htmldemo.vue";
     export default {
         components:{
             login,
             register,
             dashboard,
             layouthtml,
+            htmldemo,
             Header,
             Footer,
             SideBar
@@ -65,6 +67,7 @@
             document.body.setAttribute("data-sidebar", "dark");
         },
         mounted() {
+            console.log(this.loader);
             // document.body.classList.remove("auth-body-bg");
             // if (this.loader === true) {
             //     document.getElementById("preloader").style.display = "block";
@@ -84,17 +87,8 @@
 <template>
     <!-- <router-view></router-view> -->
     <div v-if="
-        $route.path == '/' || $route.path == '/login'
+        !loginResponse.authenticated
     ">
-        <login />
-    </div>
-    <div v-else-if="
-        $route.path == '/layouthtml'
-    ">
-        <layouthtml />
-    </div>
-    <div style="" class="d-flex unauthorized" v-else-if="
-        !loginResponse.authenticated">
         <login />
     </div>
     <div v-else>
@@ -120,7 +114,7 @@
                 <!-- End Page-content -->
             </div>
             <!-- end main content-->
-            <Footer />
+            <!-- <Footer /> -->
         </div>
         <!-- END layout-wrapper -->
     </div>

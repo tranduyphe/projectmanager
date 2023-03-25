@@ -3,29 +3,19 @@ import Dashboard from '../components/layouts/Dashboard.vue';
 import Login from '../components/account/Login.vue';
 import Register from '../components/account/Register.vue';
 import Layout from '../components/layouts/Layout.vue';
+// import htmldemo from "./components/layouts/htmldemo.vue";
 import ViewProject from '../components/projects/ViewProject.vue'
 export const routes = [
-    // {
-    //     name: 'home',
-    //     path: '/',
-    //     component: Admin,
-    //     meta: { requiresAuth: true } // thêm meta để kiểm tra xem route này cần đăng nhập hay không
-    // },
     {
         name: 'login',
         path: '/',
-        component: Login,
+        // component: Login,
         meta: { requiresAuth: false } // thêm meta để kiểm tra xem route này cần đăng nhập hay không
     },
     {
         name: 'dashboard',
         path: '/dashboard',
         component: Dashboard,
-    },
-    {
-        name: 'layouthtml',
-        path: '/layouthtml',
-        component: Layout,
     },
     {
         path: '/viewproject/:id',
@@ -38,3 +28,20 @@ const router = createRouter({
     routes
 })
 export default router
+
+// router.beforeEach((to, from, next) => {
+//     const isAuthenticated = sessionStorage.getItem('loginResponse')
+//     if (to.matched.some(record => record.meta.requiresAuth)) {
+//         // if the route requires authentication and the user is not authenticated, redirect to login page
+//         if (!isAuthenticated) {
+//             next({
+//                 path: '/login',
+//                 query: { redirect: to.fullPath }
+//             })
+//         } else {
+//             next()
+//         }
+//     } else {
+//         next() // proceed to the next middleware
+//     }
+// })

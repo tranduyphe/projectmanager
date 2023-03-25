@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use App\Models\User;
 use App\Models\Project;
 use App\Models\Card;
 use App\Models\Tasks;
+
 class TaskController extends Controller
 {
     /**
@@ -14,9 +16,21 @@ class TaskController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index($project_id)
     {
-        //
+        $cards = Card::all();
+        $results = [];
+        foreach ($cards as $key => $card) {            
+            $card_id = $card->id;
+            $list_tasks = Tasks::where([
+                ['card_id', '=', $card_id],
+                ['project_id', '=', $project_id],
+                ['department_id', '=', 1],
+            ])->get();
+            $results[$card_id] = [];
+            $results[$card_id] = $list_tasks;
+        }
+        return response()->json($results);
     }
 
     /**
@@ -26,20 +40,34 @@ class TaskController extends Controller
      */
     public function create(Request $request)
     {
-        $card_id = $request->input('card_id');
-        $title = $request->input('title_'.$card_id); 
-        $slug = Str::slug($title, '-');
+        $user       = Auth::user();
+        $user_id    = $user->id;
+        $card_id    = $request->input('card_id');
+        $title      = $request->input('title_'.$card_id); 
+        $project_id = $request->input('project_id'); 
+        $slug       = Str::slug($title);
+        if (Tasks::where('slug', $slug)->exists()) {
+            $slug = $slug . '-' . uniqid();
+        }
+        $users = User::with('detail_user_department')->find($user_id);
+        
+        if (!empty($details)) {
+            $details = $users->detail_user_department;
+            $department_id = $details->department_id;
+        }else{
+            $department_id = 1;
+        }
         $tasks = new Tasks([
-            'title' => $title,
-            'project_id' => 1,
-            'card_id' => $card_id,
-            'department_id' => 1,
+            'title'         => $title,
+            'project_id'    => $project_id,
+            'card_id'       => $card_id,
+            'department_id' => $department_id,
             'list_user_ids' => "",
-            'slug' => $slug,
-            'description' => "",
-            'dealine' => date('Y-m-d H:i:s'),
-            'created_at' => date('Y-m-d H:i:s'),
-            'updated_at' => date('Y-m-d H:i:s'),
+            'slug'          => $slug,
+            'description'   => "",
+            // 'dealine'       => date('Y-m-d H:i:s'),
+            'created_at'    => date('Y-m-d H:i:s'),
+            'updated_at'    => date('Y-m-d H:i:s'),
         ]);
         $tasks->save();
         return response()->json($tasks);
@@ -64,20 +92,8 @@ class TaskController extends Controller
      */
     public function show($id)
     {
-
-        $cards = Card::all();
-        $results = [];
-        foreach ($cards as $key => $card) {            
-            $card_id = $card->id;
-            $list_tasks = Tasks::where([
-                ['card_id', '=', $card_id],
-                ['project_id', '=', $id],
-                ['department_id', '=', 1],
-            ])->get();
-            $results[$card_id] = [];
-            $results[$card_id] = $list_tasks;
-        }
-        return response()->json($results);
+        $results = Tasks::findOrFail($id);
+        return response()->json($results);     
     }
 
     /**

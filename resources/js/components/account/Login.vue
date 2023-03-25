@@ -1,11 +1,5 @@
 <script>
-// import { required, email } from "vuelidate/lib/validators";
 import { mapGetters, mapMutations, mapActions } from 'vuex';
-// import {
-//   authMethods,
-//   authFackMethods,
-//   notificationMethods
-// } from "@/state/helpers";
 
 export default {
     data() {
@@ -21,10 +15,6 @@ export default {
         };
     },
     computed: {
-        // ...mapGetters([
-        //     'getUser',
-        //     'getAge',            
-        // ])
         ...mapGetters({
             loginResponse: 'getLoginResponse',
             getUser: 'getUser',
@@ -34,20 +24,7 @@ export default {
     created() {
         document.body.classList.add("auth-body-bg");
     },
-    // validations: {
-    //     email: { required, email },
-    //     password: { required }
-    // },
     methods: {
-        // Try to log the user in with the username
-        // and password they provided.
-        // tryToLogIn() {
-        //     this.submitted = true;
-        //     // stop here if form is invalid
-        //     // this.$v.$touch();
-        //     // console.log(this.email,this.password)
-        //     // console.log(this)
-        // },
         ...mapActions(['login']),
 
         loginSubmit() {
@@ -64,19 +41,12 @@ export default {
         },
     },
     mounted() {
-        console.log(this.loginResponse)
     }
 };
 </script>
-<style lang="scss">
-    // @import "~bootstrap/scss/maps";
-    // @import "~bootstrap/scss/utilities";
-    // @import '../../../../resources/assets/scss/app.scss';
-    // @import '~@/app.scss';    
+<style lang="scss">   
     .col-1, .col-2, .col-3, .col-4, .col-5, .col-6, .col-7, .col-8, .col-9, .col-10, .col-11, .col-12, .col, .col-auto, .col-sm-1, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm, .col-sm-auto, .col-md-1, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-md-10, .col-md-11, .col-md-12, .col-md, .col-md-auto, .col-lg-1, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8, .col-lg-9, .col-lg-10, .col-lg-11, .col-lg-12, .col-lg, .col-lg-auto, .col-xl-1, .col-xl-2, .col-xl-3, .col-xl-4, .col-xl-5, .col-xl-6, .col-xl-7, .col-xl-8, .col-xl-9, .col-xl-10, .col-xl-11, .col-xl-12, .col-xl, .col-xl-auto {
         position: relative;
-        // padding-right: 12px;
-        // padding-left: 12px;
     } 
 </style>
 <template>
@@ -88,7 +58,7 @@ export default {
         </div>
         <div>
             <div class="container-fluid p-0">
-                <div class="row no-gutters">
+                <div class="row g-0">
                     <div class="col-lg-4">
                         <div class="authentication-page-content p-4 d-flex align-items-center min-vh-100">
                             <div class="w-100">

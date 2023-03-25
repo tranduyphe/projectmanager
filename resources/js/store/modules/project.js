@@ -10,10 +10,11 @@ const getters = {
 };
 const actions = {  
     getProjects({ commit }) {
+        state.listProjects = [];
         commit('loadingState', true);
         axios
         .post('/api/project/store')
-        .then(response => {
+        .then(response => {            
             if (response.status == 200) {
                 for (const key in response.data) {
                     const project = response.data[key];

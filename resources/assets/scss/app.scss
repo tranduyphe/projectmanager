@@ -11,10 +11,13 @@ File: Main Css File
 //Core files
 @import "~bootstrap/scss/functions";
 @import "~bootstrap/scss/variables";
+// @import "variables-dark";
 @import "variables";
+@import "style";
 @import "~bootstrap/scss/mixins";
 @import '~bootstrap/scss/bootstrap';
-@import 'bootstrap';
+// @import 'bootstrap';
+
 // @import '~bootstrap-vue/src/index.scss';
 // @import '~bootstrap-vue-3/src/styles/styles.scss';
 

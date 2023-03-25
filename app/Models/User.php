@@ -9,6 +9,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use App\Models\Project;
+use App\Models\DepartmentUser;
 
 class User extends Authenticatable
 {
@@ -52,5 +53,15 @@ class User extends Authenticatable
     public function projects()
     {
         return $this->hasMany(Project::class, 'user_id');
+    }
+
+    /**
+     * List projetcs.
+     *
+     * @var $user_id
+     */
+    public function detail_user_department()
+    {
+        return $this->hasOne(DepartmentUser::class, 'user_id');
     }
 }

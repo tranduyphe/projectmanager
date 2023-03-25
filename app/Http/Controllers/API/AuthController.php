@@ -77,6 +77,18 @@ class AuthController extends Controller
         $req['roles'] = $req->getRoleNames()->first();
         return response()->json($req, 200); 
     }
+
+     /**
+     * logout
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function logout(Request $request) {
+        Auth::guard('web')->logout();
+        $request->session()->invalidate();
+        return response()->json('logout successfull');
+    }
     /**
      * Display a listing of the resource.
      *

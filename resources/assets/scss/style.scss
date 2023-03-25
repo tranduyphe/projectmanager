@@ -1,0 +1,48 @@
+body.page-task {
+    margin: 0;
+    font-family: "Nunito", sans-serif;
+    font-size: 0.9rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #505d69;
+    text-align: left;
+    background-color: #f1f5f7;
+}
+.media {
+    display: flex;
+    align-items: flex-start;
+}
+.page-task .card-body {
+    flex: 1 1 auto;
+    min-height: 1px;
+    padding: 1.25rem;
+}
+.page-task .card-title {
+    font-size: 15px;
+    margin: 0 0 7px 0;
+    font-weight: 500;
+}
+.avatar-title {
+    align-items: center;
+    background-color: #5664d2;
+    color: #fff;
+    display: flex;
+    font-weight: 500;
+    height: 100%;
+    justify-content: center;
+    width: 100%;
+}
+.page-task .card {
+    margin-bottom: 24px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+.border-bottom {
+    border-bottom: 1px solid #eff2f7 !important;
+}
+.badge-soft-success {
+    color: #1cbb8c;
+    background-color: rgba(28, 187, 140, 0.18);
+}
+.dropdown-toggle::after {
+    display: none !important;
+}

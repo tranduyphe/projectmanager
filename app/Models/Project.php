@@ -33,5 +33,4 @@ class Project extends Model
     {
         return $this->hasMany(Tasks::class, 'project_id');
     }
-
 }

@@ -15,10 +15,35 @@ export default {
                 <!-- Left Menu Start -->
                 <ul class="metismenu list-unstyled" id="side-menu">
                     <li>
-                        <a href="/" class="side-nav-link-ref router-link-active">
+                        <router-link
+                            :to="{
+                                name: 'dashboard',
+                            }"
+                            class="side-nav-link-ref"
+                        >
                             <i class="bx ri-dashboard-line"></i><span>Dashboard</span>
-                        </a>
+                        </router-link>
                     </li>
+                    <li>
+                        <router-link
+                            :to="{
+                                name: 'dashboard',
+                            }"
+                            class="side-nav-link-ref"
+                        >
+                            <i class="bx ri-artboard-2-line"></i><span>Kanban Board</span>
+                        </router-link>
+                    </li>
+                    <!-- <li>
+                        <router-link
+                            :to="{
+                                name: 'dashboard',
+                            }"
+                            class="side-nav-link-ref"
+                        >
+                            <i class="bx ri-artboard-2-line"></i><span>Kanban Board</span>
+                        </router-link>
+                    </li> -->
                 </ul>
             </div>
             <!-- Sidebar -->
