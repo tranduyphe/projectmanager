@@ -36,5 +36,16 @@
 
   &.active {
     color: var(--#{$prefix}breadcrumb-item-active-color);
-  }
+  }  
+}
+.breadcrumb-item {
+    > a {
+        color: $gray-700;
+    }
+    +.breadcrumb-item {
+        &::before {
+            font-family: "Material Design Icons";
+            content: "\F0142";
+        }
+    }
 }
