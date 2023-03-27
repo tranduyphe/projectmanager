@@ -3,13 +3,13 @@ import Dashboard from '../components/layouts/Dashboard.vue';
 import Login from '../components/account/Login.vue';
 import Register from '../components/account/Register.vue';
 import Layout from '../components/layouts/Layout.vue';
-// import htmldemo from "./components/layouts/htmldemo.vue";
+import htmldemo from "../components/layouts/htmldemo.vue";
 import ViewProject from '../components/projects/ViewProject.vue'
 export const routes = [
     {
         name: 'login',
         path: '/',
-        // component: Login,
+        component: Login,
         meta: { requiresAuth: false } // thêm meta để kiểm tra xem route này cần đăng nhập hay không
     },
     {
@@ -21,6 +21,11 @@ export const routes = [
         path: '/viewproject/:id',
         name: 'viewproject',
         component: ViewProject
+    },
+    {
+        path: '/htmldemo',
+        name: 'htmldemo',
+        component: htmldemo
     },
 ];
 const router = createRouter({

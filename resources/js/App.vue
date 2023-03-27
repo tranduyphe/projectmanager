@@ -6,14 +6,12 @@
     import Header from "./components/layouts/Header.vue";
     import Footer from "./components/layouts/Footer.vue";
     import SideBar from "./components/layouts/SiderBar.vue";
-    import htmldemo from "./components/layouts/htmldemo.vue";
     export default {
         components:{
             login,
             register,
             dashboard,
             layouthtml,
-            htmldemo,
             Header,
             Footer,
             SideBar
@@ -67,7 +65,6 @@
             document.body.setAttribute("data-sidebar", "dark");
         },
         mounted() {
-            console.log(this.loader);
             // document.body.classList.remove("auth-body-bg");
             // if (this.loader === true) {
             //     document.getElementById("preloader").style.display = "block";
