@@ -24,6 +24,7 @@
         "@vuepic/vue-datepicker": "^4.2.2",
         "bootstrap": "^5.2.3",
         "bootstrap-vue-next": "^0.7.3",
+        "click-outside-vue3": "^4.0.1",
         "moment": "^2.29.4",
         "moment-timezone": "^0.5.42",
         "sass": "^1.58.3",

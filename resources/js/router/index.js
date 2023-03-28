@@ -3,7 +3,7 @@ import Dashboard from '../components/layouts/Dashboard.vue';
 import Login from '../components/account/Login.vue';
 import Register from '../components/account/Register.vue';
 import Layout from '../components/layouts/Layout.vue';
-import htmldemo from "../components/layouts/htmldemo.vue";
+// import htmldemo from "../components/layouts/htmldemo.vue";
 import ViewProject from '../components/projects/ViewProject.vue'
 export const routes = [
     {
@@ -22,11 +22,11 @@ export const routes = [
         name: 'viewproject',
         component: ViewProject
     },
-    {
-        path: '/htmldemo',
-        name: 'htmldemo',
-        component: htmldemo
-    },
+    // {
+    //     path: '/htmldemo',
+    //     name: 'htmldemo',
+    //     component: htmldemo
+    // },
 ];
 const router = createRouter({
     history: createWebHistory(),

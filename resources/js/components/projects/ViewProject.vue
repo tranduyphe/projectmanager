@@ -4,6 +4,7 @@ import { mapGetters, mapActions, mutations } from "vuex";
 import PageHeader from "../layouts/page-header.vue";
 import moment from "moment";
 import { VueEditor } from "vue3-editor";
+// import vClickOutside from "click-outside-vue3";
 export default {
     page: {
         title: "Gosu Board",
@@ -19,6 +20,10 @@ export default {
             buttonAdd: {},
             newTasks: {},
             showModal: false,
+            showDescription:false,
+            showActive:false,
+            showModalMember:false,
+            showModalFilter:false,
             project_id: parseInt(this.$route.params.id),
             placeholder: "Nhập tiêu đề cho thẻ này...",
             taskUpdate: {},
@@ -78,6 +83,13 @@ export default {
             this.getCurrentTask(task_id);
             this.showModal = true;
         },
+        show_ModalMember() {
+            this.showModalMember = !this.showModalMember;
+        },
+
+        show_Filter() {
+            this.showModalFilter = !this.showModalFilter;
+        },
 
         dateTime(value) {
             return moment(value).format("ll");
@@ -92,6 +104,10 @@ export default {
     mounted() {
         document.body.classList.remove("auth-body-bg");
         document.body.classList.add("page-task");
+       //outside
+       
+       //
+
     },
 };
 </script>
@@ -106,35 +122,42 @@ export default {
 .list-tasks .drop-zone {
     min-height: 50px;
 }
+
+  
+</style>
+<style lang="scss">
+     
 </style>
 <template>
     <b-modal v-model="showModal" size="lg" hide-footer hide-header>
         <!-- <pre>{{ JSON.stringify(currentTask, undefined, 4) }}</pre> -->
         <div :class="['container-fluid']">
             <div :class="['row']">
-                <div :class="['col-12']">
+                <div :class="['col-12 d-flex flex-row align-items-center justify-content-between']">
                     <div class="name_card">
-                        <p>
+                        <p class="d-flex flex-row fs-3">
                             <i class="ri-archive-fill"></i>
                             <span>{{ currentTask.title }}</span>
                         </p>
                         <span>Trong danh sách <a href="">Task</a></span>
                     </div>
-                    <div :class="['btn_close']">
+                    <div :class="['btn_close']" @click="showModal = !showModal">
                         <i class="ri-close-line"></i>
                     </div>
                 </div>
                 <div :class="['col-9']">
                     <div :class="['content-main-info']">
                         <div class="member">
+                          
                             <p>Thành viên</p>
                             <div class="list_user">
-                                <div class="user"></div>
-                                <div class="user"></div>
+                                <div class="user"><img src="/images/avatar-2.jpg?feb0f89de58f0ef9b424b1beec766bd2" alt=""></div>
+                                <div class="user"><img src="/images/avatar-1.jpg?feb0f89de58f0ef9b424b1beec766bd2" alt=""></div>
                                 <div class="btn_add_user">
                                     <i class="ri-add-line"></i>
                                 </div>
                             </div>
+
                         </div>
                         <div class="label">
                             <p>Nhãn</p>
@@ -158,7 +181,8 @@ export default {
                     </div>
                     <div :class="['content-main-detail']">
                         <h6><i class="ri-menu-2-line"></i>Mô tả</h6>
-                        <div :class="['description']">
+                        <textarea placeholder="Thêm mô tả chi tiết hơn..."  v-if="!showDescription" @click="showDescription = !showDescription"></textarea>
+                        <div :class="['description']" v-if="showDescription" >
                             <div :class="['content-desc']"></div>
                             <div :class="['content-editor']">
                                 <vue-editor
@@ -166,6 +190,15 @@ export default {
                                         v-model="currentTask.description"
                                     ></vue-editor>                                    
                             </div>
+                            <div class="list_button">
+                                <div class="btn_save">Lưu</div>
+                                <div class="btn_cancel" @click="showDescription = !showDescription">Hủy</div>
+                            </div>
+                        </div>
+                        <div class="list_description">
+                             <p>This one’s about creating a form (front end) that allows entering a ZIP code in a form field input.</p>
+                             <p>This one’s about creating a form (front end) that allows entering a ZIP code in a form field input.</p>
+                             <p>This one’s about creating a form (front end) that allows entering a ZIP code in a form field input.</p>
                         </div>
                         <div :class="['list-checklists']">
                             
@@ -173,8 +206,32 @@ export default {
                     </div>
                     <div :class="['content-main-detail']">
                         <h6><i class="ri-list-check"></i>Hoạt động</h6>
+                        <textarea class="textarea_active" placeholder="Viết bình luận..."  v-if="!showActive" @click-outside="showActive = !showActive"></textarea>
+                        <div :class="['description']" v-if="showActive" >
+                            <div :class="['content-desc']"></div>
+                            <div :class="['content-editor']">
+                                <vue-editor
+                                        id="edit-current-task"
+                                        v-model="currentTask.description"
+                                    ></vue-editor>                                    
+                            </div>
+                            <div class="list_button">
+                                <div class="btn_save">Lưu</div>
+                                <div class="btn_cancel" @click="showActive = !showActive">Hủy</div>
+                            </div>
+                        </div>
                         <div :class="['list-work']">
-
+                            <div class="history_active">
+                              <div class="avatar">
+                                 <div class="image">
+                                     <img src="/images/avatar-2.jpg?feb0f89de58f0ef9b424b1beec766bd2" alt="">
+                                 </div>
+                              </div>
+                              <div class="history_active-content">
+                                   <p><b class="name">Nguyễn Khánh Lợi</b> đã tham gia thẻ này</p>
+                                   <p class="time">2 Th12 2022 lúc 09:11</p>
+                              </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -182,14 +239,144 @@ export default {
                     <div :class="['list-item']">
                         <h6>Thêm vào thẻ</h6>
                         <b-list-group>
-                            <b-list-group-item
-                                ><i class="ri-user-fill"></i> Thêm thành
-                                viên</b-list-group-item
-                            >
-                            <b-list-group-item
-                                ><i class="ri-price-tag-3-line"></i>
-                                Nhãn</b-list-group-item
-                            >
+                            <b-list-group-item @click="show_ModalMember">
+                                <div class="item"> <i class="ri-user-fill"></i> Thêm thành  viên</div>
+                               
+                                <!-- <b-modal  size="lg" hide-footer hide-header>
+                                   aaaaaaaaaa
+                               </b-modal> -->
+                           <div class="modalMember" v-if="showModalMember">
+                                <div :class="['modalMember-header']">
+                                       <span>Thành viên</span>
+                                       <a  @click.stop="showModalMember =!showModalMember"><i class="ri-close-line"></i></a>
+                                 </div>
+                                 <input type="text" placeholder="Tìm kiếm các thành viên">
+                                 <p>Thành viên của bảng</p>
+                             <div class="member_of_table">
+                                 <div class="list_member d-flex flex-row align-items-center">
+                                     <div class="avatar">
+                                        <div class="image">
+                                           <img src="/images/avatar-2.jpg?feb0f89de58f0ef9b424b1beec766bd2" alt="">
+                                        </div>
+                                    </div>
+                                     <div class="name">
+                                         <p>Nguyễn Văn A(nguyen van nguyen van nguyen)</p>
+                                      </div>
+                                 </div>
+
+                                 <div class="list_member d-flex flex-row align-items-center">
+                                     <div class="avatar">
+                                        <div class="image">
+                                           <img src="/images/avatar-2.jpg?feb0f89de58f0ef9b424b1beec766bd2" alt="">
+                                        </div>
+                                    </div>
+                                     <div class="name">
+                                         <p>Nguyễn Văn A</p>
+                                      </div>
+                                 </div>
+
+                                 <div class="list_member d-flex flex-row align-items-center">
+                                     <div class="avatar">
+                                        <div class="image">
+                                           <img src="/images/avatar-2.jpg?feb0f89de58f0ef9b424b1beec766bd2" alt="">
+                                        </div>
+                                    </div>
+                                     <div class="name">
+                                         <p>Nguyễn Văn A</p>
+                                      </div>
+                                 </div>
+
+                                 <div class="list_member d-flex flex-row align-items-center">
+                                     <div class="avatar">
+                                        <div class="image">
+                                           <img src="/images/avatar-2.jpg?feb0f89de58f0ef9b424b1beec766bd2" alt="">
+                                        </div>
+                                    </div>
+                                     <div class="name">
+                                         <p>Nguyễn Văn A</p>
+                                      </div>
+                                 </div>
+                                 <div class="list_member d-flex flex-row align-items-center">
+                                     <div class="avatar">
+                                        <div class="image">
+                                           <img src="/images/avatar-2.jpg?feb0f89de58f0ef9b424b1beec766bd2" alt="">
+                                        </div>
+                                    </div>
+                                     <div class="name">
+                                         <p>Nguyễn Văn A &lpar; <span>nguyenvana</span> &rpar;</p>
+                                      </div>
+                                 </div>
+                               </div>
+
+                               <div class="btn_display_more">
+                                    Hiển thị các thành viên khác trong không gian làm việc
+                               </div>
+                           </div>
+                            </b-list-group-item>
+                            <b-list-group-item @click="showModalFilter=true">
+                                  <div class="item"> <i class="ri-price-tag-3-line"></i> Nhãn</div>
+                                  <div class="modalFilter " v-if="showModalFilter">
+                                <div :class="['modalFilter-header d-flex flex-row align-items-center justify-content-between']">
+                                       <span>Nhãn</span>
+                                       <a @click.stop="showModalFilter =!showModalFilter"><i class="ri-close-line"></i></a>
+                                 </div>
+                                 <input class="search" type="text" placeholder="Tìm nhãn">
+                                 <p>Nhãn</p>
+                             <div class="filter_of_table">
+                                <div class="list_color d-flex flex-row align-items-center">
+                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                                    <div class="color color1">
+                                        <div class="color_child"></div>
+                                    </div>
+                                    <div class="btn_edit"><i class="ri-pencil-line"></i></div>
+                                 </div>
+                                 <div class="list_color d-flex flex-row align-items-center">
+                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                                    <div class="color color2">
+                                        <div class="color_child"></div>
+                                    </div>
+                                    <div class="btn_edit"><i class="ri-pencil-line"></i></div>
+                                 </div>
+                                 <div class="list_color d-flex flex-row align-items-center">
+                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                                    <div class="color color3">
+                                        <div class="color_child"></div>
+                                    </div>
+                                    <div class="btn_edit"><i class="ri-pencil-line"></i></div>
+                                 </div>
+                                 <div class="list_color d-flex flex-row align-items-center">
+                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                                    <div class="color color4">
+                                        <div class="color_child"></div>
+                                    </div>
+                                    <div class="btn_edit"><i class="ri-pencil-line"></i></div>
+                                 </div>
+                                 <div class="list_color d-flex flex-row align-items-center">
+                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                                    <div class="color color5">
+                                        <div class="color_child"></div>
+                                    </div>
+                                    <div class="btn_edit"><i class="ri-pencil-line"></i></div>
+                                 </div>
+                                 <div class="list_color d-flex flex-row align-items-center">
+                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                                    <div class="color color6">
+                                        <div class="color_child"></div>
+                                    </div>
+                                    <div class="btn_edit"><i class="ri-pencil-line"></i></div>
+                                 </div>
+                            </div>
+
+                               <div class="btn btn_display_more">
+                                    Tạo nhãn mới
+                               </div>
+                               <hr>
+                               <div class="btn">Bật chế độ thân thiện với người mù màu</div>
+                               <div class="btn">Gửi phản hồi cho chú tôi</div>
+
+
+                           </div>
+                            </b-list-group-item>
                             <b-list-group-item
                                 ><i class="ri-checkbox-line"></i> Việc cần
                                 làm</b-list-group-item
