@@ -4,7 +4,6 @@ import { mapGetters, mapActions, mutations } from "vuex";
 import PageHeader from "../layouts/page-header.vue";
 import moment from "moment";
 import { VueEditor } from "vue3-editor";
-// import vClickOutside from "click-outside-vue3";
 export default {
     page: {
         title: "Gosu Board",
@@ -20,10 +19,10 @@ export default {
             buttonAdd: {},
             newTasks: {},
             showModal: false,
-            showDescription:false,
             showActive:false,
             showModalMember:false,
             showModalFilter:false,
+            showEditor:false,
             project_id: parseInt(this.$route.params.id),
             placeholder: "Nhập tiêu đề cho thẻ này...",
             taskUpdate: {},
@@ -72,9 +71,10 @@ export default {
 
         changeTask(event, cardId) {
             if (typeof event.added != "undefined") {
-                this.taskUpdate["card_id"] = cardId;
                 this.taskUpdate["task_id"] = event.added.element.id;
-                this.taskUpdate["action"] = "move_task";
+                this.taskUpdate['info_task'] = {
+                    'card_id' : cardId,
+                }
                 this.updateTask(this.taskUpdate);
             }
         },
@@ -94,8 +94,47 @@ export default {
         dateTime(value) {
             return moment(value).format("ll");
         },
-    },
 
+        // click show editor description
+        handlerShowEditor() {
+            this.showEditor = true;
+        },
+
+        handlerHideEditor() {
+            this.showEditor = false;
+        },
+
+        // updated data current task
+        updateDataTask() {
+            this.taskUpdate["task_id"] = this.currentTask.id;            
+            delete this.currentTask.id;
+            delete this.currentTask.created_at;
+            delete this.currentTask.updated_at;
+            delete this.currentTask.project_id;
+            delete this.currentTask.dealine;
+            delete this.currentTask.slug;
+            delete this.currentTask.title;
+            delete this.currentTask.department_id;
+            delete this.currentTask.department_id;
+            delete this.currentTask.card_id;
+            delete this.currentTask.list_user_ids;
+            this.taskUpdate['info_task'] = this.currentTask;
+            this.updateTask(this.taskUpdate);
+            this.showEditor = false;
+        },
+
+        // check hiden modal
+        onHideModal(evt) {
+            if(evt.trigger === "backdrop"){
+                if (this.showEditor == true) {
+                    evt.preventDefault();
+                    this.showEditor = false;
+                }else{
+                    this.showModal = false;
+                }                
+            }
+        },
+    },
     created() {
         this.getListCards();
         this.getListTasks(this.$route.params.id);
@@ -129,7 +168,7 @@ export default {
      
 </style>
 <template>
-    <b-modal v-model="showModal" size="lg" hide-footer hide-header>
+    <b-modal v-model="showModal" @hide="onHide" size="lg" hide-footer hide-header>
         <!-- <pre>{{ JSON.stringify(currentTask, undefined, 4) }}</pre> -->
         <div :class="['container-fluid']">
             <div :class="['row']">
@@ -181,24 +220,19 @@ export default {
                     </div>
                     <div :class="['content-main-detail']">
                         <h6><i class="ri-menu-2-line"></i>Mô tả</h6>
-                        <textarea placeholder="Thêm mô tả chi tiết hơn..."  v-if="!showDescription" @click="showDescription = !showDescription"></textarea>
-                        <div :class="['description']" v-if="showDescription" >
-                            <div :class="['content-desc']"></div>
-                            <div :class="['content-editor']">
+                        <div :class="['description']">
+                            <div v-if="!showEditor" v-bind:innerHTML="`${currentTask.description ? currentTask.description : 'Thêm mô tả chi tiết hơn...'}`" :class="['content-desc']" @click="handlerShowEditor()" >
+                            </div>
+                            <div v-else="showEditor" :class="['content-editor']" >
                                 <vue-editor
                                         id="edit-current-task"
                                         v-model="currentTask.description"
-                                    ></vue-editor>                                    
+                                    ></vue-editor>   
+                                <div class="mt-3 mb-3">
+                                    <b-button variant="btn_save primary me-2" @click="updateDataTask()">Lưu</b-button>
+                                    <b-button :class="['btn_cancel']" variant="light btn_cancel" @click="handlerHideEditor()">Hủy</b-button>
+                                </div>                                 
                             </div>
-                            <div class="list_button">
-                                <div class="btn_save">Lưu</div>
-                                <div class="btn_cancel" @click="showDescription = !showDescription">Hủy</div>
-                            </div>
-                        </div>
-                        <div class="list_description">
-                             <p>This one’s about creating a form (front end) that allows entering a ZIP code in a form field input.</p>
-                             <p>This one’s about creating a form (front end) that allows entering a ZIP code in a form field input.</p>
-                             <p>This one’s about creating a form (front end) that allows entering a ZIP code in a form field input.</p>
                         </div>
                         <div :class="['list-checklists']">
                             
@@ -559,9 +593,6 @@ export default {
                                                     >{{ task.title }}</a
                                                 >
                                             </h5>
-                                            <p class="mb-4">
-                                                {{ task.description }}
-                                            </p>
                                         </div>
                                         <div class="d-inline-flex team mb-0">
                                             <div class="me-3 align-self-center">

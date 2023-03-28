@@ -24,12 +24,14 @@ const actions = {
         }
     },
     async createNewTask({ commit }, data){
-        console.log(data);
         let res = await axios.post(`/api/tasks/create`, data); 
         // commit('setTask', res.data); 
     },
     async updateTask({ commit }, data){
         let res = await axios.post(`/api/tasks/update`, data);
+        if (res.status == 200) {
+            commit('setCurrentTask', res.data); 
+        }
     },
     async getCurrentTask({commit}, id) {
         let res = await axios.post(`/api/tasks/show/${id}`);

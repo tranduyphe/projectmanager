@@ -116,15 +116,18 @@ class TaskController extends Controller
      */
     public function update(Request $request)
     {
-        $card_id = $request->input('card_id');
-        $task_id = $request->input('task_id');
-        $action  = $request->input('action');
-        $tasks = Tasks::find($task_id);
-        if ($action == 'move_task') {
-            $tasks->card_id = $card_id;
+        
+        $task_id  = $request->input('task_id');
+        $data     = $request->input('info_task');
+
+        if (!empty($data)) {
+
+            Tasks::where('id', $task_id)->update($data);
+
         }
-        $tasks->save();
-        return response()->json($tasks->save());
+
+        $task = Tasks::find($task_id);
+        return response()->json($task);
     }
 
     /**
