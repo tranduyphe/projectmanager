@@ -119,7 +119,6 @@ class TaskController extends Controller
         
         $task_id  = $request->input('task_id');
         $data     = $request->input('info_task');
-
         if (!empty($data)) {
 
             Tasks::where('id', $task_id)->update($data);
