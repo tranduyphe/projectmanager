@@ -1,9 +1,9 @@
 import Router from '../../router';
 
 const state = {
-    loginResponse: {},
-    authUser: {},
-    authUserData : {}
+    loginResponse: {}, // check login 
+    authUser: {}, // get user data
+    authUserData : {} // user data
 };
 
 const getters = {

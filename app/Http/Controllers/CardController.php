@@ -3,7 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth; 
 use App\Models\Card;
+use App\Models\User;
+use App\Models\DepartmentUser;
+
 
 class CardController extends Controller
 {
@@ -14,8 +18,30 @@ class CardController extends Controller
      */
     public function index()
     {
-        $cards = Card::all();
-        return response()->json($cards);
+        $results = array();
+        $user    = Auth::user();
+        $user_id = $user->id;
+        $cards   = Card::all();      
+        $results['cards'] = $cards;
+        $users   = User::with('detail_user_department')->find($user_id); 
+        
+        if (!empty($users->detail_user_department)) {
+            $details = $users->detail_user_department;
+            $department_id = $details->department_id;
+        }else{
+            $department_id = 2;
+        }
+        $results['list_user'] = [];
+        $department_user = DepartmentUser::where('department_id',$department_id)->get();
+        if (!empty($department_user)) {
+            foreach ($department_user as $key => $v) {                
+                if ($v->user_id != $user_id) {
+                    $info_user = User::find($v->user_id);
+                    $results['list_user'][$v->user_id] = $info_user;
+                }
+            }
+        }
+        return response()->json($results);
     }
 
     /**

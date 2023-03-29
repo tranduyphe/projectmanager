@@ -1,19 +1,22 @@
 const state = {
-    listTasks: {},
-    listCard: {}, 
-    currentTask: {} 
+    listTasks: {}, // get all task of project
+    listCard: {}, // get all cart
+    currentTask: {}, // get current task of project
+    listUsers: {}, // get list user of department
 };
 const getters = {
     listTasks: state => state.listTasks,
     listCard: state => state.listCard,
     currentTask: state => state.currentTask,
+    listUsers: state => state.listUsers,
 };
 const actions = {  
     async getListCards({commit}) {
         state.listCard = {}
         let res = await axios.post(`/api/card`);
-        if (res.status == 200) {
-            commit('setCard', res.data);
+        if (res.status == 200) {           
+            commit('setCard', res.data.cards);
+            commit('setListUsers', res.data.list_user);
         } 
     },
     async getListTasks({commit}, id) {
@@ -49,6 +52,9 @@ const mutations = {
     },
     setCurrentTask(state, payload){       
         state.currentTask = payload;
+    },
+    setListUsers(state, payload){       
+        state.listUsers = payload;
     },
 };
 
