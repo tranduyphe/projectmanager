@@ -22,6 +22,8 @@ export default {
             showActive:false,
             showModalMember:false,
             showModalFilter:false,
+            showModalWorkToDo:false,
+            showModalFile:false,
             showEditor:false,
             project_id: parseInt(this.$route.params.id),
             placeholder: "Nhập tiêu đề cho thẻ này...",
@@ -89,6 +91,12 @@ export default {
 
         show_Filter() {
             this.showModalFilter = !this.showModalFilter;
+        },
+        show_File() {
+            this.showModalFile = !this.showModalFile;
+        },
+        show_ModalWorkToDo() {
+            this.showModalWorkToDo = !this.showModalWorkToDo;
         },
 
         dateTime(value) {
@@ -174,7 +182,7 @@ export default {
             <div :class="['row']">
                 <div :class="['col-12 d-flex flex-row align-items-center justify-content-between']">
                     <div class="name_card">
-                        <p class="d-flex flex-row fs-3">
+                        <p class="d-flex flex-row">
                             <i class="ri-archive-fill"></i>
                             <span>{{ currentTask.title }}</span>
                         </p>
@@ -219,7 +227,9 @@ export default {
                         </div>
                     </div>
                     <div :class="['content-main-detail']">
-                        <h6><i class="ri-menu-2-line"></i>Mô tả</h6>
+                        <h6 d-flex flex-row align-items-center><i class="ri-menu-2-line"></i>
+                            <span>Mô tả</span>
+                        </h6>
                         <div :class="['description']">
                             <div v-if="!showEditor" v-bind:innerHTML="`${currentTask.description ? currentTask.description : 'Thêm mô tả chi tiết hơn...'}`" :class="['content-desc']" @click="handlerShowEditor()" >
                             </div>
@@ -238,9 +248,32 @@ export default {
                             
                         </div>
                     </div>
+                    
+                    <div class="list_work_todo">
+                         <div class="work-todo">
+                               <div class="work-todo-header d-flex flex-row align-items-center">
+                                   <p class="d-flex flex-row align-items-center name">
+                                      <i class="ri-checkbox-line"></i>
+                                      <span>Việc abc</span> 
+                                   </p>
+                                   <div class="btn_delete">Xóa</div>
+                               </div>
+                               <div class="work-todo-content d-flex flex-row align-items-center">
+                                   <p class="percent">0%</p>
+                                   <div class="progress">
+                                       <div class="progress-line"></div>
+                                   </div>     
+                               </div>
+                               <div class="btn_add">Thêm một mục</div>
+                         </div>
+                    </div>
+
                     <div :class="['content-main-detail']">
-                        <h6><i class="ri-list-check"></i>Hoạt động</h6>
-                        <textarea class="textarea_active" placeholder="Viết bình luận..."  v-if="!showActive" @click-outside="showActive = !showActive"></textarea>
+                        <h6 d-flex flex-row align-items-center><i class="ri-list-check"></i><span>Hoạt động</span></h6>
+                        <div class="comment_active"> 
+                            <textarea class="textarea_active" placeholder="Viết bình luận..."  v-if="!showActive" @click="showActive = !showActive">
+                            </textarea>
+                        </div>
                         <div :class="['description']" v-if="showActive" >
                             <div :class="['content-desc']"></div>
                             <div :class="['content-editor']">
@@ -273,7 +306,7 @@ export default {
                     <div :class="['list-item']">
                         <h6>Thêm vào thẻ</h6>
                         <b-list-group>
-                            <b-list-group-item @click="show_ModalMember">
+                            <b-list-group-item @click="showModalMember=true">
                                 <div class="item"> <i class="ri-user-fill"></i> Thêm thành  viên</div>
                                
                                 <!-- <b-modal  size="lg" hide-footer hide-header>
@@ -350,7 +383,7 @@ export default {
                             <b-list-group-item @click="showModalFilter=true">
                                   <div class="item"> <i class="ri-price-tag-3-line"></i> Nhãn</div>
                                   <div class="modalFilter " v-if="showModalFilter">
-                                <div :class="['modalFilter-header d-flex flex-row align-items-center justify-content-between']">
+                                <div :class="['modalFilter-header d-flex flex-row align-items-center']">
                                        <span>Nhãn</span>
                                        <a @click.stop="showModalFilter =!showModalFilter"><i class="ri-close-line"></i></a>
                                  </div>
@@ -411,18 +444,64 @@ export default {
 
                            </div>
                             </b-list-group-item>
-                            <b-list-group-item
-                                ><i class="ri-checkbox-line"></i> Việc cần
-                                làm</b-list-group-item
-                            >
+                            <b-list-group-item @click="showModalWorkToDo=true">
+                                <div class="item"><i class="ri-checkbox-line"></i> Việc cần làm</div>
+                                <div class="modal_work_todo" v-if="showModalWorkToDo">
+                                    <div :class="[' modal_work_todo-header d-flex flex-row align-items-center justify-content-center']">
+                                       <span>Thêm danh sách công việc</span>
+                                       <a @click.stop="showModalWorkToDo=false"><i class="ri-close-line"></i></a>
+                                    </div>
+                                    <p class="title">Tiêu đề</p>
+                                    <input type="text" placeholder="Việc cần làm">
+                                    <div class="btn_add">Thêm</div>
+                                </div>
+                            </b-list-group-item>
+
                             <b-list-group-item
                                 ><i class="ri-time-line"></i> Ngày hết
                                 hạn</b-list-group-item
                             >
-                            <b-list-group-item
-                                ><i class="ri-attachment-2"></i> File đính
-                                kèm</b-list-group-item
-                            >
+                            <b-list-group-item @click="showModalFile=true">
+                                <div class="item">
+                                    <i class="ri-attachment-2"></i> File đính kèm
+                                </div>
+                                <div class="modalFile" v-if="showModalFile">
+                                    <div :class="['modalFile-header d-flex flex-row align-items-center justify-content-center']">
+                                       <span>Đính kèm từ</span>
+                                       <a @click.stop="showModalFile =!showModalFile"><i class="ri-close-line"></i></a>
+                                    </div>
+                                    <div class="list_upload">
+                                         <div class="upload">
+                                            Máy tính
+                                        </div>
+                                        <div class="upload">
+                                            Trello
+                                        </div>
+                                        <div class="upload">
+                                            Google Driver
+                                        </div>
+                                        <div class="upload">
+                                            Dropbox
+                                        </div>
+                                        <div class="upload">
+                                            Box
+                                        </div>
+                                        <div class="upload">
+                                            OneDriver
+                                        </div>
+                                        
+                                    </div>
+                                    <hr>
+                                     <div class="attach_link">
+                                         <b>Đính kèm liên kết</b>
+                                         <input type="text" placeholder="Dán liên kết vào đây">
+                                         <div class="btn">Đính kèm</div>
+                                     </div>
+                                     <hr>
+                                     <p class="note">Mẹo: Bạn có thể kéo thả các tập tin và liên kết vào thẻ để tải chúng lên.</p>
+                       
+                                </div>
+                            </b-list-group-item>
                             <!-- <b-list-group-item
                                 ><i class="ri-image-line"></i> Ảnh
                                 bìa</b-list-group-item
@@ -532,11 +611,10 @@ export default {
                 :class="['col-3']"
             >
                 <div class="card-body">
+                   
                     <b-dropdown right class="float-end" variant="white">
                         <template v-slot:button-content>
-                            <i
-                                class="mdi mdi-dots-vertical m-0 text-muted font-size-20"
-                            ></i>
+                            <i class="ri-more-fill"></i>
                         </template>
                         <b-dropdown-item>Edit</b-dropdown-item>
                         <b-dropdown-item>Delete</b-dropdown-item>
@@ -547,7 +625,7 @@ export default {
                     <p class="mb-0">3 Tasks</p>
                 </div>
                 <div class="card">
-                    <div class="card-body border-bottom">
+                    <div class="card-body border-bottom" id="item">
                         <div id="todo-task" class="task-list">
                             <draggable
                                 class="list-group"
@@ -577,6 +655,14 @@ export default {
                                         ></div>
                                     </div>
                                     <div class="card-body">
+                                        <div class="list_filter">
+                                           <div class="filter"></div>
+                                           <div class="filter"></div>
+                                           <div class="filter"></div>
+                                           <div class="filter"></div>
+                                           <div class="filter"></div>
+                                           <div class="filter"></div>
+                                        </div>
                                         <div class="float-end ml-2">
                                             <div>
                                                 {{ dateTime(task.created_at) }}
