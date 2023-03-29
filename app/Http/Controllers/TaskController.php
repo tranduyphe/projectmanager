@@ -51,7 +51,7 @@ class TaskController extends Controller
         }
         $users = User::with('detail_user_department')->find($user_id);
         
-        if (!empty($details)) {
+        if (!empty($users)) {
             $details = $users->detail_user_department;
             $department_id = $details->department_id;
         }else{

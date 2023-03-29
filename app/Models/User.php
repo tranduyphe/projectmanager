@@ -64,4 +64,4 @@ class User extends Authenticatable
     {
         return $this->hasOne(DepartmentUser::class, 'user_id');
     }
-}
+}      

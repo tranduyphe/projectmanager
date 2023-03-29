@@ -75,6 +75,7 @@ class AuthController extends Controller
         
         $req = $request->user();
         $req['roles'] = $req->getRoleNames()->first();
+        
         return response()->json($req, 200); 
     }
 
