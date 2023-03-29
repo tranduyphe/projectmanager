@@ -1,8 +1,8 @@
 const state = {
-    listTasks: {},
-    listCard: {}, 
-    currentTask: {},
-    listUsers: {}, 
+    listTasks: {}, // get all task of project
+    listCard: {}, // get all cart
+    currentTask: {}, // get current task of project
+    listUsers: {}, // get list user of department
 };
 const getters = {
     listTasks: state => state.listTasks,
