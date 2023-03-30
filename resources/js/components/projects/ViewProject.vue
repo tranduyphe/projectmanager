@@ -4,6 +4,7 @@ import { mapGetters, mapActions, mutations } from "vuex";
 import PageHeader from "../layouts/page-header.vue";
 import moment from "moment";
 import { VueEditor } from "vue3-editor";
+
 export default {
     page: {
         title: "Gosu Board",
@@ -25,6 +26,7 @@ export default {
             showModalWorkToDo:false,
             showModalFile:false,
             showEditor:false,
+            showModalMove: false,
             project_id: parseInt(this.$route.params.id),
             placeholder: "Nhập tiêu đề cho thẻ này...",
             taskUpdate: {},
@@ -85,6 +87,7 @@ export default {
             this.getCurrentTask(task_id);
             this.showModal = true;
         },
+        
         show_ModalMember() {
             this.showModalMember = !this.showModalMember;
         },
@@ -97,6 +100,9 @@ export default {
         },
         show_ModalWorkToDo() {
             this.showModalWorkToDo = !this.showModalWorkToDo;
+        },
+        show_ModalMove() {
+            this.showModalMove = !this.showModalMove;
         },
 
         dateTime(value) {
@@ -152,7 +158,7 @@ export default {
         document.body.classList.remove("auth-body-bg");
         document.body.classList.add("page-task");
        //outside
-       
+           
        //
 
     },
@@ -179,7 +185,7 @@ export default {
     <b-modal v-model="showModal" @hide="onHide" size="lg" hide-footer hide-header>
         <!-- <pre>{{ JSON.stringify(currentTask, undefined, 4) }}</pre> -->
         <div :class="['container-fluid']">
-            <div :class="['row']">
+            <div :class="['row container-fluid-row ']">
                 <div :class="['col-12 d-flex flex-row align-items-center justify-content-between']">
                     <div class="name_card">
                         <p class="d-flex flex-row">
@@ -192,7 +198,7 @@ export default {
                         <i class="ri-close-line"></i>
                     </div>
                 </div>
-                <div :class="['col-9']">
+                <div :class="['col-lg-9']">
                     <div :class="['content-main-info']">
                         <div class="member">
                           
@@ -233,7 +239,7 @@ export default {
                         <div :class="['description']">
                             <div v-if="!showEditor" v-bind:innerHTML="`${currentTask.description ? currentTask.description : 'Thêm mô tả chi tiết hơn...'}`" :class="['content-desc']" @click="handlerShowEditor()" >
                             </div>
-                            <div v-else="showEditor" :class="['content-editor']" >
+                            <div v-if="showEditor" :class="['content-editor']" >
                                 <vue-editor
                                         id="edit-current-task"
                                         v-model="currentTask.description"
@@ -302,7 +308,7 @@ export default {
                         </div>
                     </div>
                 </div>
-                <div :class="['col-3']">
+                <div :class="['col-lg-3']">
                     <div :class="['list-item']">
                         <h6>Thêm vào thẻ</h6>
                         <b-list-group>
@@ -511,10 +517,35 @@ export default {
                     <div :class="['list-item']">
                         <h6>Thao tác</h6>
                         <b-list-group>
-                            <b-list-group-item
-                                ><i class="ri-arrow-right-line"></i> Di
-                                chuyển</b-list-group-item
-                            >
+                            <b-list-group-item @click="showModalMove=true">
+                                <div class="item">
+                                    <i class="ri-arrow-right-line"></i>
+                                     Di chuyển
+                                </div>    
+                                <div class="modal_move" v-if="showModalMove">
+                                    <div :class="[' modal_move-header d-flex flex-row align-items-center justify-content-center']">
+                                       <span>Di chuyển thẻ</span>
+                                       <a @click.stop="showModalMove=false"><i class="ri-close-line"></i></a>
+                                    </div>
+                                    <p class="title">Chọn đích đến</p>
+                                    <div class="modal_move-content">
+                                        <div class="btn select_table">
+                                             <p>Bảng</p>
+                                            <div class="name_table">Demo</div>
+                                       </div>
+                                       <div class="btn select_list">
+                                            <p>Danh sách</p>
+                                            <div class="name_list">Cần làm</div>
+                                       </div>
+                                        <div class="btn select_location">
+                                            <p>Vị trí</p>
+                                            <div class="number">1</div>
+                                       </div>
+                                    </div>
+                                    <div class="btn_move">Di chuyển</div>
+                                    
+                                </div>                      
+                            </b-list-group-item>
                             <!-- <b-list-group-item
                                 ><i class="ri-price-tag-3-line"></i> Sao
                                 chép</b-list-group-item
@@ -532,6 +563,71 @@ export default {
 
     <div class="container-fluid min-vh-100">
         <PageHeader :title="title" :items="items" />
+        <!-- nav -->
+         <div class="layoutview-header">
+                    <div class="layoutview-header-left">
+                             <h4 class="name_project">PROJECT</h4>
+                             <div class="icon_star" title="Đánh hoặc bỏ đánh dấu sao bảng này. Bảng được đánh dấu sao sẽ hiện ở đầu danh sách Bảng.">
+                                <i class="ri-star-line"></i>
+                            </div>
+                             <a class="btn_display_working_space">
+                                 <div class="icon">
+                                    <i class="ri-group-line"></i>
+                                 </div>
+                                 <p>Hiển thị không gian làm việc</p>
+                             </a>
+                             <a class="btn_table">
+                                 <div class="icon">
+                                    <i class="ri-table-alt-line"></i>
+                                 </div>
+                                 <p>Bảng</p>
+                             </a>
+                             <div class="btn_dropdown"><i class="ri-arrow-drop-down-line"></i></div>
+                    </div>
+
+                         <div class="layoutview-header-right">
+                             <a class="btn_add-ons">
+                                 <div class="icon">
+                                    <i class="ri-rocket-2-line"></i>
+                                 </div>
+                                 <p>Tiện ích bổ sung</p>
+                             </a>
+                             <a class="btn_automation">
+                                <i class="ri-flashlight-line"></i>
+                                 <p>Tự động hóa</p>
+                             </a>
+
+                             <a class="btn_filter">
+                                 <div class="icon"><i class="ri-filter-3-line"></i></div>
+                                 <p>Lọc</p>
+                             </a>
+                              <div class="list_user">
+                                <div class="avatar">
+                                    <img src="/images/avatar-1.jpg?feb0f89de58f0ef9b424b1beec766bd2" alt="">
+                                 </div>
+                                <div class="avatar">
+                                    <img src="/images/avatar-2.jpg?feb0f89de58f0ef9b424b1beec766bd2" alt="">
+                                </div>
+                                <div class="avatar">
+                                    <img src="/images/avatar-3.jpg?feb0f89de58f0ef9b424b1beec766bd2" alt="">
+                                </div>
+                                <div class="avatar">   
+                                    <img src="/images/avatar-4.jpg?feb0f89de58f0ef9b424b1beec766bd2" alt="">  
+                                </div>
+                              </div>
+
+                              <a class="btn_share">
+                                <div class="icon"><i class="ri-user-add-line"></i></div>
+                                 <p>Chia sẻ</p>
+                              </a>
+
+                              <a class="btn_menu">
+                                <i class="ri-more-line"></i>
+                              </a>
+                        </div>
+                    </div>
+
+
         <div class="row mb-2">
             <div class="col-lg-6">
                 <div class="media">
