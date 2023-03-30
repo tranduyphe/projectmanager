@@ -122,6 +122,7 @@ body.page-task {
                         margin-left: 35px;
                         display: flex;
                         margin-top: 20px;
+                        column-gap: 20px;
                         @media (max-width: 850px) {
                              flex-wrap: wrap;
                        }
@@ -162,7 +163,7 @@ body.page-task {
                         }
 
                         .label{
-                            margin-left: 20px;
+                          
                              .list_label{
                                 display: flex;
                                 align-items: center;
@@ -201,7 +202,7 @@ body.page-task {
                         }
 
                         .notification{
-                            margin-left: 20px;
+                           
                             .btn_follow{
                                  display: flex;
                                  background: #eaecf0;
