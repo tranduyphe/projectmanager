@@ -28,6 +28,18 @@ class TaskController extends Controller
                 ['department_id', '=', 1],
             ])->get();
             $results[$card_id] = [];
+            if (!empty($list_tasks)) {
+                foreach ($list_tasks as $key => $tasks) {
+                    if (!empty($tasks->list_user_ids)) {
+                        $members = [];
+                        $list_users = explode(",", $tasks->list_user_ids);
+                        foreach ($list_users as $k => $id) {
+                            $members[$k] = User::find($id);
+                        }
+                        $list_tasks[$key]['members'] = $members;
+                    }
+                }
+            }
             $results[$card_id] = $list_tasks;
         }
         return response()->json($results);
@@ -93,6 +105,16 @@ class TaskController extends Controller
     public function show($id)
     {
         $results = Tasks::findOrFail($id);
+        if (!empty($results->list_user_ids)) {
+            $members = [];
+            // $ = [];
+            $list_users = explode(",", $results->list_user_ids);
+            foreach ($list_users as $k => $id) {
+                $members[$k] = User::find($id);
+            }
+            $results['members'] = $members;
+            $results['members'] = $members;
+        }
         return response()->json($results);     
     }
 
@@ -120,12 +142,19 @@ class TaskController extends Controller
         $task_id  = $request->input('task_id');
         $data     = $request->input('info_task');
         if (!empty($data)) {
-
-            Tasks::where('id', $task_id)->update($data);
-
+            Tasks::where('id', $task_id)->update($data);            
         }
-
         $task = Tasks::find($task_id);
+        if (!empty($task->list_user_ids)) {
+            $members = [];
+            // $ = [];
+            $list_users = explode(",", $task->list_user_ids);
+            foreach ($list_users as $k => $id) {
+                $members[$k] = User::find($id);
+            }
+            $task['members'] = $members;
+            $task['members'] = $members;
+        }
         return response()->json($task);
     }
 

@@ -3,14 +3,12 @@ const state = {
     listCard: {}, // get all cart
     currentTask: {}, // get current task of project
     listUsers: {}, // get list user of department
-    listUserTask: {}, // get list user in task
 };
 const getters = {
     listTasks: state => state.listTasks,
     listCard: state => state.listCard,
     currentTask: state => state.currentTask,
     listUsers: state => state.listUsers,
-    listUserTask: state => state.listUserTask,
 };
 const actions = {  
     async getListCards({commit}) {
@@ -30,27 +28,15 @@ const actions = {
     },
     async createNewTask({ commit }, data){
         let res = await axios.post(`/api/tasks/create`, data); 
-        // commit('setTask', res.data); 
     },
     async updateTask({ commit }, data){
         let res = await axios.post(`/api/tasks/update`, data);
-        if (res.status == 200) {
+        if (res.status == 200) {            
             commit('setCurrentTask', res.data);             
         }
     },
-    async getCurrentTask({commit}, id) {
-        let res = await axios.post(`/api/tasks/show/${id}`);
-        if (res.status == 200) {
-            commit('setCurrentTask', res.data); 
-            if (res.data.list_user_ids !== null) {
-                var userTask = res.data.list_user_ids;
-                userTask = userTask.split(', ');
-                for (const key in userTask) {
-                    const user_id = userTask[key];
-                    commit('setlistUserTask', user_id);
-                }
-            }
-        }
+    getCurrentTask({commit}, data) {
+        commit('setCurrentTask', data);
     },
 };
 const mutations = {
@@ -65,9 +51,6 @@ const mutations = {
     },
     setListUsers(state, payload){       
         state.listUsers = payload;
-    },
-    setlistUserTask(state, payload){       
-        state.listUserTask[payload] = payload;
     },
 };
 

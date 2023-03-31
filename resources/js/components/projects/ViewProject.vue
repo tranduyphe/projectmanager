@@ -4,6 +4,8 @@ import { mapGetters, mapActions, mutations } from "vuex";
 import PageHeader from "../layouts/page-header.vue";
 import moment from "moment";
 import { VueEditor } from "vue3-editor";
+import { taskHelper } from "../../helpers/helps";
+
 export default {
     page: {
         title: "Gosu Board",
@@ -37,10 +39,12 @@ export default {
                     active: true,
                 },
             ],
+            listMemberActive: {},
+            indexTask:""
         };
     },
     computed: {
-        ...mapGetters(["listCard", "listTasks", "currentTask", "listUsers", "listUserTask"]),
+        ...mapGetters(["listCard", "listTasks", "currentTask", "listUsers", "authUserData"]),
     },
     methods: {
         ...mapActions([
@@ -49,6 +53,7 @@ export default {
             "getListTasks",
             "updateTask",
             "getCurrentTask",
+            "auth"
         ]),
 
         handlerClick($id) {
@@ -69,24 +74,30 @@ export default {
             }
         },
 
-        changeTask(event, cardId) {
+        async changeTask(event, cardId) {
             if (typeof event.added != "undefined") {
                 this.taskUpdate["task_id"] = event.added.element.id;
                 this.taskUpdate["info_task"] = {
                     card_id: cardId,
                 };
-                this.updateTask(this.taskUpdate);
+                await this.updateTask(this.taskUpdate);
             }
         },
 
-        showTask(task_id) {
-            this.getCurrentTask(task_id);
+        showTask(data, index) {
+            this.indexTask = index;
+            this.getCurrentTask(data);
             this.showModal = true;
         },
 
-
-        show_ModalMember() {
+        show_ModalMember(array) {
             this.showModalMember = !this.showModalMember;
+            if (this.showModalMember) {
+                this.listMemberActive = taskHelper.convertToObject(array);
+            }else{
+                this.listMemberActive = {};
+            }
+            
         },
 
         show_Filter() {
@@ -111,21 +122,13 @@ export default {
         },
 
         // updated data current task
-        updateDataTask() {
+        async updateDataTask() {
             this.taskUpdate["task_id"] = this.currentTask.id;
-            delete this.currentTask.id;
-            delete this.currentTask.created_at;
-            delete this.currentTask.updated_at;
-            delete this.currentTask.project_id;
-            delete this.currentTask.dealine;
-            delete this.currentTask.slug;
-            delete this.currentTask.title;
-            delete this.currentTask.department_id;
-            delete this.currentTask.department_id;
-            delete this.currentTask.card_id;
-            delete this.currentTask.list_user_ids;
-            this.taskUpdate["info_task"] = this.currentTask;
-            this.updateTask(this.taskUpdate);
+            var description = {
+                'description': this.currentTask.description
+            }
+            this.taskUpdate["info_task"] = description;
+            await this.updateTask(this.taskUpdate);
             this.showEditor = false;
         },
 
@@ -147,26 +150,32 @@ export default {
          * @param {*} action 
          * @param {*} user_id 
          */
-        updatedUserTask(action, user_id){
+         async updatedUserTask(action, user_id){
             if (action == 'deactive') {
-                delete this.listUserTask[user_id];
+                delete this.listMemberActive[user_id];
             }else{
-                this.listUserTask[user_id] = parseInt(user_id);
+                this.listMemberActive[user_id] = parseInt(user_id);
             }
             this.taskUpdate["task_id"] = this.currentTask.id;
-            var list_user_task = Object.keys(this.listUserTask);
+            var list_user_task = Object.keys(this.listMemberActive);
             var list_user_ids = {
                 'list_user_ids' : list_user_task ? list_user_task.join(", ") : ""
-            }
-            
-            
+            }            
             this.taskUpdate["info_task"] = list_user_ids;
-            this.updateTask(this.taskUpdate);
-
-        }
+            var index = this.indexTask;
+            var currentTaskCardId = this.listTasks[this.currentTask.card_id][index];
+            await this.updateTask(this.taskUpdate);
+            
+            if (this.currentTask.list_user_ids) {
+                currentTaskCardId['members'] = this.currentTask.members
+            }else{
+                currentTaskCardId['members'] = false;
+            }
+        },  
 
     },
     created() {
+        this.auth();
         this.getListCards();
         this.getListTasks(this.$route.params.id);
     },
@@ -174,10 +183,12 @@ export default {
     mounted() {
         document.body.classList.remove("auth-body-bg");
         document.body.classList.add("page-task");
+        
     },
 };
 </script>
 <template>    
+<!-- <pre>{{ JSON.stringify(authUserData, undefined, 4) }}</pre> -->
     <b-modal
         v-model="showModal"
         @hide="onHideModal"
@@ -185,8 +196,6 @@ export default {
         hide-footer
         hide-header
     >        
-    <!-- <pre>{{ JSON.stringify(listUserTask, undefined, 4) }}</pre> -->
-    
         <div :class="['container-fluid']">
             <div :class="['row']">
                 <div
@@ -207,24 +216,21 @@ export default {
                 </div>
                 <div :class="['col-9']">
                     <div :class="['content-main-info']">
-                        <div class="member">
+                        <div class="member" v-if="currentTask.members">
                             <p>Thành viên</p>
                             <div class="list_user">
-                                <div class="user">
+                                <div class="user"  
+                                    v-for="(userTask, index) in currentTask.members"
+                                    :key="index"
+                                >
                                     <img
                                         src="/images/avatar-2.jpg?feb0f89de58f0ef9b424b1beec766bd2"
-                                        alt=""
+                                        :title="userTask.name"
                                     />
-                                </div>
-                                <div class="user">
-                                    <img
-                                        src="/images/avatar-1.jpg?feb0f89de58f0ef9b424b1beec766bd2"
-                                        alt=""
-                                    />
-                                </div>
-                                <div class="btn_add_user">
-                                    <i class="ri-add-line"></i>
-                                </div>
+                                </div>                                
+                            </div>
+                            <div class="btn_add_user">
+                                <i class="ri-add-line"></i>
                             </div>
                         </div>
                         <div class="label">
@@ -337,14 +343,14 @@ export default {
                         <h6>Thêm vào thẻ</h6>
                         <b-list-group>
                             <b-list-group-item>
-                                <div class="item" @click="show_ModalMember()">
+                                <div class="item" @click="show_ModalMember(currentTask.members)">
                                     <i class="ri-user-fill"></i> Thêm thành viên
                                 </div>
                                 <div class="modalMember" v-if="showModalMember">
                                     <div :class="['modalMember-header']">
                                         <span>Thành viên</span>
                                         <a
-                                            @click="show_ModalMember()"
+                                            @click="show_ModalMember(currentTask.members)"                                            
                                             ><i class="ri-close-line"></i
                                         ></a>
                                     </div>
@@ -356,25 +362,27 @@ export default {
                                     <div class="member_of_table">
                                         <div
                                             v-for="(user, index) in listUsers"
-                                            :key="index++"
-                                            :class="['list_member d-flex flex-row align-items-center']"
-                                            :data-check="`${!listUserTask[user.id] ? 'active' : 'deactive'}`" 
-                                            @click="updatedUserTask(!listUserTask[user.id] ? 'active' : 'deactive', user.id)"                                           
+                                            :key="user.id"
+                                            :class="['list_member d-flex flex-row align-items-center']" 
+                                            @click="updatedUserTask(!listMemberActive[user.id] && listMemberActive ? 'active' : 'deactive', user.id)"
+                                            :data-check="`${!listMemberActive[user.id] && listMemberActive ? 'active' : 'deactive'}`"                                                                  
                                         >
-                                            <div class="avatar">
-                                                <div class="image">
-                                                    <img
-                                                        src="/images/avatar-2.jpg?feb0f89de58f0ef9b424b1beec766bd2"
-                                                        alt=""
-                                                    />
+                                            <div :class="['list_member d-flex flex-row align-items-center']">
+                                                <div class="avatar">
+                                                    <div class="image">
+                                                        <img
+                                                            src="/images/avatar-2.jpg?feb0f89de58f0ef9b424b1beec766bd2"
+                                                            alt=""
+                                                        />
+                                                    </div>
                                                 </div>
+                                                <div class="name">
+                                                    <p>{{ user.name }}</p>
+                                                </div>
+                                                <span v-if="listMemberActive[user.id]">
+                                                    <i class="ri-check-line"></i>
+                                                </span>
                                             </div>
-                                            <div class="name">
-                                                <p>{{ user.name }}</p>
-                                            </div>
-                                            <span v-if="listUserTask[user.id]">
-                                                <i class="ri-check-line"></i>
-                                            </span>
                                         </div>
                                     </div>
                                 </div>
@@ -657,11 +665,12 @@ export default {
                             >
                                 <div
                                     class="card task-box cursor-pointer"
-                                    v-for="task in listTasks[card.id]"
+                                    v-for=" ( task, index ) in listTasks[card.id] "
                                     :key="task.id"
                                     :data-cardid="card.id"
-                                    @click="showTask(task.id)"
+                                    @click="showTask(task, index)"
                                 >
+                                    <!-- <pre>{{ JSON.stringify(task) }}</pre> -->
                                     <!-- <pre>{{ JSON.stringify(task, undefined, 4) }}</pre> -->
                                     <div
                                         class="progress progress-sm animated-progess"
@@ -695,38 +704,26 @@ export default {
                                             </h5>
                                         </div>
                                         <div class="d-inline-flex team mb-0">
-                                            <div class="me-3 align-self-center">
-                                                Team :
-                                            </div>
-                                            <div class="team-member">
-                                                <a
-                                                    href="javascript: void(0);"
-                                                    class="team-member d-inline-block"
-                                                    v-b-tooltip.hover
-                                                    data-placement="top"
-                                                    title="Calvin Redrick"
+                                            <div class="me-3 align-self-center" v-if="task.members">
+                                                <div class="list-member" 
+                                                    v-for="member in task.members"                                            
                                                 >
-                                                    <img
-                                                        src="@/assets/images/users/avatar-2.jpg"
-                                                        class="rounded-circle avatar-xs"
-                                                        alt
-                                                    />
-                                                </a>
-                                            </div>
-                                            <div class="team-member">
-                                                <a
-                                                    href="javascript: void(0);"
-                                                    class="team-member d-inline-block"
-                                                    v-b-tooltip.hover
-                                                    data-placement="top"
-                                                    title="David Martinez"
-                                                >
-                                                    <img
-                                                        src="@/assets/images/users/avatar-1.jpg"
-                                                        class="rounded-circle avatar-xs"
-                                                        alt
-                                                    />
-                                                </a>
+                                                    <div class="team-member">
+                                                        <a
+                                                            href="javascript: void(0);"
+                                                            class="team-member d-inline-block"
+                                                            v-b-tooltip.hover
+                                                            data-placement="top"
+                                                            :title="member.name"
+                                                        >
+                                                            <img
+                                                                src="@/assets/images/users/avatar-2.jpg"
+                                                                class="rounded-circle avatar-xs"
+                                                                alt
+                                                            />
+                                                        </a>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

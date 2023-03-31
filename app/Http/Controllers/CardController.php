@@ -34,11 +34,9 @@ class CardController extends Controller
         $results['list_user'] = [];
         $department_user = DepartmentUser::where('department_id',$department_id)->get();
         if (!empty($department_user)) {
-            foreach ($department_user as $key => $v) {                
-                if ($v->user_id != $user_id) {
-                    $info_user = User::find($v->user_id);
-                    $results['list_user'][$v->user_id] = $info_user;
-                }
+            foreach ($department_user as $key => $v) {   
+                $info_user = User::find($v->user_id);
+                $results['list_user'][$v->user_id] = $info_user;
             }
         }
         return response()->json($results);
