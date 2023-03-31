@@ -20,6 +20,8 @@ class TaskController extends Controller
     {
         $cards = Card::all();
         $results = [];
+        $tests = [];
+        $data = [];
         foreach ($cards as $key => $card) {            
             $card_id = $card->id;
             $list_tasks = Tasks::where([
@@ -27,10 +29,26 @@ class TaskController extends Controller
                 ['project_id', '=', $project_id],
                 ['department_id', '=', 1],
             ])->get();
-            $results[$card_id] = [];
-            $results[$card_id] = $list_tasks;
+            if (!empty($list_tasks)) {
+                foreach ($list_tasks as $key => $tasks) {
+                    $results[$tasks->id] = $tasks;
+                    $tests[$card_id][$key] = $tasks->id;
+                    if (!empty($tasks->list_user_ids)) {
+                        $members = [];
+                        $list_users = explode(",", $tasks->list_user_ids);
+                        foreach ($list_users as $k => $id) {
+                            $members[$k] = User::find($id);
+                        }
+                        $list_tasks[$key]['members'] = $members;
+                    }
+                }
+            }
+            
+            // $results[$card_id] = $list_tasks;
         }
-        return response()->json($results);
+        $data['list_draggable'] = $tests;
+        $data['list_task'] = $results;
+        return response()->json($data);
     }
 
     /**
@@ -65,7 +83,6 @@ class TaskController extends Controller
             'list_user_ids' => "",
             'slug'          => $slug,
             'description'   => "",
-            // 'dealine'       => date('Y-m-d H:i:s'),
             'created_at'    => date('Y-m-d H:i:s'),
             'updated_at'    => date('Y-m-d H:i:s'),
         ]);
@@ -93,6 +110,16 @@ class TaskController extends Controller
     public function show($id)
     {
         $results = Tasks::findOrFail($id);
+        if (!empty($results->list_user_ids)) {
+            $members = [];
+            // $ = [];
+            $list_users = explode(",", $results->list_user_ids);
+            foreach ($list_users as $k => $id) {
+                $members[$k] = User::find($id);
+            }
+            $results['members'] = $members;
+            $results['members'] = $members;
+        }
         return response()->json($results);     
     }
 
@@ -119,14 +146,20 @@ class TaskController extends Controller
         
         $task_id  = $request->input('task_id');
         $data     = $request->input('info_task');
-
         if (!empty($data)) {
-
-            Tasks::where('id', $task_id)->update($data);
-
+            Tasks::where('id', $task_id)->update($data);            
         }
-
         $task = Tasks::find($task_id);
+        if (!empty($task->list_user_ids)) {
+            $members = [];
+            // $ = [];
+            $list_users = explode(",", $task->list_user_ids);
+            foreach ($list_users as $k => $id) {
+                $members[$k] = User::find($id);
+            }
+            $task['members'] = $members;
+            $task['members'] = $members;
+        }
         return response()->json($task);
     }
 
