@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import Dashboard from '../components/layouts/Dashboard.vue';
+import Single from '../components/layouts/single-project.vue';
 import Login from '../components/account/Login.vue';
 import Register from '../components/account/Register.vue';
 import Layout from '../components/layouts/Layout.vue';
@@ -21,6 +22,12 @@ export const routes = [
         path: '/viewproject/:id',
         name: 'viewproject',
         component: ViewProject
+    },
+
+    {
+        name: 'single',
+        path: '/single',
+        component: Single,
     },
     // {
     //     path: '/htmldemo',
