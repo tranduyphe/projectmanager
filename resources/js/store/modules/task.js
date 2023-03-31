@@ -3,12 +3,14 @@ const state = {
     listCard: {}, // get all cart
     currentTask: {}, // get current task of project
     listUsers: {}, // get list user of department
+    listTaskDraggable: {}, // get list user of department
 };
 const getters = {
     listTasks: state => state.listTasks,
     listCard: state => state.listCard,
     currentTask: state => state.currentTask,
     listUsers: state => state.listUsers,
+    listTaskDraggable: state => state.listTaskDraggable,
 };
 const actions = {  
     async getListCards({commit}) {
@@ -23,15 +25,18 @@ const actions = {
         
         let res = await axios.post(`/api/tasks/index/${id}`) 
         if (res.status == 200) {
-            commit('setTask', res.data); 
+            commit('setTask', res.data.task); 
+            commit('setTaskDraggable', res.data.test); 
         }
     },
     async createNewTask({ commit }, data){
         let res = await axios.post(`/api/tasks/create`, data); 
     },
     async updateTask({ commit }, data){
+
         let res = await axios.post(`/api/tasks/update`, data);
-        if (res.status == 200) {            
+        if (res.status == 200) {   
+                 
             commit('setCurrentTask', res.data);             
         }
     },
@@ -45,6 +50,9 @@ const mutations = {
     },
     setTask(state, payload){       
         state.listTasks = payload;
+    },
+    setTaskDraggable(state, payload){       
+        state.listTaskDraggable = payload;
     },
     setCurrentTask(state, payload){       
         state.currentTask = payload;

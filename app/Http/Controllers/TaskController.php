@@ -20,6 +20,8 @@ class TaskController extends Controller
     {
         $cards = Card::all();
         $results = [];
+        $tests = [];
+        $data = [];
         foreach ($cards as $key => $card) {            
             $card_id = $card->id;
             $list_tasks = Tasks::where([
@@ -27,9 +29,10 @@ class TaskController extends Controller
                 ['project_id', '=', $project_id],
                 ['department_id', '=', 1],
             ])->get();
-            $results[$card_id] = [];
             if (!empty($list_tasks)) {
                 foreach ($list_tasks as $key => $tasks) {
+                    $results[$tasks->id] = $tasks;
+                    $tests[$card_id][$key] = $tasks->id;
                     if (!empty($tasks->list_user_ids)) {
                         $members = [];
                         $list_users = explode(",", $tasks->list_user_ids);
@@ -40,9 +43,12 @@ class TaskController extends Controller
                     }
                 }
             }
-            $results[$card_id] = $list_tasks;
+            
+            // $results[$card_id] = $list_tasks;
         }
-        return response()->json($results);
+        $data['test'] = $tests;
+        $data['task'] = $results;
+        return response()->json($data);
     }
 
     /**

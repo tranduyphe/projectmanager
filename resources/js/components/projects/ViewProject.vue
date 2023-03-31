@@ -40,11 +40,10 @@ export default {
                 },
             ],
             listMemberActive: {},
-            indexTask:""
         };
     },
     computed: {
-        ...mapGetters(["listCard", "listTasks", "currentTask", "listUsers", "authUserData"]),
+        ...mapGetters(["listTaskDraggable", "listCard", "listTasks", "currentTask", "listUsers", "authUserData"]),
     },
     methods: {
         ...mapActions([
@@ -74,18 +73,17 @@ export default {
             }
         },
 
-        async changeTask(event, cardId) {
+        changeTask(event, cardId) {    
             if (typeof event.added != "undefined") {
-                this.taskUpdate["task_id"] = event.added.element.id;
+                this.taskUpdate["task_id"] = event.added.element;
                 this.taskUpdate["info_task"] = {
                     card_id: cardId,
                 };
-                await this.updateTask(this.taskUpdate);
+                this.updateTask(this.taskUpdate);
             }
         },
 
-        showTask(data, index) {
-            this.indexTask = index;
+        showTask(data) {
             this.getCurrentTask(data);
             this.showModal = true;
         },
@@ -162,8 +160,7 @@ export default {
                 'list_user_ids' : list_user_task ? list_user_task.join(", ") : ""
             }            
             this.taskUpdate["info_task"] = list_user_ids;
-            var index = this.indexTask;
-            var currentTaskCardId = this.listTasks[this.currentTask.card_id][index];
+            var currentTaskCardId = this.listTasks[this.currentTask.id];
             await this.updateTask(this.taskUpdate);
             
             if (this.currentTask.list_user_ids) {
@@ -660,22 +657,22 @@ export default {
                             <draggable
                                 class="list-group"
                                 group="tasks"
-                                :list="listTasks[card.id]"
+                                :list="listTaskDraggable[card.id]"
                                 @change="changeTask($event, card.id)"
                             >
                                 <div
                                     class="card task-box cursor-pointer"
-                                    v-for=" ( task, index ) in listTasks[card.id] "
-                                    :key="task.id"
+                                    v-for=" ( task, index ) in listTaskDraggable[card.id] "
+                                    :key="index"
                                     :data-cardid="card.id"
-                                    @click="showTask(task, index)"
+                                    @click="showTask(listTasks[task])"
                                 >
-                                    <!-- <pre>{{ JSON.stringify(task) }}</pre> -->
+                                   
                                     <!-- <pre>{{ JSON.stringify(task, undefined, 4) }}</pre> -->
                                     <div
                                         class="progress progress-sm animated-progess"
                                         style="height: 3px"
-                                    >
+                                    >                                    
                                         <div
                                             class="progress-bar"
                                             role="progressbar"
@@ -688,25 +685,25 @@ export default {
                                     <div class="card-body">
                                         <div class="float-end ml-2">
                                             <div>
-                                                {{ dateTime(task.created_at) }}
+                                                {{ dateTime(listTasks[task].created_at) }}
                                             </div>
                                         </div>
                                         <div class="mb-3">
-                                            <a href="#" class>#{{ task.id }}</a>
+                                            <a href="#" class>#{{ listTasks[task].id }}</a>
                                         </div>
                                         <div>
                                             <h5 class="font-size-16">
                                                 <a
                                                     href="javascript: void(0);"
                                                     class="text-dark"
-                                                    >{{ task.title }}</a
+                                                    >{{ listTasks[task].title }}</a
                                                 >
                                             </h5>
                                         </div>
                                         <div class="d-inline-flex team mb-0">
-                                            <div class="me-3 align-self-center" v-if="task.members">
+                                            <div class="me-3 align-self-center" v-if="listTasks[task].members">
                                                 <div class="list-member" 
-                                                    v-for="member in task.members"                                            
+                                                    v-for="member in listTasks[task].members"                                            
                                                 >
                                                     <div class="team-member">
                                                         <a
