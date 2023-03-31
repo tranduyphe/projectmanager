@@ -24,6 +24,9 @@ export default {
             showActive: false,
             showModalMember: false,
             showModalFilter: false,
+            showModalWorkToDo: false,
+            showModalFile: false,
+            showModalMove: false,
             showEditor: false,
             project_id: parseInt(this.$route.params.id),
             placeholder: "Nhập tiêu đề cho thẻ này...",
@@ -43,7 +46,14 @@ export default {
         };
     },
     computed: {
-        ...mapGetters(["listTaskDraggable", "listCard", "listTasks", "currentTask", "listUsers", "authUserData"]),
+        ...mapGetters([
+            "listTaskDraggable",
+            "listCard",
+            "listTasks",
+            "currentTask",
+            "listUsers",
+            "authUserData",
+        ]),
     },
     methods: {
         ...taskMethods,
@@ -62,16 +72,15 @@ export default {
             this.newTasks["project_id"] = this.project_id;
             if (this.newTasks && this.newTasks["title_" + $id]) {
                 var newTask = await this.createNewTask(this.newTasks);
-                console.log(newTask);
-                if (typeof newTask != 'undefined') {
-                    this.listTaskDraggable[newTask.card_id].push(newTask.id); 
-                    this.listTasks[newTask.id] = newTask; 
+                if (typeof newTask != "undefined") {
+                    this.listTaskDraggable[newTask.card_id].push(newTask.id);
+                    this.listTasks[newTask.id] = newTask;
                 }
                 this.newTasks = {};
             }
         },
 
-        changeTask(event, cardId) {    
+        changeTask(event, cardId) {
             if (typeof event.added != "undefined") {
                 this.taskUpdate["task_id"] = event.added.element;
                 this.taskUpdate["info_task"] = {
@@ -90,10 +99,9 @@ export default {
             this.showModalMember = !this.showModalMember;
             if (this.showModalMember) {
                 this.listMemberActive = taskHelper.convertToObject(array);
-            }else{
+            } else {
                 this.listMemberActive = {};
             }
-            
         },
 
         show_Filter() {
@@ -101,7 +109,7 @@ export default {
         },
 
         /**
-         * 
+         *
          * @param {*} value returm date
          */
         dateTime(value) {
@@ -117,8 +125,8 @@ export default {
         async updateDataTask() {
             this.taskUpdate["task_id"] = this.currentTask.id;
             var description = {
-                'description': this.currentTask.description
-            }
+                description: this.currentTask.description,
+            };
             this.taskUpdate["info_task"] = description;
             await this.updateTask(this.taskUpdate);
             this.showEditor = false;
@@ -139,31 +147,30 @@ export default {
 
         /**
          * add and remove use in current task
-         * @param {*} action 
-         * @param {*} user_id 
+         * @param {*} action
+         * @param {*} user_id
          */
-         async updatedUserTask(action, user_id){
-            if (action == 'deactive') {
+        async updatedUserTask(action, user_id) {
+            if (action == "deactive") {
                 delete this.listMemberActive[user_id];
-            }else{
+            } else {
                 this.listMemberActive[user_id] = parseInt(user_id);
             }
             this.taskUpdate["task_id"] = this.currentTask.id;
             var list_user_task = Object.keys(this.listMemberActive);
             var list_user_ids = {
-                'list_user_ids' : list_user_task ? list_user_task.join(", ") : ""
-            }            
+                list_user_ids: list_user_task ? list_user_task.join(", ") : "",
+            };
             this.taskUpdate["info_task"] = list_user_ids;
             var currentTaskCardId = this.listTasks[this.currentTask.id];
             await this.updateTask(this.taskUpdate);
-            
-            if (this.currentTask.list_user_ids) {
-                currentTaskCardId['members'] = this.currentTask.members
-            }else{
-                currentTaskCardId['members'] = false;
-            }
-        },  
 
+            if (this.currentTask.list_user_ids) {
+                currentTaskCardId["members"] = this.currentTask.members;
+            } else {
+                currentTaskCardId["members"] = false;
+            }
+        },
     },
     created() {
         this.auth();
@@ -174,19 +181,18 @@ export default {
     mounted() {
         document.body.classList.remove("auth-body-bg");
         document.body.classList.add("page-task");
-        
     },
 };
 </script>
-<template>    
-<!-- <pre>{{ JSON.stringify(authUserData, undefined, 4) }}</pre> -->
+<template>
+    <!-- <pre>{{ JSON.stringify(authUserData, undefined, 4) }}</pre> -->
     <b-modal
         v-model="showModal"
         @hide="onHideModal"
         size="lg"
         hide-footer
         hide-header
-    >        
+    >
         <div :class="['container-fluid']">
             <div :class="['row']">
                 <div
@@ -210,15 +216,18 @@ export default {
                         <div class="member" v-if="currentTask.members">
                             <p>Thành viên</p>
                             <div class="list_user">
-                                <div class="user"  
-                                    v-for="(userTask, index) in currentTask.members"
+                                <div
+                                    class="user"
+                                    v-for="(
+                                        userTask, index
+                                    ) in currentTask.members"
                                     :key="index"
                                 >
                                     <img
                                         src="/images/avatar-2.jpg?feb0f89de58f0ef9b424b1beec766bd2"
                                         :title="userTask.name"
                                     />
-                                </div>                                
+                                </div>
                             </div>
                             <div class="btn_add_user">
                                 <i class="ri-add-line"></i>
@@ -245,7 +254,10 @@ export default {
                         </div>
                     </div>
                     <div :class="['content-main-detail']">
-                        <h6><i class="ri-menu-2-line"></i>Mô tả</h6>
+                        <h6 d-flex flex-row align-items-center>
+                            <i class="ri-menu-2-line"></i>
+                            <span>Mô tả</span>
+                        </h6>
                         <div :class="['description']">
                             <div
                                 v-if="!showEditor"
@@ -280,10 +292,35 @@ export default {
                                 </div>
                             </div>
                         </div>
-                        <div :class="['list-checklists']"></div>
+                        <div class="list_work_todo">
+                            <div class="work-todo">
+                                <div
+                                    class="work-todo-header d-flex flex-row align-items-center"
+                                >
+                                    <p
+                                        class="d-flex flex-row align-items-center name"
+                                    >
+                                        <i class="ri-checkbox-line"></i>
+                                        <span>Việc abc</span>
+                                    </p>
+                                    <div class="btn_delete">Xóa</div>
+                                </div>
+                                <div
+                                    class="work-todo-content d-flex flex-row align-items-center"
+                                >
+                                    <p class="percent">0%</p>
+                                    <div class="progress">
+                                        <div class="progress-line"></div>
+                                    </div>
+                                </div>
+                                <div class="btn_add">Thêm một mục</div>
+                            </div>
+                        </div>
                     </div>
                     <div :class="['content-main-detail']">
-                        <h6><i class="ri-list-check"></i>Hoạt động</h6>
+                        <h6 d-flex flex-row align-items-center>
+                            <i class="ri-list-check"></i><span>Hoạt động</span>
+                        </h6>
                         <textarea
                             class="textarea_active"
                             placeholder="Viết bình luận..."
@@ -334,14 +371,23 @@ export default {
                         <h6>Thêm vào thẻ</h6>
                         <b-list-group>
                             <b-list-group-item>
-                                <div class="item" @click="show_ModalMember(currentTask.members)">
+                                <div
+                                    class="item"
+                                    @click="
+                                        show_ModalMember(currentTask.members)
+                                    "
+                                >
                                     <i class="ri-user-fill"></i> Thêm thành viên
                                 </div>
                                 <div class="modalMember" v-if="showModalMember">
                                     <div :class="['modalMember-header']">
                                         <span>Thành viên</span>
                                         <a
-                                            @click="show_ModalMember(currentTask.members)"                                            
+                                            @click="
+                                                show_ModalMember(
+                                                    currentTask.members
+                                                )
+                                            "
                                             ><i class="ri-close-line"></i
                                         ></a>
                                     </div>
@@ -354,11 +400,31 @@ export default {
                                         <div
                                             v-for="(user, index) in listUsers"
                                             :key="user.id"
-                                            :class="['list_member d-flex flex-row align-items-center']" 
-                                            @click="updatedUserTask(!listMemberActive[user.id] && listMemberActive ? 'active' : 'deactive', user.id)"
-                                            :data-check="`${!listMemberActive[user.id] && listMemberActive ? 'active' : 'deactive'}`"                                                                  
+                                            :class="[
+                                                'list_member d-flex flex-row align-items-center',
+                                            ]"
+                                            @click="
+                                                updatedUserTask(
+                                                    !listMemberActive[
+                                                        user.id
+                                                    ] && listMemberActive
+                                                        ? 'active'
+                                                        : 'deactive',
+                                                    user.id
+                                                )
+                                            "
+                                            :data-check="`${
+                                                !listMemberActive[user.id] &&
+                                                listMemberActive
+                                                    ? 'active'
+                                                    : 'deactive'
+                                            }`"
                                         >
-                                            <div :class="['list_member d-flex flex-row align-items-center']">
+                                            <div
+                                                :class="[
+                                                    'list_member d-flex flex-row align-items-center',
+                                                ]"
+                                            >
                                                 <div class="avatar">
                                                     <div class="image">
                                                         <img
@@ -370,8 +436,16 @@ export default {
                                                 <div class="name">
                                                     <p>{{ user.name }}</p>
                                                 </div>
-                                                <span v-if="listMemberActive[user.id]">
-                                                    <i class="ri-check-line"></i>
+                                                <span
+                                                    v-if="
+                                                        listMemberActive[
+                                                            user.id
+                                                        ]
+                                                    "
+                                                >
+                                                    <i
+                                                        class="ri-check-line"
+                                                    ></i>
                                                 </span>
                                             </div>
                                         </div>
@@ -506,22 +580,90 @@ export default {
                                         Tạo nhãn mới
                                     </div>
                                     <div class="btn_display_more">
-                                            Hiển thị các thành viên khác trong không gian làm việc
+                                        Hiển thị các thành viên khác trong không
+                                        gian làm việc
                                     </div>
                                 </div>
                             </b-list-group-item>
                             <b-list-group-item
-                                ><i class="ri-checkbox-line"></i> Việc cần
-                                làm</b-list-group-item
+                                @click="showModalWorkToDo = true"
                             >
+                                <div class="item">
+                                    <i class="ri-checkbox-line"></i> Việc cần
+                                    làm
+                                </div>
+                                <div
+                                    class="modal_work_todo"
+                                    v-if="showModalWorkToDo"
+                                >
+                                    <div
+                                        :class="[
+                                            ' modal_work_todo-header d-flex flex-row align-items-center justify-content-center',
+                                        ]"
+                                    >
+                                        <span>Thêm danh sách công việc</span>
+                                        <a
+                                            @click.stop="
+                                                showModalWorkToDo = false
+                                            "
+                                            ><i class="ri-close-line"></i
+                                        ></a>
+                                    </div>
+                                    <p class="title">Tiêu đề</p>
+                                    <input
+                                        type="text"
+                                        placeholder="Việc cần làm"
+                                    />
+                                    <div class="btn_add">Thêm</div>
+                                </div>
+                            </b-list-group-item>
                             <b-list-group-item
                                 ><i class="ri-time-line"></i> Ngày hết
                                 hạn</b-list-group-item
                             >
-                            <b-list-group-item
-                                ><i class="ri-attachment-2"></i> File đính
-                                kèm</b-list-group-item
-                            >
+                            <b-list-group-item @click="showModalFile = true">
+                                <div class="item">
+                                    <i class="ri-attachment-2"></i> File đính
+                                    kèm
+                                </div>
+                                <div class="modalFile" v-if="showModalFile">
+                                    <div
+                                        :class="[
+                                            'modalFile-header d-flex flex-row align-items-center justify-content-center',
+                                        ]"
+                                    >
+                                        <span>Đính kèm từ</span>
+                                        <a
+                                            @click.stop="
+                                                showModalFile = !showModalFile
+                                            "
+                                            ><i class="ri-close-line"></i
+                                        ></a>
+                                    </div>
+                                    <div class="list_upload">
+                                        <div class="upload">Máy tính</div>
+                                        <div class="upload">Trello</div>
+                                        <div class="upload">Google Driver</div>
+                                        <div class="upload">Dropbox</div>
+                                        <div class="upload">Box</div>
+                                        <div class="upload">OneDriver</div>
+                                    </div>
+                                    <hr />
+                                    <div class="attach_link">
+                                        <b>Đính kèm liên kết</b>
+                                        <input
+                                            type="text"
+                                            placeholder="Dán liên kết vào đây"
+                                        />
+                                        <div class="btn">Đính kèm</div>
+                                    </div>
+                                    <hr />
+                                    <p class="note">
+                                        Mẹo: Bạn có thể kéo thả các tập tin và
+                                        liên kết vào thẻ để tải chúng lên.
+                                    </p>
+                                </div>
+                            </b-list-group-item>
                             <!-- <b-list-group-item
                                 ><i class="ri-image-line"></i> Ảnh
                                 bìa</b-list-group-item
@@ -531,10 +673,40 @@ export default {
                     <div :class="['list-item']">
                         <h6>Thao tác</h6>
                         <b-list-group>
-                            <b-list-group-item
-                                ><i class="ri-arrow-right-line"></i> Di
-                                chuyển</b-list-group-item
-                            >
+                            <b-list-group-item @click="showModalMove = true">
+                                <div class="item">
+                                    <i class="ri-arrow-right-line"></i>
+                                    Di chuyển
+                                </div>
+                                <div class="modal_move" v-if="showModalMove">
+                                    <div
+                                        :class="[
+                                            ' modal_move-header d-flex flex-row align-items-center justify-content-center',
+                                        ]"
+                                    >
+                                        <span>Di chuyển thẻ</span>
+                                        <a @click.stop="showModalMove = false"
+                                            ><i class="ri-close-line"></i
+                                        ></a>
+                                    </div>
+                                    <p class="title">Chọn đích đến</p>
+                                    <div class="modal_move-content">
+                                        <div class="btn select_table">
+                                            <p>Bảng</p>
+                                            <div class="name_table">Demo</div>
+                                        </div>
+                                        <div class="btn select_list">
+                                            <p>Danh sách</p>
+                                            <div class="name_list">Cần làm</div>
+                                        </div>
+                                        <div class="btn select_location">
+                                            <p>Vị trí</p>
+                                            <div class="number">1</div>
+                                        </div>
+                                    </div>
+                                    <div class="btn_move">Di chuyển</div>
+                                </div>
+                            </b-list-group-item>
                             <!-- <b-list-group-item
                                 ><i class="ri-price-tag-3-line"></i> Sao
                                 chép</b-list-group-item
@@ -552,6 +724,82 @@ export default {
 
     <div class="container-fluid min-vh-100">
         <PageHeader :title="title" :items="items" />
+        <!-- nav -->
+        <div class="layoutview-header">
+            <div class="layoutview-header-left">
+                <h4 class="name_project">PROJECT</h4>
+                <div
+                    class="icon_star"
+                    title="Đánh hoặc bỏ đánh dấu sao bảng này. Bảng được đánh dấu sao sẽ hiện ở đầu danh sách Bảng."
+                >
+                    <i class="ri-star-line"></i>
+                </div>
+                <a class="btn_display_working_space">
+                    <div class="icon">
+                        <i class="ri-group-line"></i>
+                    </div>
+                    <p>Hiển thị không gian làm việc</p>
+                </a>
+                <a class="btn_table">
+                    <div class="icon">
+                        <i class="ri-table-alt-line"></i>
+                    </div>
+                    <p>Bảng</p>
+                </a>
+                <div class="btn_dropdown">
+                    <i class="ri-arrow-drop-down-line"></i>
+                </div>
+            </div>
+            <div class="layoutview-header-right">
+                <a class="btn_add-ons">
+                    <div class="icon">
+                        <i class="ri-rocket-2-line"></i>
+                    </div>
+                    <p>Tiện ích bổ sung</p>
+                </a>
+                <a class="btn_automation">
+                    <i class="ri-flashlight-line"></i>
+                    <p>Tự động hóa</p>
+                </a>
+                <a class="btn_filter">
+                    <div class="icon"><i class="ri-filter-3-line"></i></div>
+                    <p>Lọc</p>
+                </a>
+                <div class="list_user">
+                    <div class="avatar">
+                        <img
+                            src="/images/avatar-1.jpg?feb0f89de58f0ef9b424b1beec766bd2"
+                            alt=""
+                        />
+                    </div>
+                    <div class="avatar">
+                        <img
+                            src="/images/avatar-2.jpg?feb0f89de58f0ef9b424b1beec766bd2"
+                            alt=""
+                        />
+                    </div>
+                    <div class="avatar">
+                        <img
+                            src="/images/avatar-3.jpg?feb0f89de58f0ef9b424b1beec766bd2"
+                            alt=""
+                        />
+                    </div>
+                    <div class="avatar">
+                        <img
+                            src="/images/avatar-4.jpg?feb0f89de58f0ef9b424b1beec766bd2"
+                            alt=""
+                        />
+                    </div>
+                </div>
+                <a class="btn_share">
+                    <div class="icon"><i class="ri-user-add-line"></i></div>
+                    <p>Chia sẻ</p>
+                </a>
+                <a class="btn_menu">
+                    <i class="ri-more-line"></i>
+                </a>
+            </div>
+        </div>
         <div class="row mb-2">
             <div class="col-lg-6">
                 <div class="media">
@@ -656,17 +904,18 @@ export default {
                             >
                                 <div
                                     class="card task-box cursor-pointer"
-                                    v-for=" ( task, index ) in listTaskDraggable[card.id] "
+                                    v-for="(task, index) in listTaskDraggable[
+                                        card.id
+                                    ]"
                                     :key="index"
                                     :data-cardid="card.id"
                                     @click="showTask(listTasks[task])"
                                 >
-                                   
                                     <!-- <pre>{{ JSON.stringify(task, undefined, 4) }}</pre> -->
                                     <div
                                         class="progress progress-sm animated-progess"
                                         style="height: 3px"
-                                    >                                    
+                                    >
                                         <div
                                             class="progress-bar"
                                             role="progressbar"
@@ -677,27 +926,50 @@ export default {
                                         ></div>
                                     </div>
                                     <div class="card-body">
+                                        <div class="list_filter">
+                                           <div class="filter"></div>
+                                           <div class="filter"></div>
+                                           <div class="filter"></div>
+                                           <div class="filter"></div>
+                                           <div class="filter"></div>
+                                           <div class="filter"></div>
+                                        </div>
                                         <div class="float-end ml-2">
                                             <div>
-                                                {{ dateTime(listTasks[task].created_at) }}
+                                                {{
+                                                    dateTime(
+                                                        listTasks[task]
+                                                            .created_at
+                                                    )
+                                                }}
                                             </div>
                                         </div>
                                         <div class="mb-3">
-                                            <a href="#" class>#{{ listTasks[task].id }}</a>
+                                            <a href="#" class
+                                                >#{{ listTasks[task].id }}</a
+                                            >
                                         </div>
                                         <div>
                                             <h5 class="font-size-16">
                                                 <a
                                                     href="javascript: void(0);"
                                                     class="text-dark"
-                                                    >{{ listTasks[task].title }}</a
+                                                    >{{
+                                                        listTasks[task].title
+                                                    }}</a
                                                 >
                                             </h5>
                                         </div>
                                         <div class="d-inline-flex team mb-0">
-                                            <div class="me-3 align-self-center" v-if="listTasks[task].members">
-                                                <div class="list-member" 
-                                                    v-for="member in listTasks[task].members"                                            
+                                            <div
+                                                class="me-3 align-self-center"
+                                                v-if="listTasks[task].members"
+                                            >
+                                                <div
+                                                    class="list-member"
+                                                    v-for="member in listTasks[
+                                                        task
+                                                    ].members"
                                                 >
                                                     <div class="team-member">
                                                         <a
