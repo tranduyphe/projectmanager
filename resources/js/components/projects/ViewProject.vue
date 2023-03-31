@@ -5,7 +5,7 @@ import PageHeader from "../layouts/page-header.vue";
 import moment from "moment";
 import { VueEditor } from "vue3-editor";
 import { taskHelper } from "../../helpers/helps";
-
+import { taskMethods, authMethods } from "../../store/helpers";
 export default {
     page: {
         title: "Gosu Board",
@@ -46,14 +46,8 @@ export default {
         ...mapGetters(["listTaskDraggable", "listCard", "listTasks", "currentTask", "listUsers", "authUserData"]),
     },
     methods: {
-        ...mapActions([
-            "createNewTask",
-            "getListCards",
-            "getListTasks",
-            "updateTask",
-            "getCurrentTask",
-            "auth"
-        ]),
+        ...taskMethods,
+        ...authMethods,
 
         handlerClick($id) {
             for (const key in this.listCard) {
@@ -63,12 +57,16 @@ export default {
             this.buttonAdd[$id] = true;
         },
 
-        createTask($id) {
+        async createTask($id) {
             this.newTasks["card_id"] = $id;
             this.newTasks["project_id"] = this.project_id;
             if (this.newTasks && this.newTasks["title_" + $id]) {
-                this.createNewTask(this.newTasks);
-                this.getListTasks(this.$route.params.id);
+                var newTask = await this.createNewTask(this.newTasks);
+                console.log(newTask);
+                if (typeof newTask != 'undefined') {
+                    this.listTaskDraggable[newTask.card_id].push(newTask.id); 
+                    this.listTasks[newTask.id] = newTask; 
+                }
                 this.newTasks = {};
             }
         },
@@ -112,11 +110,7 @@ export default {
 
         // click show editor description
         handlerShowEditor() {
-            this.showEditor = true;
-        },
-
-        handlerHideEditor() {
-            this.showEditor = false;
+            this.showEditor = !this.showEditor;
         },
 
         // updated data current task
@@ -280,7 +274,7 @@ export default {
                                     <b-button
                                         :class="['btn_cancel']"
                                         variant="light btn_cancel"
-                                        @click="handlerHideEditor()"
+                                        @click="handlerShowEditor()"
                                         >Hủy</b-button
                                     >
                                 </div>

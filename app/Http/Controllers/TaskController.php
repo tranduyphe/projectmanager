@@ -46,8 +46,8 @@ class TaskController extends Controller
             
             // $results[$card_id] = $list_tasks;
         }
-        $data['test'] = $tests;
-        $data['task'] = $results;
+        $data['list_draggable'] = $tests;
+        $data['list_task'] = $results;
         return response()->json($data);
     }
 
@@ -83,7 +83,6 @@ class TaskController extends Controller
             'list_user_ids' => "",
             'slug'          => $slug,
             'description'   => "",
-            // 'dealine'       => date('Y-m-d H:i:s'),
             'created_at'    => date('Y-m-d H:i:s'),
             'updated_at'    => date('Y-m-d H:i:s'),
         ]);

@@ -25,18 +25,20 @@ const actions = {
         
         let res = await axios.post(`/api/tasks/index/${id}`) 
         if (res.status == 200) {
-            commit('setTask', res.data.task); 
-            commit('setTaskDraggable', res.data.test); 
+            commit('setTask', res.data.list_task); 
+            commit('setTaskDraggable', res.data.list_draggable); 
         }
     },
     async createNewTask({ commit }, data){
         let res = await axios.post(`/api/tasks/create`, data); 
+        if (res.status == 200 ) {
+            return res.data;
+        }
     },
     async updateTask({ commit }, data){
 
         let res = await axios.post(`/api/tasks/update`, data);
-        if (res.status == 200) {   
-                 
+        if (res.status == 200) { 
             commit('setCurrentTask', res.data);             
         }
     },
