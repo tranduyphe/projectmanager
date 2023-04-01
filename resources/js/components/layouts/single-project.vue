@@ -18,6 +18,11 @@ export default {
     },
     data() {
         return {
+            date: new Date(),
+            range:{
+               start: new Date(2020, 0, 6),
+               end: new Date(2020, 0, 10),
+              },
             buttonAdd: {},
             newTasks: {},
             showModal: false,
@@ -28,6 +33,7 @@ export default {
             showModalFile: false,
             showModalMove: false,
             showEditor: false,
+            showModalExpirationDate: false,
             project_id: parseInt(this.$route.params.id),
             placeholder: "Nhập tiêu đề cho thẻ này...",
             taskUpdate: {},
@@ -108,6 +114,10 @@ export default {
             this.showModalFilter = !this.showModalFilter;
         },
 
+        show_ModalExpirationDate() {
+            this.showModalExpirationDate = !this.showModalExpirationDate;
+        },
+
         /**
          *
          * @param {*} value returm date
@@ -120,6 +130,7 @@ export default {
         handlerShowEditor() {
             this.showEditor = !this.showEditor;
         },
+
 
         // updated data current task
         async updateDataTask() {
@@ -175,7 +186,7 @@ export default {
     created() {
         this.auth();
         this.getListCards();
-        this.getListTasks(this.$route.params.id);
+        this.getListTasks(1);
     },
 
     mounted() {
@@ -185,6 +196,7 @@ export default {
 };
 </script>
 <template>
+    
     <!-- <pre>{{ JSON.stringify(authUserData, undefined, 4) }}</pre> -->
     <b-modal
         v-model="showModal"
@@ -193,7 +205,7 @@ export default {
         hide-footer
         hide-header
     >
-        <div :class="['container-fluid']">
+        <div :class="['container-fluid']">     
             <div :class="['row']">
                 <div
                     :class="[
@@ -310,8 +322,8 @@ export default {
                                 >
                                     <p class="percent">0%</p>
                                     <div class="progress">
-                                        <div class="progress-line"></div>
-                                    </div>
+                                    <div class="progress-bar" role="progressbar" aria-label="Basic example" aria-valuenow="0" aria-valuemin="0" style="width: 25%" aria-valuemax="100"></div>
+                                   </div>
                                 </div>
                                 <div class="btn_add">Thêm một mục</div>
                             </div>
@@ -617,10 +629,53 @@ export default {
                                     <div class="btn_add">Thêm</div>
                                 </div>
                             </b-list-group-item>
-                            <b-list-group-item
-                                ><i class="ri-time-line"></i> Ngày hết
-                                hạn</b-list-group-item
-                            >
+                            <b-list-group-item @click="showModalExpirationDate = true"> 
+                                <div class="item">
+                                    <i class="ri-time-line"></i> Ngày hết hạn
+                                </div>
+                                <div class="modal_expiration_date" v-if="showModalExpirationDate">
+                                    <div
+                                        :class="['modal_expiration_date-header d-flex flex-row align-items-center justify-content-center',]">
+                                        <span>Ngày</span>
+                                        <a  @click.stop="showModalExpirationDate = false"
+                                            ><i class="ri-close-line"></i
+                                        ></a>
+                                    </div>
+                                    <p>Ngày bắt đầu</p>
+                                    <div class="start_day">
+                                         <VueDatePicker
+                                            required v-model.range="range" mode="dateTime"
+                                          />
+                                    </div>
+
+                                    <p>Ngày hết hạn</p>
+                                    <div class="start_day">
+                                         <VueDatePicker
+                                            required v-model.range="range" mode="dateTime"
+                                          />
+                                    </div>
+                                    <p>Thiết lập nhắc nhở</p>
+                                    <div class="remind">
+                                        <select id="select_remind">
+                                            <option value="1">Không có</option>
+                                            <option value="2">Thời điểm ngày hết hạn</option>
+                                            <option value="3">5 phút trước</option>
+                                            <option value="4">10 phút trước</option>
+                                            <option value="5">15 phút trước</option>
+                                            <option value="6">1 giờ</option>
+                                            <option value="7">2 giờ</option>
+                                            <option value="8">1 ngày</option>
+                                            <option value="9">2 ngày</option>
+                                       </select>
+                                    </div>
+                                    <p class="note">
+                                          Nhắc nhở sẽ dược gửi tới tất cả các thành viên và người theo dõi trang bày
+                                    </p>
+                                    <div class="day_btn btn_luu">Lưu</div>
+                                    <div class="day_btn btn_gobo">Gỡ bỏ</div>
+                                </div>
+                            </b-list-group-item>
+
                             <b-list-group-item @click="showModalFile = true">
                                 <div class="item">
                                     <i class="ri-attachment-2"></i> File đính
@@ -641,7 +696,8 @@ export default {
                                         ></a>
                                     </div>
                                     <div class="list_upload">
-                                        <div class="upload">Máy tính</div>
+                                        <input type="file" id="file"/>
+                                        <label class="upload" for="file">Máy tính</label>
                                         <div class="upload">Trello</div>
                                         <div class="upload">Google Driver</div>
                                         <div class="upload">Dropbox</div>
