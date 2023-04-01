@@ -5,7 +5,7 @@ import PageHeader from "../layouts/page-header.vue";
 import moment from "moment";
 import { VueEditor } from "vue3-editor";
 import { taskHelper } from "../../helpers/helps";
-import { taskMethods, authMethods } from "../../store/helpers";
+import { taskMethods, authMethods, labelMethods, taskGetters, labelGetters } from "../../store/helpers";
 export default {
     page: {
         title: "Gosu Board",
@@ -43,22 +43,20 @@ export default {
                 },
             ],
             listMemberActive: {},
+            currentListLabel: {}
         };
     },
     computed: {
+        ...taskGetters,
+        ...labelGetters,
         ...mapGetters([
-            "listTaskDraggable",
-            "listCard",
-            "listTasks",
-            "currentTask",
-            "listUsers",
             "authUserData",
         ]),
     },
     methods: {
         ...taskMethods,
         ...authMethods,
-
+        ...labelMethods,
         handlerClick($id) {
             for (const key in this.listCard) {
                 const cardProject = this.listCard[key];
@@ -171,10 +169,36 @@ export default {
                 currentTaskCardId["members"] = false;
             }
         },
+
+        async updateLabelTask(action, idLabel, data) {
+            this.listLabels = this.currentTask.task_labels;
+            if (!this.listLabels) {
+                this.listLabels = {};
+            }
+            if (action == 'deactive') {
+                delete this.listLabels[idLabel];
+            }else{
+                this.listLabels[parseInt(idLabel)] = data;
+            }
+            this.taskUpdate["task_id"] = this.currentTask.id;
+            var listlabels = Object.keys(this.listLabels);
+            var labels = {
+                labels: listlabels ? listlabels.join(",") : "",
+            };
+            var currentTaskCardId = this.listTasks[this.currentTask.id];
+            this.taskUpdate["info_task"] = labels;
+            await this.updateTask(this.taskUpdate);
+            if (this.currentTask.labels) {
+                currentTaskCardId["task_labels"] = this.currentTask.task_labels;
+            } else {
+                currentTaskCardId["task_labels"] = false;
+            }
+        }
     },
     created() {
         this.auth();
         this.getListCards();
+        this.getLabels();
         this.getListTasks(this.$route.params.id);
     },
 
@@ -185,7 +209,7 @@ export default {
 };
 </script>
 <template>
-    <!-- <pre>{{ JSON.stringify(authUserData, undefined, 4) }}</pre> -->
+    <pre>{{ JSON.stringify(listItemLabels, undefined, 4) }}</pre>
     <b-modal
         v-model="showModal"
         @hide="onHideModal"
@@ -477,103 +501,17 @@ export default {
                                         placeholder="Tìm nhãn"
                                     />
                                     <p>Nhãn</p>
-                                    <div class="filter_of_table">
+                                    <div class="filter_of_table" v-for="(label,index) in listItemLabels">
                                         <div
                                             class="list_color d-flex flex-row align-items-center"
+                                            :data-check="`${ currentTask.task_labels ? !currentTask.task_labels[label.id] ? 'active' : 'deactive' : 'active' }`"
+                                            @click="updateLabelTask(currentTask.task_labels ? !currentTask.task_labels[label.id] ? 'active' : 'deactive' : 'active', label.id, label)"
                                         >
-                                            <input
-                                                class="form-check-input"
-                                                type="checkbox"
-                                                value=""
-                                                id="flexCheckDefault"
-                                            />
+                                            <i :class="`${ currentTask.task_labels ? !currentTask.task_labels[label.id] ? 'ri-checkbox-blank-line' : 'ri-checkbox-line' : 'ri-checkbox-blank-line' }`"></i>
                                             <div class="color color1">
-                                                <div class="color_child"></div>
+                                                <div class="color_child">{{ label.name }}</div>
                                             </div>
-                                            <div class="btn_edit">
-                                                <i class="ri-pencil-line"></i>
-                                            </div>
-                                        </div>
-                                        <div
-                                            class="list_color d-flex flex-row align-items-center"
-                                        >
-                                            <input
-                                                class="form-check-input"
-                                                type="checkbox"
-                                                value=""
-                                                id="flexCheckDefault"
-                                            />
-                                            <div class="color color2">
-                                                <div class="color_child"></div>
-                                            </div>
-                                            <div class="btn_edit">
-                                                <i class="ri-pencil-line"></i>
-                                            </div>
-                                        </div>
-                                        <div
-                                            class="list_color d-flex flex-row align-items-center"
-                                        >
-                                            <input
-                                                class="form-check-input"
-                                                type="checkbox"
-                                                value=""
-                                                id="flexCheckDefault"
-                                            />
-                                            <div class="color color3">
-                                                <div class="color_child"></div>
-                                            </div>
-                                            <div class="btn_edit">
-                                                <i class="ri-pencil-line"></i>
-                                            </div>
-                                        </div>
-                                        <div
-                                            class="list_color d-flex flex-row align-items-center"
-                                        >
-                                            <input
-                                                class="form-check-input"
-                                                type="checkbox"
-                                                value=""
-                                                id="flexCheckDefault"
-                                            />
-                                            <div class="color color4">
-                                                <div class="color_child"></div>
-                                            </div>
-                                            <div class="btn_edit">
-                                                <i class="ri-pencil-line"></i>
-                                            </div>
-                                        </div>
-                                        <div
-                                            class="list_color d-flex flex-row align-items-center"
-                                        >
-                                            <input
-                                                class="form-check-input"
-                                                type="checkbox"
-                                                value=""
-                                                id="flexCheckDefault"
-                                            />
-                                            <div class="color color5">
-                                                <div class="color_child"></div>
-                                            </div>
-                                            <div class="btn_edit">
-                                                <i class="ri-pencil-line"></i>
-                                            </div>
-                                        </div>
-                                        <div
-                                            class="list_color d-flex flex-row align-items-center"
-                                        >
-                                            <input
-                                                class="form-check-input"
-                                                type="checkbox"
-                                                value=""
-                                                id="flexCheckDefault"
-                                            />
-                                            <div class="color color6">
-                                                <div class="color_child"></div>
-                                            </div>
-                                            <div class="btn_edit">
-                                                <i class="ri-pencil-line"></i>
-                                            </div>
-                                        </div>
+                                        </div>                                       
                                     </div>
 
                                     <div class="btn btn_display_more">

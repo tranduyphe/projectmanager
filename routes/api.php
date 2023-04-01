@@ -6,6 +6,7 @@ use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\CardController;
+use App\Http\Controllers\LabelController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -50,6 +51,13 @@ Route::group(
 				Route::post( '/create', array( TaskController::class, 'create' ) );
 				Route::post( '/index/{id}', array( TaskController::class, 'index' ) );
 				Route::post( '/show/{id}', array( TaskController::class, 'show' ) );
+			}
+		);
+
+        Route::group(
+			array( 'prefix' => 'labels' ),
+			function () {
+                Route::post( '/', array( LabelController::class, 'index' ) );
 			}
 		);
 	}

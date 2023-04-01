@@ -21,8 +21,7 @@ const actions = {
             commit('setListUsers', res.data.list_user);
         } 
     },
-    async getListTasks({commit}, id) {
-        
+    async getListTasks({commit}, id) {        
         let res = await axios.post(`/api/tasks/index/${id}`) 
         if (res.status == 200) {
             commit('setTask', res.data.list_task); 

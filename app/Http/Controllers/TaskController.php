@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Project;
 use App\Models\Card;
 use App\Models\Tasks;
+use App\Models\Label;
 
 class TaskController extends Controller
 {
@@ -33,6 +34,7 @@ class TaskController extends Controller
                 foreach ($list_tasks as $key => $tasks) {
                     $results[$tasks->id] = $tasks;
                     $tests[$card_id][$key] = $tasks->id;
+                    // get list member add in task
                     if (!empty($tasks->list_user_ids)) {
                         $members = [];
                         $list_users = explode(",", $tasks->list_user_ids);
@@ -40,6 +42,16 @@ class TaskController extends Controller
                             $members[$k] = User::find($id);
                         }
                         $list_tasks[$key]['members'] = $members;
+                    }
+
+                    // get list labels add in task
+                    if (!empty($tasks->labels)) {
+                        $labels = [];
+                        $list_labels = explode(",", $tasks->labels);
+                        foreach ($list_labels as $k => $v) {
+                            $labels[$v] = Label::find($v);
+                        }
+                        $list_tasks[$key]['task_labels'] = $labels;
                     }
                 }
             }
@@ -112,13 +124,20 @@ class TaskController extends Controller
         $results = Tasks::findOrFail($id);
         if (!empty($results->list_user_ids)) {
             $members = [];
-            // $ = [];
-            $list_users = explode(",", $results->list_user_ids);
+            $list_users = explode(",", trim($results->list_user_ids));
             foreach ($list_users as $k => $id) {
                 $members[$k] = User::find($id);
             }
-            $results['members'] = $members;
-            $results['members'] = $members;
+            $results['members'] = $members;            
+        }
+        // get list labels add in task
+        if (!empty($results->labels)) {
+            $labels = [];
+            $list_labels = explode(",", trim($results->labels));            
+            foreach ($list_labels as $k => $v) {
+                $labels[intval($v)] = Label::find($v);
+            }
+            $results['task_labels'] = $labels;
         }
         return response()->json($results);     
     }
@@ -159,6 +178,15 @@ class TaskController extends Controller
             }
             $task['members'] = $members;
             $task['members'] = $members;
+        }
+        // get list labels add in task
+        if (!empty($task->labels)) {
+            $labels = [];
+            $list_labels = explode(",", $task->labels);
+            foreach ($list_labels as $k => $v) {
+                $labels[$v] = Label::find($v);
+            }
+            $task['task_labels'] = $labels;
         }
         return response()->json($task);
     }
