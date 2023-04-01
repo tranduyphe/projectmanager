@@ -4,7 +4,7 @@ import { mapGetters, mapActions, mutations } from "vuex";
 import PageHeader from "../layouts/page-header.vue";
 import moment from "moment";
 import { VueEditor } from "vue3-editor";
-import { taskHelper } from "../../helpers/helps";
+import { taskHelper } from "../../helpers/helptask";
 import { taskMethods, authMethods } from "../../store/helpers";
 export default {
     page: {

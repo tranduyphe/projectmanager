@@ -4,8 +4,8 @@ import { mapGetters, mapActions, mutations } from "vuex";
 import PageHeader from "../layouts/page-header.vue";
 import moment from "moment";
 import { VueEditor } from "vue3-editor";
-import { taskHelper } from "../../helpers/helps";
-import { taskMethods, authMethods, labelMethods, taskGetters, labelGetters } from "../../store/helpers";
+import { taskHelper } from "../../helpers/helptask";
+import { taskMethods, authMethods, labelMethods, taskGetters, labelGetters, authGetters } from "../../store/helpers";
 export default {
     page: {
         title: "Gosu Board",
@@ -43,15 +43,13 @@ export default {
                 },
             ],
             listMemberActive: {},
-            currentListLabel: {}
+            dataUpdated: {}
         };
     },
     computed: {
         ...taskGetters,
         ...labelGetters,
-        ...mapGetters([
-            "authUserData",
-        ]),
+        ...authGetters
     },
     methods: {
         ...taskMethods,
@@ -91,15 +89,11 @@ export default {
         showTask(data) {
             this.getCurrentTask(data);
             this.showModal = true;
+            // taskHelper.updateDataTask();
         },
 
         show_ModalMember(array) {
             this.showModalMember = !this.showModalMember;
-            if (this.showModalMember) {
-                this.listMemberActive = taskHelper.convertToObject(array);
-            } else {
-                this.listMemberActive = {};
-            }
         },
 
         show_Filter() {
@@ -142,58 +136,10 @@ export default {
                 }
             }
         },
-
-        /**
-         * add and remove use in current task
-         * @param {*} action
-         * @param {*} user_id
-         */
-        async updatedUserTask(action, user_id) {
-            if (action == "deactive") {
-                delete this.listMemberActive[user_id];
-            } else {
-                this.listMemberActive[user_id] = parseInt(user_id);
-            }
-            this.taskUpdate["task_id"] = this.currentTask.id;
-            var list_user_task = Object.keys(this.listMemberActive);
-            var list_user_ids = {
-                list_user_ids: list_user_task ? list_user_task.join(", ") : "",
-            };
-            this.taskUpdate["info_task"] = list_user_ids;
-            var currentTaskCardId = this.listTasks[this.currentTask.id];
-            await this.updateTask(this.taskUpdate);
-
-            if (this.currentTask.list_user_ids) {
-                currentTaskCardId["members"] = this.currentTask.members;
-            } else {
-                currentTaskCardId["members"] = false;
-            }
+        
+        async updateDataCurrentTask(obj ) {
+            await taskHelper.updateDataTask( obj )
         },
-
-        async updateLabelTask(action, idLabel, data) {
-            this.listLabels = this.currentTask.task_labels;
-            if (!this.listLabels) {
-                this.listLabels = {};
-            }
-            if (action == 'deactive') {
-                delete this.listLabels[idLabel];
-            }else{
-                this.listLabels[parseInt(idLabel)] = data;
-            }
-            this.taskUpdate["task_id"] = this.currentTask.id;
-            var listlabels = Object.keys(this.listLabels);
-            var labels = {
-                labels: listlabels ? listlabels.join(",") : "",
-            };
-            var currentTaskCardId = this.listTasks[this.currentTask.id];
-            this.taskUpdate["info_task"] = labels;
-            await this.updateTask(this.taskUpdate);
-            if (this.currentTask.labels) {
-                currentTaskCardId["task_labels"] = this.currentTask.task_labels;
-            } else {
-                currentTaskCardId["task_labels"] = false;
-            }
-        }
     },
     created() {
         this.auth();
@@ -209,7 +155,7 @@ export default {
 };
 </script>
 <template>
-    <pre>{{ JSON.stringify(listItemLabels, undefined, 4) }}</pre>
+    <!-- <pre>{{ JSON.stringify(listItemLabels, undefined, 4) }}</pre> -->
     <b-modal
         v-model="showModal"
         @hide="onHideModal"
@@ -257,16 +203,20 @@ export default {
                                 <i class="ri-add-line"></i>
                             </div>
                         </div>
-                        <div class="label">
+                        <div class="label" v-if="currentTask.task_labels">
                             <p>Nhãn</p>
                             <div class="list_label">
-                                <div class="name_label">
+                                <div class="name_label"
+                                v-for="(
+                                    label, index
+                                ) in currentTask.task_labels"
+                                :key="index"
+                                >
                                     <div class="label_active"></div>
-                                    <p>SDK</p>
-                                </div>
+                                </div> 
                                 <div class="btn_add_label">
                                     <i class="ri-add-line"></i>
-                                </div>
+                                </div>                               
                             </div>
                         </div>
                         <div class="notification">
@@ -427,21 +377,19 @@ export default {
                                             :class="[
                                                 'list_member d-flex flex-row align-items-center',
                                             ]"
-                                            @click="
-                                                updatedUserTask(
-                                                    !listMemberActive[
-                                                        user.id
-                                                    ] && listMemberActive
-                                                        ? 'active'
-                                                        : 'deactive',
-                                                    user.id
-                                                )
+                                            @click="                                                
+                                                updateDataCurrentTask(
+                                                {
+                                                    'action' : currentTask.members ? !currentTask.members[user.id] ? 'active' : 'deactive' : 'active',
+                                                    'id' : user.id,
+                                                    'data': user,
+                                                    'key' : 'members',
+                                                    'field': 'list_user_ids',
+                                                }
+                                            )
                                             "
                                             :data-check="`${
-                                                !listMemberActive[user.id] &&
-                                                listMemberActive
-                                                    ? 'active'
-                                                    : 'deactive'
+                                                currentTask.members ? !currentTask.members[user.id] ? 'active' : 'deactive' : 'active'
                                             }`"
                                         >
                                             <div
@@ -462,9 +410,7 @@ export default {
                                                 </div>
                                                 <span
                                                     v-if="
-                                                        listMemberActive[
-                                                            user.id
-                                                        ]
+                                                        currentTask.members && currentTask.members[user.id]
                                                     "
                                                 >
                                                     <i
@@ -495,31 +441,25 @@ export default {
                                             ><i class="ri-close-line"></i
                                         ></a>
                                     </div>
-                                    <input
-                                        class="search"
-                                        type="text"
-                                        placeholder="Tìm nhãn"
-                                    />
-                                    <p>Nhãn</p>
                                     <div class="filter_of_table" v-for="(label,index) in listItemLabels">
                                         <div
                                             class="list_color d-flex flex-row align-items-center"
-                                            :data-check="`${ currentTask.task_labels ? !currentTask.task_labels[label.id] ? 'active' : 'deactive' : 'active' }`"
-                                            @click="updateLabelTask(currentTask.task_labels ? !currentTask.task_labels[label.id] ? 'active' : 'deactive' : 'active', label.id, label)"
+                                            
+                                            @click="updateDataCurrentTask(
+                                                {
+                                                    'action' : currentTask.task_labels ? !currentTask.task_labels[label.id] ? 'active' : 'deactive' : 'active',
+                                                    'id' : label.id,
+                                                    'data': label,
+                                                    'key' : 'task_labels',
+                                                    'field': 'labels',
+                                                }
+                                            )"
                                         >
                                             <i :class="`${ currentTask.task_labels ? !currentTask.task_labels[label.id] ? 'ri-checkbox-blank-line' : 'ri-checkbox-line' : 'ri-checkbox-blank-line' }`"></i>
                                             <div class="color color1">
                                                 <div class="color_child">{{ label.name }}</div>
                                             </div>
                                         </div>                                       
-                                    </div>
-
-                                    <div class="btn btn_display_more">
-                                        Tạo nhãn mới
-                                    </div>
-                                    <div class="btn_display_more">
-                                        Hiển thị các thành viên khác trong không
-                                        gian làm việc
                                     </div>
                                 </div>
                             </b-list-group-item>
@@ -864,13 +804,15 @@ export default {
                                         ></div>
                                     </div>
                                     <div class="card-body">
-                                        <div class="list_filter">
-                                           <div class="filter"></div>
-                                           <div class="filter"></div>
-                                           <div class="filter"></div>
-                                           <div class="filter"></div>
-                                           <div class="filter"></div>
-                                           <div class="filter"></div>
+                                        <div class="list_filter" v-if="listTasks[
+                                                        task
+                                                    ].task_labels">
+                                            <div class="filter" 
+                                                v-for="member in listTasks[
+                                                    task
+                                                ].task_labels"                                               
+                                            >
+                                            </div>
                                         </div>
                                         <div class="float-end ml-2">
                                             <div>

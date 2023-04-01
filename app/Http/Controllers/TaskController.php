@@ -39,7 +39,7 @@ class TaskController extends Controller
                         $members = [];
                         $list_users = explode(",", $tasks->list_user_ids);
                         foreach ($list_users as $k => $id) {
-                            $members[$k] = User::find($id);
+                            $members[$id] = User::find($id);
                         }
                         $list_tasks[$key]['members'] = $members;
                     }
@@ -174,7 +174,7 @@ class TaskController extends Controller
             // $ = [];
             $list_users = explode(",", $task->list_user_ids);
             foreach ($list_users as $k => $id) {
-                $members[$k] = User::find($id);
+                $members[$id] = User::find($id);
             }
             $task['members'] = $members;
             $task['members'] = $members;

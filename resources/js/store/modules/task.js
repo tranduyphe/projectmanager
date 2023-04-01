@@ -35,7 +35,6 @@ const actions = {
         }
     },
     async updateTask({ commit }, data){
-
         let res = await axios.post(`/api/tasks/update`, data);
         if (res.status == 200) { 
             commit('setCurrentTask', res.data);             
