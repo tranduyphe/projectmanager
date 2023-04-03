@@ -12,7 +12,9 @@ const getters = {
     listUsers: state => state.listUsers,
     listTaskDraggable: state => state.listTaskDraggable,
 };
-const actions = {  
+const actions = {
+    
+    // get list cards
     async getListCards({commit}) {
         state.listCard = {}
         let res = await axios.post(`/api/card`);
@@ -21,6 +23,8 @@ const actions = {
             commit('setListUsers', res.data.list_user);
         } 
     },
+
+    // get all task
     async getListTasks({commit}, id) {        
         let res = await axios.post(`/api/tasks/index/${id}`) 
         if (res.status == 200) {
@@ -28,24 +32,45 @@ const actions = {
             commit('setTaskDraggable', res.data.list_draggable); 
         }
     },
+
+    // create new task task
     async createNewTask({ commit }, data){
         let res = await axios.post(`/api/tasks/create`, data); 
         if (res.status == 200 ) {
             return res.data;
         }
     },
+    // update data task
     async updateTask({ commit }, data){
         let res = await axios.post(`/api/tasks/update`, data);
         if (res.status == 200) { 
             commit('setCurrentTask', res.data);             
         }
     },
-    async createTodo({ commit }, data){
+
+    // add new work to do
+    async createWorkTodo({ commit }, data){
         let res = await axios.post(`/api/todo/create`, data);
-        // if (res.status == 200) { 
-        //     commit('setCurrentTask', res.data);             
-        // }
+        if (res.status == 200) { 
+            return res.data;
+        }
     },
+
+    // remove work to do
+    async removeWorkTodo({ commit }, id){
+        let res = await axios.post(`/api/todo/remove/${id}`);
+        return res.status;
+    },
+
+    // add check list
+    async addCheckList({ commit }, data){
+        let res = await axios.post(`/api/checklist/create`, data);
+        if (res.status == 200) { 
+            return res.data;
+        }
+    },
+
+    //get data curent tasl
     getCurrentTask({commit}, data) {
         commit('setCurrentTask', data);
     },   

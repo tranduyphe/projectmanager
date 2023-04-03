@@ -8,6 +8,7 @@ use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\CardController;
 use App\Http\Controllers\LabelController;
 use App\Http\Controllers\WorkTodoController;
+use App\Http\Controllers\CheckListController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -66,7 +67,15 @@ Route::group(
 			array( 'prefix' => 'todo' ),
 			function () {
                 Route::post( '/create', array( WorkTodoController::class, 'create' ) );
+                Route::post( '/remove/{id}', array( WorkTodoController::class, 'destroy' ) );
 			}
+		);
+
+        Route::group(
+			array( 'prefix' => 'checklist' ),
+			function () {
+                Route::post( '/create', array( CheckListController::class, 'create' ) );			
+            }
 		);
 	}
 );

@@ -2,6 +2,8 @@
 namespace App\Http\Traits;
 use App\Models\User;
 use App\Models\Label;
+use App\Models\Tasks;
+use App\Models\WorkToDo;
 
 trait TaskProject {
 
@@ -31,5 +33,38 @@ trait TaskProject {
             $labels[$id] = Label::find($id);
         }
         return $labels;
+    }
+
+    /**
+     * show list work to do in task
+     * @param number id of task 
+     */
+    public function listWorks($id) 
+    {
+        $listWorks = [];
+        $work = Tasks::with('worktodo')->find($id);
+        if (!empty($work->worktodo)) {
+            foreach ($work->worktodo as $key => $v) {
+                $listWorks[$v->id] = $v;
+                $listWorks[$v->id]['check_list'] = self::checkLists($v->id);
+            }
+        }
+        return $listWorks;
+    }
+
+    /**
+     * show check list in work todo
+     * @param number id of work todo
+     */
+    public function checkLists($id) 
+    {
+        $checkLists = [];
+        $works = WorkToDo::with('checklist')->find($id);
+        if (!empty($works->checklist)) {
+            foreach ($works->checklist as $key => $v) {
+                $checkLists[$v->id] = $v;
+            }
+        }
+        return $checkLists;
     }
 }

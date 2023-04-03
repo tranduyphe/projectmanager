@@ -36,6 +36,7 @@ class TaskController extends Controller
             if (!empty($list_tasks)) {
                 foreach ($list_tasks as $key => $tasks) {
                     $results[$tasks->id] = $tasks;
+                    $list_draggable[$card_id][$key] = $tasks->id;
                     // get list member add in task
                     if (!empty($tasks->list_user_ids)) {
                         $list_tasks[$key]['members'] = $this->listMembers($tasks->list_user_ids);
@@ -44,14 +45,14 @@ class TaskController extends Controller
                     if (!empty($tasks->labels)) {
                         $list_tasks[$key]['task_labels'] = $this->listMembers($tasks->labels);
                     }
-                    $work = Tasks::with('worktodo')->find($tasks->id);
-                    $list_tasks[$key]['works'] = $work->worktodo;
+                    
+                    // get works to do in current task
+                    $list_tasks[$key]['works'] = $this->listWorks($tasks->id);
                 }
             }
-            
-            // $results[$card_id] = $list_tasks;
+
         }
-        $data['list_draggable'] = $tests;
+        $data['list_draggable'] = $list_draggable;
         $data['list_task'] = $results;
         return response()->json($data);
     }

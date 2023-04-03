@@ -3,22 +3,21 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
-use App\Http\Traits\TaskProject;
+use App\Models\CheckList;
 use App\Models\WorkToDo;
 
-class WorkTodoController extends Controller
+class CheckListController extends Controller
 {
-    use TaskProject;
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index($id)
+    public function index()
     {
-       
+        // $results = CheckList::all();
+        // return response()->json($results);
     }
 
     /**
@@ -28,24 +27,22 @@ class WorkTodoController extends Controller
      */
     public function create(Request $request)
     {
-        $title      = $request->input('title'); 
-        $slug       = Str::slug($title);
-        $task_id    = $request->input('task_id');
-        if (WorkToDo::where('slug', $slug)->exists()) {
+        $title   = htmlspecialchars($request->input('title'));
+        $work_id = $request->input('id');
+        $slug    = Str::slug($title);
+        if (CheckList::where('slug', $slug)->exists()) {
             $slug = $slug . '-' . uniqid();
         }
-        
-        $todo = new WorkToDo([
+        $checklist = new CheckList([
             'title'         => $title,
-            'task_id'       => $task_id,
+            'work_todo_id'  => $work_id,
+            'list_user_ids' => "",
             'slug'          => $slug,
             'created_at'    => date('Y-m-d H:i:s'),
             'updated_at'    => date('Y-m-d H:i:s'),
         ]);
-        $todo->save();  
-        $works = WorkToDo::find($todo->id);
-        $works['check_list']  = $this->listWorks($works->id);    
-        return response()->json($works);
+        $checklist->save();
+        return response()->json(CheckList::find($checklist->id));
     }
 
     /**
@@ -56,8 +53,9 @@ class WorkTodoController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        
     }
+
 
     /**
      * Display the specified resource.
@@ -67,7 +65,7 @@ class WorkTodoController extends Controller
      */
     public function show($id)
     {
-
+        
     }
 
     /**
@@ -88,9 +86,9 @@ class WorkTodoController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request)
+    public function update(Request $request, $id)
     {
-        
+        //
     }
 
     /**
@@ -101,8 +99,6 @@ class WorkTodoController extends Controller
      */
     public function destroy($id)
     {
-        $works_todo = WorkToDo::find($id);
-        $works_todo->checklist()->delete();
-        WorkToDo::destroy($id);
+        //
     }
 }

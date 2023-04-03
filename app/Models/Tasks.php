@@ -36,9 +36,9 @@ class Tasks extends Model
      * 
      */
      /**
-     * List projetcs.
+     * List worktodo.
      *
-     * @var $user_id
+     * @var task_id
      */
     public function worktodo()
     {

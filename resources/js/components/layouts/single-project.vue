@@ -175,7 +175,7 @@ export default {
     created() {
         this.auth();
         this.getListCards();
-        this.getListTasks(this.$route.params.id);
+        this.getListTasks(1);
     },
 
     mounted() {
