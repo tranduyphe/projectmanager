@@ -40,9 +40,15 @@ const actions = {
             commit('setCurrentTask', res.data);             
         }
     },
+    async createTodo({ commit }, data){
+        let res = await axios.post(`/api/todo/create`, data);
+        // if (res.status == 200) { 
+        //     commit('setCurrentTask', res.data);             
+        // }
+    },
     getCurrentTask({commit}, data) {
         commit('setCurrentTask', data);
-    },
+    },   
 };
 const mutations = {
     setCard(state, payload){

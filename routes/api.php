@@ -7,6 +7,7 @@ use App\Http\Controllers\TaskController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\CardController;
 use App\Http\Controllers\LabelController;
+use App\Http\Controllers\WorkTodoController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -58,6 +59,13 @@ Route::group(
 			array( 'prefix' => 'labels' ),
 			function () {
                 Route::post( '/', array( LabelController::class, 'index' ) );
+			}
+		);
+
+        Route::group(
+			array( 'prefix' => 'todo' ),
+			function () {
+                Route::post( '/create', array( WorkTodoController::class, 'create' ) );
 			}
 		);
 	}

@@ -43,7 +43,8 @@ export default {
                 },
             ],
             listMemberActive: {},
-            dataUpdated: {}
+            dataUpdated: {},
+            nameWorkTodo: "Việc cần làm",
         };
     },
     computed: {
@@ -136,10 +137,21 @@ export default {
                 }
             }
         },
-        
+        //updated data task
         async updateDataCurrentTask(obj ) {
             await taskHelper.updateDataTask( obj )
         },
+
+        // add new  work todo
+        addNewWordToto(){
+            // console.log(this.nameWorkTodo);
+            var data = {
+                'title': this.nameWorkTodo,
+                'task_id': this.currentTask.id,
+            };
+            console.log(data)
+            this.createTodo(data);
+        }
     },
     created() {
         this.auth();
@@ -487,12 +499,18 @@ export default {
                                             ><i class="ri-close-line"></i
                                         ></a>
                                     </div>
-                                    <p class="title">Tiêu đề</p>
-                                    <input
-                                        type="text"
-                                        placeholder="Việc cần làm"
-                                    />
-                                    <div class="btn_add">Thêm</div>
+                                    <b-form-group
+                                        label="Tiêu đề"
+                                        label-for="title-input"
+                                    >
+                                        <b-form-input
+                                            id=""
+                                            v-model="nameWorkTodo"
+                                            :value ="nameWorkTodo"
+                                        >
+                                        </b-form-input>
+                                    </b-form-group>
+                                    <div class="btn_add" @click="addNewWordToto()">Thêm</div>
                                 </div>
                             </b-list-group-item>
                             <b-list-group-item
