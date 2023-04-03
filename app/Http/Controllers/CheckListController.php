@@ -99,6 +99,6 @@ class CheckListController extends Controller
      */
     public function destroy($id)
     {
-        //
+        CheckList::destroy($id);
     }
 }

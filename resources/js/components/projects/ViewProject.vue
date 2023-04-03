@@ -162,6 +162,7 @@ export default {
             if (status == 200) {
                 if (this.currentTask.works[id]) {
                     delete this.currentTask.works[id]
+                    delete this.listTasks[this.currentTask.id].works[id]
                 }
             } 
         },
@@ -920,10 +921,12 @@ export default {
                                         <div class="d-flex team mb-0">
                                             <div 
                                                 :class="['d-flex align-items-center']"
-                                                v-if = "listTasks[task].works && listTasks[task].works.length != 0"
-                                            >
+                                                v-if = "calulateCheckList(listTasks[task].works).total != 0"
+                                            >   
                                                 <i class="ri-checkbox-line"></i>
-                                                {{ calulateCheckList(listTasks[task].works).done+'/'+calulateCheckList(listTasks[task].works).total }}
+                                                {{ 
+                                                   calulateCheckList(listTasks[task].works).done+'/'+calulateCheckList(listTasks[task].works).total
+                                                }}
                                             </div>
                                             <div
                                                 class="align-self-center"

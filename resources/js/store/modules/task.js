@@ -69,7 +69,13 @@ const actions = {
             return res.data;
         }
     },
-
+    // remove check in work todo
+    async removeCheckList({commit}, id){
+        let res = await axios.post(`/api/checklist/remove/${id}`);
+        if (res.status == 200) { 
+            return res.data;
+        }
+    },
     //get data curent tasl
     getCurrentTask({commit}, data) {
         commit('setCurrentTask', data);
