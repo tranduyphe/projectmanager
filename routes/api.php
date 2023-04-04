@@ -6,6 +6,9 @@ use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\CardController;
+use App\Http\Controllers\LabelController;
+use App\Http\Controllers\WorkTodoController;
+use App\Http\Controllers\CheckListController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -51,6 +54,30 @@ Route::group(
 				Route::post( '/index/{id}', array( TaskController::class, 'index' ) );
 				Route::post( '/show/{id}', array( TaskController::class, 'show' ) );
 			}
+		);
+
+        Route::group(
+			array( 'prefix' => 'labels' ),
+			function () {
+                Route::post( '/', array( LabelController::class, 'index' ) );
+			}
+		);
+
+        Route::group(
+			array( 'prefix' => 'todo' ),
+			function () {
+                Route::post( '/create', array( WorkTodoController::class, 'create' ) );
+                Route::post( '/remove/{id}', array( WorkTodoController::class, 'destroy' ) );
+			}
+		);
+
+        Route::group(
+			array( 'prefix' => 'checklist' ),
+			function () {
+                Route::post( '/create', array( CheckListController::class, 'create' ) );			
+                Route::post( '/remove/{id}', array( CheckListController::class, 'destroy' ) );			
+                Route::post( '/update/{id}', array( CheckListController::class, 'update' ) );			
+            }
 		);
 	}
 );

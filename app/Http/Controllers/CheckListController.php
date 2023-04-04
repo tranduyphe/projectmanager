@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Label;
-class LabelController extends Controller
+use Illuminate\Support\Str;
+use App\Models\CheckList;
+use App\Models\WorkToDo;
+
+class CheckListController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -13,8 +16,8 @@ class LabelController extends Controller
      */
     public function index()
     {
-        $results = Label::all();
-        return response()->json($results);
+        // $results = CheckList::all();
+        // return response()->json($results);
     }
 
     /**
@@ -24,7 +27,24 @@ class LabelController extends Controller
      */
     public function create(Request $request)
     {
-
+        $title   = htmlspecialchars($request->input('title'));
+        $work_id = $request->input('id');
+        $slug    = Str::slug($title);
+        if (CheckList::where('slug', $slug)->exists()) {
+            $slug = $slug . '-' . uniqid();
+        }
+        $checklist = new CheckList([
+            'title'         => $title,
+            'work_todo_id'  => $work_id,
+            'list_user_ids' => "",
+            'slug'          => $slug,
+            'created_at'    => date('Y-m-d H:i:s'),
+            'updated_at'    => date('Y-m-d H:i:s'),
+        ]);
+        $checklist->save();
+        $data = CheckList::find($checklist->id);
+        $data['status'] = $data->status ? true : false;
+        return response()->json($data);
     }
 
     /**
@@ -70,7 +90,12 @@ class LabelController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        
+        $data = $request->input('data');
+        if (!empty($data)) {
+            $results = CheckList::where('id', $id)->update($data);
+        }
+        return response()->json($results);
     }
 
     /**
@@ -81,6 +106,6 @@ class LabelController extends Controller
      */
     public function destroy($id)
     {
-        //
+        CheckList::destroy($id);
     }
 }

@@ -86,6 +86,8 @@ export default {
                                 <VueDatePicker
                                     required
                                     v-model="projectData.start_time"
+                                    auto-apply
+                                    :month-change-on-scroll="false"
                                 />
                             </b-form-group>
                             <b-form-group
@@ -95,6 +97,8 @@ export default {
                                 <VueDatePicker
                                     required
                                     v-model="projectData.end_time"
+                                    auto-apply
+                                    :month-change-on-scroll="false"
                                 />
                             </b-form-group>
                             <div :class="['modal-footer']">

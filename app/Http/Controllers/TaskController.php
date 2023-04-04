@@ -8,9 +8,12 @@ use App\Models\User;
 use App\Models\Project;
 use App\Models\Card;
 use App\Models\Tasks;
+use App\Models\Label;
+use App\Http\Traits\TaskProject;
 
 class TaskController extends Controller
 {
+    use TaskProject;
     /**
      * Display a listing of the resource.
      *
@@ -29,24 +32,27 @@ class TaskController extends Controller
                 ['project_id', '=', $project_id],
                 ['department_id', '=', 1],
             ])->get();
+
             if (!empty($list_tasks)) {
                 foreach ($list_tasks as $key => $tasks) {
                     $results[$tasks->id] = $tasks;
-                    $tests[$card_id][$key] = $tasks->id;
+                    $list_draggable[$card_id][$key] = $tasks->id;
+                    // get list member add in task
                     if (!empty($tasks->list_user_ids)) {
-                        $members = [];
-                        $list_users = explode(",", $tasks->list_user_ids);
-                        foreach ($list_users as $k => $id) {
-                            $members[$k] = User::find($id);
-                        }
-                        $list_tasks[$key]['members'] = $members;
+                        $list_tasks[$key]['members'] = $this->listMembers($tasks->list_user_ids);
                     }
+                    // get list labels add in task
+                    if (!empty($tasks->labels)) {
+                        $list_tasks[$key]['task_labels'] = $this->listMembers($tasks->labels);
+                    }
+                    
+                    // get works to do in current task
+                    $list_tasks[$key]['works'] = $this->listWorks($tasks->id);
                 }
             }
-            
-            // $results[$card_id] = $list_tasks;
+
         }
-        $data['list_draggable'] = $tests;
+        $data['list_draggable'] = $list_draggable;
         $data['list_task'] = $results;
         return response()->json($data);
     }
@@ -75,6 +81,7 @@ class TaskController extends Controller
         }else{
             $department_id = 1;
         }
+        
         $tasks = new Tasks([
             'title'         => $title,
             'project_id'    => $project_id,
@@ -111,14 +118,11 @@ class TaskController extends Controller
     {
         $results = Tasks::findOrFail($id);
         if (!empty($results->list_user_ids)) {
-            $members = [];
-            // $ = [];
-            $list_users = explode(",", $results->list_user_ids);
-            foreach ($list_users as $k => $id) {
-                $members[$k] = User::find($id);
-            }
-            $results['members'] = $members;
-            $results['members'] = $members;
+            $results['members'] = $this->listMembers($results->list_user_ids);            
+        }
+        // get list labels add in task
+        if (!empty($results->labels)) {
+            $results['task_labels'] = $this->listMembers($results->labels);
         }
         return response()->json($results);     
     }
@@ -151,14 +155,11 @@ class TaskController extends Controller
         }
         $task = Tasks::find($task_id);
         if (!empty($task->list_user_ids)) {
-            $members = [];
-            // $ = [];
-            $list_users = explode(",", $task->list_user_ids);
-            foreach ($list_users as $k => $id) {
-                $members[$k] = User::find($id);
-            }
-            $task['members'] = $members;
-            $task['members'] = $members;
+            $task['members'] = $this->listMembers($task->list_user_ids);
+        }
+        // get list labels add in task
+        if (!empty($task->labels)) {
+            $task['task_labels'] = $this->listMembers($task->labels);
         }
         return response()->json($task);
     }

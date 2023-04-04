@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Card;
 use App\Models\Project;
+use App\Models\WorkToDo;
 
 class Tasks extends Model
 {
@@ -31,4 +32,16 @@ class Tasks extends Model
         return $this->belongsTo(Project::class, 'project_id');
     }
 
+    /**
+     * 
+     */
+     /**
+     * List worktodo.
+     *
+     * @var task_id
+     */
+    public function worktodo()
+    {
+        return $this->hasMany(WorkToDo::class, 'task_id');
+    }
 }

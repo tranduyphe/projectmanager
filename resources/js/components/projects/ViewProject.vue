@@ -4,8 +4,9 @@ import { mapGetters, mapActions, mutations } from "vuex";
 import PageHeader from "../layouts/page-header.vue";
 import moment from "moment";
 import { VueEditor } from "vue3-editor";
-import { taskHelper } from "../../helpers/helps";
-import { taskMethods, authMethods } from "../../store/helpers";
+import { taskHelper } from "../../helpers/helptask";
+import { taskMethods, authMethods, labelMethods, taskGetters, labelGetters, authGetters } from "../../store/helpers";
+import CheckList from "./project/checklists.vue"
 export default {
     page: {
         title: "Gosu Board",
@@ -15,12 +16,13 @@ export default {
         draggable: VueDraggableNext,
         PageHeader,
         VueEditor,
+        CheckList
     },
     data() {
         return {
             buttonAdd: {},
             newTasks: {},
-            showModal: false,
+                        showModal: false,
             showActive: false,
             showModalMember: false,
             showModalFilter: false,
@@ -42,23 +44,19 @@ export default {
                     active: true,
                 },
             ],
-            listMemberActive: {},
+            dataUpdated: {},
+            nameWorkTodo: "Việc cần làm",
         };
     },
     computed: {
-        ...mapGetters([
-            "listTaskDraggable",
-            "listCard",
-            "listTasks",
-            "currentTask",
-            "listUsers",
-            "authUserData",
-        ]),
+        ...taskGetters,
+        ...labelGetters,
+        ...authGetters
     },
     methods: {
         ...taskMethods,
         ...authMethods,
-
+        ...labelMethods,
         handlerClick($id) {
             for (const key in this.listCard) {
                 const cardProject = this.listCard[key];
@@ -93,15 +91,11 @@ export default {
         showTask(data) {
             this.getCurrentTask(data);
             this.showModal = true;
+            // taskHelper.updateDataTask();
         },
 
         show_ModalMember(array) {
             this.showModalMember = !this.showModalMember;
-            if (this.showModalMember) {
-                this.listMemberActive = taskHelper.convertToObject(array);
-            } else {
-                this.listMemberActive = {};
-            }
         },
 
         show_Filter() {
@@ -144,37 +138,32 @@ export default {
                 }
             }
         },
+        //updated data task
+        async updateDataCurrentTask(obj ) {
+            await taskHelper.updateDataTask( obj )
+        },
 
-        /**
-         * add and remove use in current task
-         * @param {*} action
-         * @param {*} user_id
-         */
-        async updatedUserTask(action, user_id) {
-            if (action == "deactive") {
-                delete this.listMemberActive[user_id];
-            } else {
-                this.listMemberActive[user_id] = parseInt(user_id);
+        // add new  work todo
+        async addNewWordToto(){
+            if (this.nameWorkTodo) {
+                var data = {
+                    'title': this.nameWorkTodo,
+                    'task_id': this.currentTask.id,
+                };
+                await taskHelper.addWorkTodo( data );
+                this.showModalWorkToDo = !this.showModalWorkToDo
             }
-            this.taskUpdate["task_id"] = this.currentTask.id;
-            var list_user_task = Object.keys(this.listMemberActive);
-            var list_user_ids = {
-                list_user_ids: list_user_task ? list_user_task.join(", ") : "",
-            };
-            this.taskUpdate["info_task"] = list_user_ids;
-            var currentTaskCardId = this.listTasks[this.currentTask.id];
-            await this.updateTask(this.taskUpdate);
+        },
 
-            if (this.currentTask.list_user_ids) {
-                currentTaskCardId["members"] = this.currentTask.members;
-            } else {
-                currentTaskCardId["members"] = false;
-            }
+        // calculate number check list
+        calulateCheckList(data){
+            return taskHelper.calculateListWorkTodo(data);
         },
     },
     created() {
         this.auth();
         this.getListCards();
+        this.getLabels();
         this.getListTasks(this.$route.params.id);
     },
 
@@ -185,7 +174,7 @@ export default {
 };
 </script>
 <template>
-    <!-- <pre>{{ JSON.stringify(authUserData, undefined, 4) }}</pre> -->
+    <!-- <pre>{{ JSON.stringify(listItemLabels, undefined, 4) }}</pre> -->
     <b-modal
         v-model="showModal"
         @hide="onHideModal"
@@ -233,16 +222,20 @@ export default {
                                 <i class="ri-add-line"></i>
                             </div>
                         </div>
-                        <div class="label">
+                        <div class="label" v-if="currentTask.task_labels">
                             <p>Nhãn</p>
                             <div class="list_label">
-                                <div class="name_label">
+                                <div class="name_label"
+                                v-for="(
+                                    label, index
+                                ) in currentTask.task_labels"
+                                :key="index"
+                                >
                                     <div class="label_active"></div>
-                                    <p>SDK</p>
-                                </div>
+                                </div> 
                                 <div class="btn_add_label">
                                     <i class="ri-add-line"></i>
-                                </div>
+                                </div>                               
                             </div>
                         </div>
                         <div class="notification">
@@ -292,30 +285,7 @@ export default {
                                 </div>
                             </div>
                         </div>
-                        <div class="list_work_todo">
-                            <div class="work-todo">
-                                <div
-                                    class="work-todo-header d-flex flex-row align-items-center"
-                                >
-                                    <p
-                                        class="d-flex flex-row align-items-center name"
-                                    >
-                                        <i class="ri-checkbox-line"></i>
-                                        <span>Việc abc</span>
-                                    </p>
-                                    <div class="btn_delete">Xóa</div>
-                                </div>
-                                <div
-                                    class="work-todo-content d-flex flex-row align-items-center"
-                                >
-                                    <p class="percent">0%</p>
-                                    <div class="progress">
-                                        <div class="progress-line"></div>
-                                    </div>
-                                </div>
-                                <div class="btn_add">Thêm một mục</div>
-                            </div>
-                        </div>
+                        <CheckList :works="currentTask.works"></CheckList>                        
                     </div>
                     <div :class="['content-main-detail']">
                         <h6 d-flex flex-row align-items-center>
@@ -403,21 +373,19 @@ export default {
                                             :class="[
                                                 'list_member d-flex flex-row align-items-center',
                                             ]"
-                                            @click="
-                                                updatedUserTask(
-                                                    !listMemberActive[
-                                                        user.id
-                                                    ] && listMemberActive
-                                                        ? 'active'
-                                                        : 'deactive',
-                                                    user.id
-                                                )
+                                            @click="                                                
+                                                updateDataCurrentTask(
+                                                {
+                                                    'action' : currentTask.members ? !currentTask.members[user.id] ? 'active' : 'deactive' : 'active',
+                                                    'id' : user.id,
+                                                    'data': user,
+                                                    'key' : 'members',
+                                                    'field': 'list_user_ids',
+                                                }
+                                            )
                                             "
                                             :data-check="`${
-                                                !listMemberActive[user.id] &&
-                                                listMemberActive
-                                                    ? 'active'
-                                                    : 'deactive'
+                                                currentTask.members ? !currentTask.members[user.id] ? 'active' : 'deactive' : 'active'
                                             }`"
                                         >
                                             <div
@@ -438,9 +406,7 @@ export default {
                                                 </div>
                                                 <span
                                                     v-if="
-                                                        listMemberActive[
-                                                            user.id
-                                                        ]
+                                                        currentTask.members && currentTask.members[user.id]
                                                     "
                                                 >
                                                     <i
@@ -471,117 +437,25 @@ export default {
                                             ><i class="ri-close-line"></i
                                         ></a>
                                     </div>
-                                    <input
-                                        class="search"
-                                        type="text"
-                                        placeholder="Tìm nhãn"
-                                    />
-                                    <p>Nhãn</p>
-                                    <div class="filter_of_table">
+                                    <div class="filter_of_table" v-for="(label,index) in listItemLabels">
                                         <div
                                             class="list_color d-flex flex-row align-items-center"
+                                            
+                                            @click="updateDataCurrentTask(
+                                                {
+                                                    'action' : currentTask.task_labels ? !currentTask.task_labels[label.id] ? 'active' : 'deactive' : 'active',
+                                                    'id' : label.id,
+                                                    'data': label,
+                                                    'key' : 'task_labels',
+                                                    'field': 'labels',
+                                                }
+                                            )"
                                         >
-                                            <input
-                                                class="form-check-input"
-                                                type="checkbox"
-                                                value=""
-                                                id="flexCheckDefault"
-                                            />
+                                            <i :class="`${ currentTask.task_labels ? !currentTask.task_labels[label.id] ? 'ri-checkbox-blank-line' : 'ri-checkbox-line' : 'ri-checkbox-blank-line' }`"></i>
                                             <div class="color color1">
-                                                <div class="color_child"></div>
+                                                <div class="color_child">{{ label.name }}</div>
                                             </div>
-                                            <div class="btn_edit">
-                                                <i class="ri-pencil-line"></i>
-                                            </div>
-                                        </div>
-                                        <div
-                                            class="list_color d-flex flex-row align-items-center"
-                                        >
-                                            <input
-                                                class="form-check-input"
-                                                type="checkbox"
-                                                value=""
-                                                id="flexCheckDefault"
-                                            />
-                                            <div class="color color2">
-                                                <div class="color_child"></div>
-                                            </div>
-                                            <div class="btn_edit">
-                                                <i class="ri-pencil-line"></i>
-                                            </div>
-                                        </div>
-                                        <div
-                                            class="list_color d-flex flex-row align-items-center"
-                                        >
-                                            <input
-                                                class="form-check-input"
-                                                type="checkbox"
-                                                value=""
-                                                id="flexCheckDefault"
-                                            />
-                                            <div class="color color3">
-                                                <div class="color_child"></div>
-                                            </div>
-                                            <div class="btn_edit">
-                                                <i class="ri-pencil-line"></i>
-                                            </div>
-                                        </div>
-                                        <div
-                                            class="list_color d-flex flex-row align-items-center"
-                                        >
-                                            <input
-                                                class="form-check-input"
-                                                type="checkbox"
-                                                value=""
-                                                id="flexCheckDefault"
-                                            />
-                                            <div class="color color4">
-                                                <div class="color_child"></div>
-                                            </div>
-                                            <div class="btn_edit">
-                                                <i class="ri-pencil-line"></i>
-                                            </div>
-                                        </div>
-                                        <div
-                                            class="list_color d-flex flex-row align-items-center"
-                                        >
-                                            <input
-                                                class="form-check-input"
-                                                type="checkbox"
-                                                value=""
-                                                id="flexCheckDefault"
-                                            />
-                                            <div class="color color5">
-                                                <div class="color_child"></div>
-                                            </div>
-                                            <div class="btn_edit">
-                                                <i class="ri-pencil-line"></i>
-                                            </div>
-                                        </div>
-                                        <div
-                                            class="list_color d-flex flex-row align-items-center"
-                                        >
-                                            <input
-                                                class="form-check-input"
-                                                type="checkbox"
-                                                value=""
-                                                id="flexCheckDefault"
-                                            />
-                                            <div class="color color6">
-                                                <div class="color_child"></div>
-                                            </div>
-                                            <div class="btn_edit">
-                                                <i class="ri-pencil-line"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="btn btn_display_more">
-                                        Tạo nhãn mới
-                                    </div>
-                                    <div class="btn_display_more">
-                                        Hiển thị các thành viên khác trong không
-                                        gian làm việc
+                                        </div>                                       
                                     </div>
                                 </div>
                             </b-list-group-item>
@@ -609,17 +483,30 @@ export default {
                                             ><i class="ri-close-line"></i
                                         ></a>
                                     </div>
-                                    <p class="title">Tiêu đề</p>
-                                    <input
-                                        type="text"
-                                        placeholder="Việc cần làm"
-                                    />
-                                    <div class="btn_add">Thêm</div>
+                                    <b-form-group
+                                        label="Tiêu đề"
+                                        label-for="title-input"
+                                    >
+                                        <b-form-input
+                                            id=""
+                                            v-model="nameWorkTodo"
+                                            :value ="nameWorkTodo"
+                                        >
+                                        </b-form-input>
+                                    </b-form-group>
+                                    <div class="btn_add" @click="addNewWordToto()">Thêm</div>
                                 </div>
                             </b-list-group-item>
                             <b-list-group-item
-                                ><i class="ri-time-line"></i> Ngày hết
-                                hạn</b-list-group-item
+                                >
+                                <VueDatePicker
+                                    auto-apply
+                                    :month-change-on-scroll="false"
+                                >
+                                <template #trigger><i class="ri-time-line"></i> Ngày hết
+                                hạn</template>
+                                </VueDatePicker> 
+                            </b-list-group-item
                             >
                             <b-list-group-item @click="showModalFile = true">
                                 <div class="item">
@@ -891,7 +778,6 @@ export default {
 
                     <!-- end dropdown -->
                     <h4 class="card-title">{{ card.title }}</h4>
-                    <p class="mb-0">3 Tasks</p>
                 </div>
                 <div class="card">
                     <div class="card-body border-bottom">
@@ -926,13 +812,15 @@ export default {
                                         ></div>
                                     </div>
                                     <div class="card-body">
-                                        <div class="list_filter">
-                                           <div class="filter"></div>
-                                           <div class="filter"></div>
-                                           <div class="filter"></div>
-                                           <div class="filter"></div>
-                                           <div class="filter"></div>
-                                           <div class="filter"></div>
+                                        <div class="list_filter" v-if="listTasks[
+                                                        task
+                                                    ].task_labels">
+                                            <div class="filter" 
+                                                v-for="member in listTasks[
+                                                    task
+                                                ].task_labels"                                               
+                                            >
+                                            </div>
                                         </div>
                                         <div class="float-end ml-2">
                                             <div>
@@ -960,9 +848,18 @@ export default {
                                                 >
                                             </h5>
                                         </div>
-                                        <div class="d-inline-flex team mb-0">
+                                        <div class="d-flex team mb-0">
+                                            <div 
+                                                :class="['d-flex align-items-center']"
+                                                v-if = "calulateCheckList(listTasks[task].works).total != 0"
+                                            >   
+                                                <i class="ri-checkbox-line"></i>
+                                                {{ 
+                                                   calulateCheckList(listTasks[task].works).done+'/'+calulateCheckList(listTasks[task].works).total
+                                                }}
+                                            </div>
                                             <div
-                                                class="me-3 align-self-center"
+                                                class="align-self-center"
                                                 v-if="listTasks[task].members"
                                             >
                                                 <div
