@@ -6,6 +6,7 @@ import moment from "moment";
 import { VueEditor } from "vue3-editor";
 import { taskHelper } from "../../helpers/helptask";
 import { taskMethods, authMethods, labelMethods, taskGetters, labelGetters, authGetters } from "../../store/helpers";
+import CheckList from "./project/checklists.vue"
 export default {
     page: {
         title: "Gosu Board",
@@ -15,13 +16,13 @@ export default {
         draggable: VueDraggableNext,
         PageHeader,
         VueEditor,
+        CheckList
     },
     data() {
         return {
             buttonAdd: {},
             newTasks: {},
-            showActiveChecklist: {},
-            showModal: false,
+                        showModal: false,
             showActive: false,
             showModalMember: false,
             showModalFilter: false,
@@ -43,10 +44,8 @@ export default {
                     active: true,
                 },
             ],
-            listMemberActive: {},
             dataUpdated: {},
             nameWorkTodo: "Việc cần làm",
-            nameChecklist: "",
         };
     },
     computed: {
@@ -146,7 +145,6 @@ export default {
 
         // add new  work todo
         async addNewWordToto(){
-            // console.log(this.nameWorkTodo);
             if (this.nameWorkTodo) {
                 var data = {
                     'title': this.nameWorkTodo,
@@ -157,39 +155,6 @@ export default {
             }
         },
 
-        // add new  work todo
-        async deleteWordToto(id){
-            var status = await this.removeWorkTodo(id);
-            if (status == 200) {
-                if (this.currentTask.works[id]) {
-                    delete this.currentTask.works[id]
-                    delete this.listTasks[this.currentTask.id].works[id]
-                }
-            } 
-        },
-
-        // add new list check in work todo
-        showAddChecklist(id){
-            this.showActiveChecklist = {}
-            this.showActiveChecklist[id] = !this.showActiveChecklist[id];
-        },
-
-        // create check list
-        async newCheckList(id){
-            if (this.nameChecklist) {
-                var data = {
-                    'id': id,
-                    'title': this.nameChecklist
-                }
-                await taskHelper.addcheckLists(data);
-                this.showAddChecklist(id);
-                this.nameChecklist = "";
-            }            
-        },
-        // remove check list
-        async deleteCheckList(data){
-            await taskHelper.removeCheckListTask(data);
-        },
         // calculate number check list
         calulateCheckList(data){
             return taskHelper.calculateListWorkTodo(data);
@@ -320,53 +285,7 @@ export default {
                                 </div>
                             </div>
                         </div>
-                        <div class="list_work_todo">
-                            <div class="work-todo" v-for="(work) in currentTask.works">
-                                <div
-                                    class="work-todo-header d-flex flex-row align-items-center"                                    
-                                >
-                                    <div :class="['d-flex flex-row align-items-center name']">
-                                        <i class="ri-checkbox-line"></i>
-                                        <span>{{ work.title }}</span>
-                                    </div> 
-                                    <b-button variant="light" @click="deleteWordToto(work.id)">Xóa</b-button>       
-                                </div>
-                                <b-progress :value="33.3333" :max="50" show-value></b-progress>
-                                <div v-if="work.check_list && work.check_list.length != 0">
-                                    <div :class="['d-flex justify-content-between align-items-center']" 
-                                        v-for="(checklist, index) in work.check_list"
-                                        :key="index"
-                                    >
-                                        <div>
-                                            <b-form-checkbox
-                                                class='d-flex justify-content-between align-items-center'                                               
-                                            >
-                                                {{ checklist.title }}
-                                            </b-form-checkbox>
-                                        </div>
-                                        <div :class="['d-flex justify-content-between align-items-center']">
-                                            <b-button variant="light"><i class="ri-calendar-check-line"></i></b-button>  
-                                            <b-button variant="light" @click="deleteCheckList({'id': checklist.id, 'work_id':work.id})"><i class="ri-delete-bin-7-line"></i></b-button>  
-                                        </div>
-                                    </div>
-                                </div>
-                                <div v-if="showActiveChecklist[work.id]">
-                                    <div>
-                                        <b-form-textarea
-                                            v-model="nameChecklist"
-                                            placeholder="Enter something..."
-                                            rows="3"
-                                            max-rows="6"
-                                        ></b-form-textarea>
-                                    </div>
-                                    <div>
-                                        <b-button @click="newCheckList(work.id)" variant="primary">Thêm</b-button>
-                                        <b-button @click="showActiveChecklist[work.id] = !showActiveChecklist[work.id]" variant="light">Hủy</b-button>
-                                    </div>
-                                </div>
-                                <b-button v-if="!showActiveChecklist[work.id]" variant="light" @click="showAddChecklist(work.id)">Thêm một mục</b-button>
-                            </div>
-                        </div>
+                        <CheckList :works="currentTask.works"></CheckList>                        
                     </div>
                     <div :class="['content-main-detail']">
                         <h6 d-flex flex-row align-items-center>
@@ -579,8 +498,15 @@ export default {
                                 </div>
                             </b-list-group-item>
                             <b-list-group-item
-                                ><i class="ri-time-line"></i> Ngày hết
-                                hạn</b-list-group-item
+                                >
+                                <VueDatePicker
+                                    auto-apply
+                                    :month-change-on-scroll="false"
+                                >
+                                <template #trigger><i class="ri-time-line"></i> Ngày hết
+                                hạn</template>
+                                </VueDatePicker> 
+                            </b-list-group-item
                             >
                             <b-list-group-item @click="showModalFile = true">
                                 <div class="item">

@@ -69,6 +69,11 @@ const actions = {
             return res.data;
         }
     },
+    // update check list
+    async updatedChecklist({ commit }, data){
+        let res = await axios.post(`/api/checklist/update/${data['id']}`, data);
+        return res.status;
+    },
     // remove check in work todo
     async removeCheckList({commit}, id){
         let res = await axios.post(`/api/checklist/remove/${id}`);

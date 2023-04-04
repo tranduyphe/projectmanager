@@ -76,6 +76,7 @@ Route::group(
 			function () {
                 Route::post( '/create', array( CheckListController::class, 'create' ) );			
                 Route::post( '/remove/{id}', array( CheckListController::class, 'destroy' ) );			
+                Route::post( '/update/{id}', array( CheckListController::class, 'update' ) );			
             }
 		);
 	}

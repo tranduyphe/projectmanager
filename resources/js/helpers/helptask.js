@@ -7,7 +7,8 @@ export const taskHelper = {
     addWorkTodo,
     addcheckLists,
     calculateListWorkTodo,
-    removeCheckListTask
+    removeCheckListTask,
+    updatedDataChecklist,
 };
 
 function isEmptyObject(obj) {
@@ -110,21 +111,42 @@ async function addcheckLists( data ) {
  * @param {*} data key=> id of work todo
  * 
  */
-function calculateListWorkTodo(data) {
-    // console.log(data);
-    var total = 0;
-    var done  = 0;
-    for (const key in data) {
-        var listCheck = data[key];
-        total = total + Object.keys(listCheck['check_list']).length;
-    }
-    var results = {
-        'total': total,
-        'done': done
-    };
+async function updatedDataChecklist( data ) {
+    var results = await store.dispatch( 'updatedChecklist', data );
     return results;
 }
 
+ /**
+ * add check list todo
+ * @param {*} data key=> id of work todo
+ * 
+ */
+function calculateListWorkTodo(data) {
+    var total = 0;
+    var done  = 0;
+    var percent = {};
+    for (const key in data) {
+        var listCheck = data[key];
+        total = total + Object.keys(listCheck['check_list']).length;
+        var number = 0;
+        var done_check = 0;
+        for (const id in listCheck['check_list']) {
+            var check = listCheck['check_list'][id]
+            if (check.status) {
+                done++;
+                done_check++;
+            }
+            number++;
+        }
+        percent[key] = Math.round(100/number * done_check)
+    }
+    var results = {
+        'total': total,
+        'done': done,
+        'percent' : percent
+    };
+    return results;
+}
 /**
  * remove check list
  * @param array data key => id of check list, word_toto_id

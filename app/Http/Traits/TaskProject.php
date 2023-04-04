@@ -63,6 +63,7 @@ trait TaskProject {
         if (!empty($works->checklist)) {
             foreach ($works->checklist as $key => $v) {
                 $checkLists[$v->id] = $v;
+                $checkLists[$v->id]['status'] = $v->status ? true : false;
             }
         }
         return $checkLists;

@@ -42,7 +42,9 @@ class CheckListController extends Controller
             'updated_at'    => date('Y-m-d H:i:s'),
         ]);
         $checklist->save();
-        return response()->json(CheckList::find($checklist->id));
+        $data = CheckList::find($checklist->id);
+        $data['status'] = $data->status ? true : false;
+        return response()->json($data);
     }
 
     /**
@@ -88,7 +90,12 @@ class CheckListController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        
+        $data = $request->input('data');
+        if (!empty($data)) {
+            $results = CheckList::where('id', $id)->update($data);
+        }
+        return response()->json($results);
     }
 
     /**
