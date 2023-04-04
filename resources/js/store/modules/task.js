@@ -72,9 +72,7 @@ const actions = {
     // remove check in work todo
     async removeCheckList({commit}, id){
         let res = await axios.post(`/api/checklist/remove/${id}`);
-        if (res.status == 200) { 
-            return res.data;
-        }
+        return res.status;
     },
     //get data curent tasl
     getCurrentTask({commit}, data) {

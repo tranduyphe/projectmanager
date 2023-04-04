@@ -6,7 +6,8 @@ export const taskHelper = {
     updateDataTask,
     addWorkTodo,
     addcheckLists,
-    calculateListWorkTodo
+    calculateListWorkTodo,
+    removeCheckListTask
 };
 
 function isEmptyObject(obj) {
@@ -74,10 +75,9 @@ async function addWorkTodo( data ) {
         store.getters.currentTask.works = {}
     }
     var results = await store.dispatch( 'createWorkTodo', data ); // callback function 
-    if (typeof store.getters.currentTask.works[results.id] == 'undefined') {
-        store.getters.currentTask.works[results.id] = {}
+    if (typeof results != 'undefined') {
+        store.getters.currentTask.works[results.id] = results;
     }
-    store.getters.currentTask.works[results.id] = results;
 }
 
  /**
@@ -94,18 +94,14 @@ async function addcheckLists( data ) {
     if (store.getters.listTasks[task_id].works.length == 0) {
         store.getters.listTasks[task_id].works = {} // add works todo in list task
     }
-    var result = await store.dispatch( 'addCheckList', data );
-    if (typeof result != 'undefined') {
+    var results = await store.dispatch( 'addCheckList', data );
+    if (typeof results != 'undefined') {
         if (store.getters.currentTask.works[data.id]['check_list'].length == 0) {
             store.getters.currentTask.works[data.id]['check_list'] = {};
             store.getters.listTasks[task_id].works[data.id]['check_list'] = {};
         }
-        if (typeof store.getters.currentTask.works[data.id]['check_list'][result.id] == 'undefined') {
-            store.getters.currentTask.works[data.id]['check_list'][result.id] = {};
-            store.getters.listTasks[task_id].works[data.id]['check_list'][result.id] = {};
-        }
-        store.getters.currentTask.works[data.id]['check_list'][result.id] = result;
-        store.getters.listTasks[task_id].works[data.id]['check_list'][result.id] = result;
+        store.getters.currentTask.works[data.id]['check_list'][results.id] = results;
+        store.getters.listTasks[task_id].works[data.id]['check_list'][results.id] = results;
     }
 }
 
@@ -127,4 +123,18 @@ function calculateListWorkTodo(data) {
         'done': done
     };
     return results;
+}
+
+/**
+ * remove check list
+ * @param array data key => id of check list, word_toto_id
+ */
+async function removeCheckListTask(data){
+    var task_id = store.getters.currentTask.id;
+    var work_id = data['work_id'];
+    var status = await store.dispatch( 'removeCheckList', data['id'] );
+    if (status == 200) {
+        delete store.getters.currentTask.works[work_id].check_list[data['id']];
+        delete  store.getters.listTasks[task_id].works[work_id]['check_list'][data['id']];
+    }
 }

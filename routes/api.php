@@ -75,7 +75,7 @@ Route::group(
 			array( 'prefix' => 'checklist' ),
 			function () {
                 Route::post( '/create', array( CheckListController::class, 'create' ) );			
-                Route::post( '/remove/{id}', array( CheckListController::class, 'creadestroyte' ) );			
+                Route::post( '/remove/{id}', array( CheckListController::class, 'destroy' ) );			
             }
 		);
 	}

@@ -153,6 +153,7 @@ export default {
                     'task_id': this.currentTask.id,
                 };
                 await taskHelper.addWorkTodo( data );
+                this.showModalWorkToDo = !this.showModalWorkToDo
             }
         },
 
@@ -185,7 +186,10 @@ export default {
                 this.nameChecklist = "";
             }            
         },
-
+        // remove check list
+        async deleteCheckList(data){
+            await taskHelper.removeCheckListTask(data);
+        },
         // calculate number check list
         calulateCheckList(data){
             return taskHelper.calculateListWorkTodo(data);
@@ -342,7 +346,7 @@ export default {
                                         </div>
                                         <div :class="['d-flex justify-content-between align-items-center']">
                                             <b-button variant="light"><i class="ri-calendar-check-line"></i></b-button>  
-                                            <b-button variant="light"><i class="ri-delete-bin-7-line"></i></b-button>  
+                                            <b-button variant="light" @click="deleteCheckList({'id': checklist.id, 'work_id':work.id})"><i class="ri-delete-bin-7-line"></i></b-button>  
                                         </div>
                                     </div>
                                 </div>
@@ -357,7 +361,7 @@ export default {
                                     </div>
                                     <div>
                                         <b-button @click="newCheckList(work.id)" variant="primary">Thêm</b-button>
-                                        <b-button @click="showAddChecklist(work.id)" variant="light">Hủy</b-button>
+                                        <b-button @click="showActiveChecklist[work.id] = !showActiveChecklist[work.id]" variant="light">Hủy</b-button>
                                     </div>
                                 </div>
                                 <b-button v-if="!showActiveChecklist[work.id]" variant="light" @click="showAddChecklist(work.id)">Thêm một mục</b-button>
