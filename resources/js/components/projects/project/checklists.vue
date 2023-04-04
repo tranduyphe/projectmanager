@@ -74,7 +74,9 @@ export default {
                 var _data = {
                     'title': this.works[data['work_id']].check_list[data['id']].title,
                     'dealine': dealine,
-                    'status': !this.works[data['work_id']].check_list[data['id']].status ? 1 : 0,
+                }
+                if (typeof data['status'] != 'undefined') {
+                    _data['status'] = !this.works[data['work_id']].check_list[data['id']].status ? 1 : 0
                 }
                 data['data'] = _data;
                 var result = await taskHelper.updatedDataChecklist(data);
@@ -121,9 +123,11 @@ export default {
                         <b-form-checkbox
                             class='d-flex justify-content-between align-items-center'
                             v-model="checklist.status"  
-                            @click="updateData({'id': checklist.id, 'work_id':work.id})"                                                                
+                            @click="updateData({'id': checklist.id, 'work_id':work.id, 'status': checklist.status})" 
+                                                                                           
                         >
                         <!-- @click="updateData({'id': checklist.id, 'work_id':work.id})"  -->
+                        {{ checklist.status }}
                         </b-form-checkbox>
                         <div>
                             <div @click="showEditChecklist(index)">

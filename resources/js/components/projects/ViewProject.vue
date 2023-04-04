@@ -22,7 +22,7 @@ export default {
         return {
             buttonAdd: {},
             newTasks: {},
-                        showModal: false,
+            showModal: false,
             showActive: false,
             showModalMember: false,
             showModalFilter: false,
@@ -140,6 +140,7 @@ export default {
         },
         //updated data task
         async updateDataCurrentTask(obj ) {
+            console.log(this.currentTask.dealine)
             await taskHelper.updateDataTask( obj )
         },
 
@@ -499,9 +500,16 @@ export default {
                             </b-list-group-item>
                             <b-list-group-item
                                 >
-                                <VueDatePicker
-                                    auto-apply
+                                <VueDatePicker    
+                                    v-model="currentTask.dealine"                                
                                     :month-change-on-scroll="false"
+                                    auto-apply
+                                    @closed="updateDataCurrentTask(
+                                        {
+                                            'key' : 'dealine',
+                                            'field': 'dealine',
+                                        }
+                                    )"
                                 >
                                 <template #trigger><i class="ri-time-line"></i> Ngày hết
                                 hạn</template>

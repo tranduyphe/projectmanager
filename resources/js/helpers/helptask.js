@@ -1,5 +1,6 @@
 import { forEach } from 'lodash';
 import { store } from '../store/store';
+import moment from "moment";
 export const taskHelper = {
     isEmptyObject,
     convertToObject,
@@ -34,10 +35,11 @@ function convertToObject(obj) {
  * @param {*} field field data task by field
  */
 async function updateDataTask( obj ) {
+    console.log(obj)    
     // action, id_data, data, key, field, task_id
     var dataUpdated = store.getters.currentTask[obj['key']];
     var task_id = store.getters.currentTask.id;
-
+    
     if (!dataUpdated) {
         dataUpdated = {};
     }
@@ -45,15 +47,21 @@ async function updateDataTask( obj ) {
     if ( obj['action'] == 'deactive' ) {
         delete dataUpdated[obj['id']];
     }else{
-        dataUpdated[obj['id']] = obj['data'];
-    } 
-
+        if (obj['action'] == 'active') {
+            dataUpdated[obj['id']] = obj['data'];
+        }        
+    }     
     var listArray = Object.keys(dataUpdated); // convert data Obj to array by key dataupdated
     var fields = {};
+    if (typeof obj['action'] != 'undefined') {
         fields[obj['field']] = listArray ? listArray.join(",") : "";
+    }else{
+        fields[obj['field']] = dataUpdated ? moment(dataUpdated).format('YYYY-MM-DD HH:mm:ss') : null  // update date dealine in task
+    }
+        
     var data = {};
     data["task_id"] = task_id;
-    data["info_task"] = fields;
+    data["info_task"] = fields; 
     // update task
     await store.dispatch( 'updateTask', data ); // callback function
 

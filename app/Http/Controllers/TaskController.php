@@ -161,6 +161,8 @@ class TaskController extends Controller
         if (!empty($task->labels)) {
             $task['task_labels'] = $this->listMembers($task->labels);
         }
+        // get works to do in current task
+        $task['works'] = $this->listWorks($task->id);
         return response()->json($task);
     }
 
