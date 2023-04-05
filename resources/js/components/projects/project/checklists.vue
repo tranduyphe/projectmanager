@@ -69,20 +69,23 @@ export default {
         // update check list
         async updateData(data){
             if (this.works[data['work_id']].check_list[data['id']].title) {
-                var dealine = this.works[data['work_id']].check_list[data['id']].dealine 
-                dealine = dealine ? moment(dealine).format('YYYY-MM-DD HH:mm:ss') : null;
+                console.log(this.works[data['work_id']].check_list[data['id']].status)
                 var _data = {
-                    'title': this.works[data['work_id']].check_list[data['id']].title,
-                    'dealine': dealine,
-                }
+                    'title': this.works[data['work_id']].check_list[data['id']].title
+                };
+                if (typeof data['data'] != 'undefined') {
+                    _data['deadline'] = moment(data['data']).format('YYYY-MM-DD HH:mm:ss');
+                };
                 if (typeof data['status'] != 'undefined') {
                     _data['status'] = !this.works[data['work_id']].check_list[data['id']].status ? 1 : 0
-                }
+                };
+
                 data['data'] = _data;
                 var result = await taskHelper.updatedDataChecklist(data);
                 if (result == 200) {
                     this.activeEditChecklist  = {};
                 }
+
             }
         },
         // calculate number check list
@@ -120,15 +123,12 @@ export default {
                     :key="index"
                 >
                     <div class='d-flex justify-content-between align-items-center'>
-                        <b-form-checkbox
-                            class='d-flex justify-content-between align-items-center'
-                            v-model="checklist.status"  
-                            @click="updateData({'id': checklist.id, 'work_id':work.id, 'status': checklist.status})" 
-                                                                                           
-                        >
-                        <!-- @click="updateData({'id': checklist.id, 'work_id':work.id})"  -->
-                        {{ checklist.status }}
-                        </b-form-checkbox>
+                        <input
+                            type="checkbox"
+                            v-model="checklist.status"
+                            :checked="checklist.status"
+                            @click="updateData({'id': checklist.id, 'work_id':work.id, 'status': checklist.status})"
+                        />
                         <div>
                             <div @click="showEditChecklist(index)">
                                 <b-form-textarea
@@ -146,13 +146,16 @@ export default {
                                 <div :class="['d-flex justify-content-between align-items-center']">
                                     <b-button variant="light">
                                         <VueDatePicker
-                                            v-model="checklist.dealine"
-                                            auto-apply
-                                            @closed="updateData({'id': checklist.id, 'work_id':work.id})"
+                                            v-model="checklist.deadline"                                
                                             :month-change-on-scroll="false"
                                         >
-                                        <template #trigger><i class="ri-time-line"></i></template>
-                                        </VueDatePicker> 
+                                            <template #trigger><i class="ri-time-line"></i></template>
+                                            <template #action-select="{ value }">
+                                                <b-button variant="primary" @click="updateData({'id': checklist.id, 'work_id':work.id, 'data': value})">
+                                                    Save
+                                                </b-button>
+                                            </template>
+                                        </VueDatePicker>
                                     </b-button>
                                     <b-button variant="light" @click="deleteCheckList({'id': checklist.id, 'work_id':work.id})"><i class="ri-delete-bin-7-line"></i></b-button>  
                                 </div>
@@ -162,12 +165,15 @@ export default {
                     <div v-if="!activeEditChecklist[index]" :class="['d-flex justify-content-between align-items-center']">
                         <b-button variant="light">
                             <VueDatePicker
-                                v-model="checklist.dealine"
-                                auto-apply
-                                @closed="updateData({'id': checklist.id, 'work_id':work.id})"
+                                v-model="checklist.deadline"                                
                                 :month-change-on-scroll="false"
                             >
-                            <template #trigger><i class="ri-time-line"></i></template>
+                                <template #trigger><i class="ri-time-line"></i></template>
+                                <template #action-select="{ value }">
+                                    <b-button variant="primary" @click="updateData({'id': checklist.id, 'work_id':work.id, 'data': value})">
+                                        Save
+                                    </b-button>
+                                </template>
                             </VueDatePicker>
                         </b-button>  
                         <b-button variant="light" @click="deleteCheckList({'id': checklist.id, 'work_id':work.id})"><i class="ri-delete-bin-7-line"></i></b-button>  

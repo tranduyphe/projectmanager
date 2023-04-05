@@ -87,9 +87,7 @@ class TaskController extends Controller
             'project_id'    => $project_id,
             'card_id'       => $card_id,
             'department_id' => $department_id,
-            'list_user_ids' => "",
             'slug'          => $slug,
-            'description'   => "",
             'created_at'    => date('Y-m-d H:i:s'),
             'updated_at'    => date('Y-m-d H:i:s'),
         ]);

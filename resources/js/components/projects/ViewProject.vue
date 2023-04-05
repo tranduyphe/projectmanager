@@ -6,7 +6,9 @@ import moment from "moment";
 import { VueEditor } from "vue3-editor";
 import { taskHelper } from "../../helpers/helptask";
 import { taskMethods, authMethods, labelMethods, taskGetters, labelGetters, authGetters } from "../../store/helpers";
-import CheckList from "./project/checklists.vue"
+import SelectCard from "./project/SelectCard.vue";
+import CheckList from "./project/checklists.vue";
+import TaskDeadline from "./project/taskdeadline.vue";
 export default {
     page: {
         title: "Gosu Board",
@@ -16,7 +18,9 @@ export default {
         draggable: VueDraggableNext,
         PageHeader,
         VueEditor,
-        CheckList
+        CheckList,
+        TaskDeadline,
+        SelectCard
     },
     data() {
         return {
@@ -139,8 +143,7 @@ export default {
             }
         },
         //updated data task
-        async updateDataCurrentTask(obj ) {
-            console.log(this.currentTask.dealine)
+        async updateDataCurrentTask( obj ) {
             await taskHelper.updateDataTask( obj )
         },
 
@@ -160,6 +163,9 @@ export default {
         calulateCheckList(data){
             return taskHelper.calculateListWorkTodo(data);
         },
+        test(value){
+            console.log(value)
+        }
     },
     created() {
         this.auth();
@@ -246,6 +252,7 @@ export default {
                                 <p>Theo dõi</p>
                             </div>
                         </div>
+                        <TaskDeadline :deadline="currentTask.deadline"></TaskDeadline>
                     </div>
                     <div :class="['content-main-detail']">
                         <h6 d-flex flex-row align-items-center>
@@ -285,7 +292,7 @@ export default {
                                     >
                                 </div>
                             </div>
-                        </div>
+                        </div>                                                
                         <CheckList :works="currentTask.works"></CheckList>                        
                     </div>
                     <div :class="['content-main-detail']">
@@ -501,18 +508,24 @@ export default {
                             <b-list-group-item
                                 >
                                 <VueDatePicker    
-                                    v-model="currentTask.dealine"                                
-                                    :month-change-on-scroll="false"
-                                    auto-apply
-                                    @closed="updateDataCurrentTask(
-                                        {
-                                            'key' : 'dealine',
-                                            'field': 'dealine',
-                                        }
-                                    )"
+                                    v-model="currentTask.deadline"                                
+                                    :month-change-on-scroll="false"                                    
                                 >
-                                <template #trigger><i class="ri-time-line"></i> Ngày hết
-                                hạn</template>
+                                    <template #trigger #action-select>
+                                        <i class="ri-time-line"></i> Ngày hết hạn
+                                        
+                                    </template>
+                                    <template #action-select="{ value }">
+                                        <b-button variant="primary" @click="updateDataCurrentTask(
+                                            {
+                                                'key' : 'deadline',
+                                                'field': 'deadline',
+                                                'data' : value
+                                            }
+                                            )">
+                                            Save
+                                        </b-button>
+                                    </template>
                                 </VueDatePicker> 
                             </b-list-group-item
                             >
@@ -584,32 +597,9 @@ export default {
                                             ><i class="ri-close-line"></i
                                         ></a>
                                     </div>
-                                    <p class="title">Chọn đích đến</p>
-                                    <div class="modal_move-content">
-                                        <div class="btn select_table">
-                                            <p>Bảng</p>
-                                            <div class="name_table">Demo</div>
-                                        </div>
-                                        <div class="btn select_list">
-                                            <p>Danh sách</p>
-                                            <div class="name_list">Cần làm</div>
-                                        </div>
-                                        <div class="btn select_location">
-                                            <p>Vị trí</p>
-                                            <div class="number">1</div>
-                                        </div>
-                                    </div>
-                                    <div class="btn_move">Di chuyển</div>
+                                    <SelectCard :cards="listCard"></SelectCard>                                   
                                 </div>
                             </b-list-group-item>
-                            <!-- <b-list-group-item
-                                ><i class="ri-price-tag-3-line"></i> Sao
-                                chép</b-list-group-item
-                            >
-                            <b-list-group-item
-                                ><i class="ri-checkbox-line"></i>
-                                share</b-list-group-item
-                            > -->
                         </b-list-group>
                     </div>
                 </div>
@@ -789,7 +779,7 @@ export default {
                 </div>
                 <div class="card">
                     <div class="card-body border-bottom">
-                        <div id="todo-task" class="task-list">
+                        <div :id="`${'wrap_card_'+card.id}`" class="task-list">
                             <draggable
                                 class="list-group"
                                 group="tasks"
@@ -802,7 +792,7 @@ export default {
                                         card.id
                                     ]"
                                     :key="index"
-                                    :data-cardid="card.id"
+                                    :id="`${'task_'+task}`"
                                     @click="showTask(listTasks[task])"
                                 >
                                     <!-- <pre>{{ JSON.stringify(task, undefined, 4) }}</pre> -->

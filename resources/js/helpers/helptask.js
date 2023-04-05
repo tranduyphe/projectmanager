@@ -10,6 +10,7 @@ export const taskHelper = {
     calculateListWorkTodo,
     removeCheckListTask,
     updatedDataChecklist,
+    calculateDate,
 };
 
 function isEmptyObject(obj) {
@@ -34,8 +35,7 @@ function convertToObject(obj) {
  * @param {*} key key get data of current task use key
  * @param {*} field field data task by field
  */
-async function updateDataTask( obj ) {
-    console.log(obj)    
+async function updateDataTask( obj ) { 
     // action, id_data, data, key, field, task_id
     var dataUpdated = store.getters.currentTask[obj['key']];
     var task_id = store.getters.currentTask.id;
@@ -49,6 +49,8 @@ async function updateDataTask( obj ) {
     }else{
         if (obj['action'] == 'active') {
             dataUpdated[obj['id']] = obj['data'];
+        }else{
+            dataUpdated = obj['data']
         }        
     }     
     var listArray = Object.keys(dataUpdated); // convert data Obj to array by key dataupdated
@@ -56,7 +58,7 @@ async function updateDataTask( obj ) {
     if (typeof obj['action'] != 'undefined') {
         fields[obj['field']] = listArray ? listArray.join(",") : "";
     }else{
-        fields[obj['field']] = dataUpdated ? moment(dataUpdated).format('YYYY-MM-DD HH:mm:ss') : null  // update date dealine in task
+        fields[obj['field']] = dataUpdated ? moment(dataUpdated).format('YYYY-MM-DD HH:mm:ss') : null  // update date deadline in task
     }
         
     var data = {};
@@ -167,4 +169,29 @@ async function removeCheckListTask(data){
         delete store.getters.currentTask.works[work_id].check_list[data['id']];
         delete  store.getters.listTasks[task_id].works[work_id]['check_list'][data['id']];
     }
+}
+
+function calculateDate(dateTasks){
+    var today    = moment(new Date());
+    dateTasks    = moment(new Date(dateTasks))
+    var duration = moment.duration(dateTasks.diff(today));
+    var days     = Math.round(duration.asDays());
+    var timeTask = ' [at] '+moment(dateTasks).format('HH:ss')
+    var danger = "[<span class='danger'>out of date</span>]";
+    var warning = "[<span class='warning'>near due</span>]";
+    var results = moment().add(days, 'days').calendar({
+        sameDay: '[Today]'+ timeTask,
+        nextDay: '[Tomorrow]' + timeTask + warning,
+        nextWeek: 'dddd'+ timeTask,
+        lastDay: '[Yesterday]' + timeTask + danger,
+        lastWeek: '[Last] dddd'+ timeTask + danger,
+        sameElse: function (now) {
+            if (this.isBefore(now)) {
+                return 'DD/MM/YYYY'+ timeTask + danger;
+            } else {
+                return 'DD/MM/YYYY'+ timeTask;
+            }
+        }
+    });
+    return results;
 }

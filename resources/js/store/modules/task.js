@@ -46,6 +46,7 @@ const actions = {
         if (res.status == 200) { 
             commit('setCurrentTask', res.data);             
         }
+        return res.status;
     },
 
     // add new work to do

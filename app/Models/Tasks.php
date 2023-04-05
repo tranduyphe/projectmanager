@@ -19,7 +19,7 @@ class Tasks extends Model
         'slug',
         'description',
         'title',
-        'dealine'
+        'deadline'
     ];
 
     // public function card()
