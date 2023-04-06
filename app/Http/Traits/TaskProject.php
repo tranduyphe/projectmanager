@@ -1,9 +1,11 @@
 <?php
 namespace App\Http\Traits;
+use Illuminate\Support\Str;
 use App\Models\User;
 use App\Models\Label;
 use App\Models\Tasks;
 use App\Models\WorkToDo;
+use App\Models\Media;
 
 trait TaskProject {
 
@@ -67,5 +69,78 @@ trait TaskProject {
             }
         }
         return $checkLists;
+    }
+
+    /**
+     * upload files in task
+     */
+    public function upLoadFiles($request){
+        $folderName = 'uploads';
+        $path = public_path() . '/' . $folderName;
+        if (!is_dir($path)) {
+            mkdir($path, 0755);
+        }
+        $id = false;
+        if ($request->input('url')) {
+            $title     = $request->input('name');
+            $url       = $request->input('url');
+            $extension = 'link';
+            $slug      = Str::slug($title);
+            if (Media::where('slug', $slug)->exists()) {
+                $slug = $slug . '-' . uniqid();
+            }
+            $media = new Media([
+                'title'         => $title,
+                'name_file'     => $url,
+                'type'          => $extension,
+                'slug'          => $slug,
+                'created_at'    => date('Y-m-d H:i:s'),
+                'updated_at'    => date('Y-m-d H:i:s'),
+            ]);
+            $media->save();
+            $id = $media->id;
+        }else{
+            if ($request->hasFile('file')) {
+                $file       = $request->file('file');
+                $fullName   = $file->getClientOriginalName();
+                $checkFiles = explode(".", $fullName);
+                $title      = current( $checkFiles );
+                $extension  = end( $checkFiles );
+                $fileName   = Str::slug($title.time()).'.'.$extension;
+                $file->move(public_path('uploads'), $fileName);  
+                $url = public_path('uploads').'/'.$fileName;          
+                $slug      = Str::slug($title);
+                if (Media::where('slug', $slug)->exists()) {
+                    $slug = $slug . '-' . uniqid();
+                }
+                $media = new Media([
+                    'title'         => $title,
+                    'name_file'     => $fileName,
+                    'type'          => $extension,
+                    'slug'          => $slug,
+                    'created_at'    => date('Y-m-d H:i:s'),
+                    'updated_at'    => date('Y-m-d H:i:s'),
+                ]);
+                $media->save();
+                $id = $media->id;
+            }    
+        }
+        return $id;
+    }
+
+    /**
+     * show list file in task
+     * @param number id of media
+     */
+    public function listFiles($arr) 
+    {
+        $listFiles = false;
+        if (!empty($arr) && isset($arr)) {
+            $arr = explode(',',$arr);
+            foreach ($arr as $key => $v) {
+                $listFiles[$v] = Media::find($v);
+            }
+        }
+        return $listFiles;
     }
 }

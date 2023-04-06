@@ -80,6 +80,21 @@ const actions = {
         let res = await axios.post(`/api/checklist/remove/${id}`);
         return res.status;
     },
+
+    // upload file 
+    async uploadFile({commit}, data){
+        var config = "";
+        if (typeof data['url'] == 'undefined') {
+            config = {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            }
+        }
+        let res = await axios.post(`/api/tasks/store`, data, config);
+        return res.status;
+    },
+
     //get data curent tasl
     getCurrentTask({commit}, data) {
         commit('setCurrentTask', data);

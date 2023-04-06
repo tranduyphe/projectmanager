@@ -53,6 +53,7 @@ Route::group(
 				Route::post( '/create', array( TaskController::class, 'create' ) );
 				Route::post( '/index/{id}', array( TaskController::class, 'index' ) );
 				Route::post( '/show/{id}', array( TaskController::class, 'show' ) );
+				Route::post( '/store', array( TaskController::class, 'store' ) );
 			}
 		);
 

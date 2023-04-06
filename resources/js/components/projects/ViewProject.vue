@@ -6,9 +6,10 @@ import moment from "moment";
 import { VueEditor } from "vue3-editor";
 import { taskHelper } from "../../helpers/helptask";
 import { taskMethods, authMethods, labelMethods, taskGetters, labelGetters, authGetters } from "../../store/helpers";
-import SelectCard from "./project/SelectCard.vue";
+import MoveCard from "./project/MoveCard.vue";
 import CheckList from "./project/checklists.vue";
 import TaskDeadline from "./project/taskdeadline.vue";
+import FilesTask from "./project/FilesTask.vue";
 export default {
     page: {
         title: "Gosu Board",
@@ -20,7 +21,8 @@ export default {
         VueEditor,
         CheckList,
         TaskDeadline,
-        SelectCard
+        MoveCard,
+        FilesTask
     },
     data() {
         return {
@@ -50,6 +52,8 @@ export default {
             ],
             dataUpdated: {},
             nameWorkTodo: "Việc cần làm",
+            image:"",
+            file: null,
         };
     },
     computed: {
@@ -163,9 +167,78 @@ export default {
         calulateCheckList(data){
             return taskHelper.calculateListWorkTodo(data);
         },
-        test(value){
-            console.log(value)
-        }
+        onPaste (pasteEvent, callback) {
+            if (!this.showEditor) {
+                if(pasteEvent.clipboardData == false){
+                    if(typeof(callback) == "function"){
+                        callback(undefined);
+                    }
+                };
+                var url = pasteEvent.clipboardData.getData('text');
+                if (this.validateUrl(url)) {
+                    var dataUrl = this.validateUrl(url)
+                    var data = {
+                        'url': url,
+                        'name': dataUrl[4],
+                        'task_id': this.currentTask.id
+                    }
+                    this.uploadFile(data);
+                }else{
+                    var items = pasteEvent.clipboardData.items;
+                    if(items == undefined){
+                        if(typeof(callback) == "function"){
+                            callback(undefined);
+                        }
+                    };
+                    for (var i = 0; i < items.length; i++) {
+                        if (items[i].type.indexOf("image") == -1) continue;
+                        var blob = items[i].getAsFile();
+                        const fileUpload = new Blob([blob], blob);
+                        const formData = new FormData();
+                        formData.append('file', fileUpload, blob.name);
+                        formData.append('task_id', this.currentTask.id);
+                        this.uploadFile(formData);
+                        this.addImage(blob);
+                    }
+                }
+               
+            }            
+        },
+        validateUrl(url) {
+            const regex = RegExp('(https?:\\/\\/)?((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|((\\d{1,3}\\.){3}\\d{1,3}))(\\:\\d+)?(\\/[-a-z\\d%_.~+@]*)*(\\?[;&a-z\\d%_.~+=-@]*)?(\\#[-a-z\\d_@]*)?$', 'i');
+            return url.match(regex);
+        },
+        addImage(file){
+            if (!file.type.match('image.*')) {
+                return new Promise((reject) => {
+                    const error = {
+                        message: 'Solo puede arrastrar imágenes.',
+                        response: {
+                            status: 200
+                        }
+                    }
+                    this.$obtenerError(error)
+                    reject()
+                    return;
+                })
+            }
+            const img = new Image(),
+                reader = new FileReader();
+
+            reader.onload = (e) => this.image = e.target.result;
+            reader.readAsDataURL(file);
+        },
+        upload(e){
+            let files = e.target.files || e.dataTransfer.files;
+            if (!files.length)
+                return;
+            this.file = e.target.files[0];
+            let formData = new FormData();
+                formData.append('file', this.file);
+                formData.append('task_id', this.currentTask.id);
+                this.uploadFile(formData);
+        },
+
     },
     created() {
         this.auth();
@@ -176,7 +249,7 @@ export default {
 
     mounted() {
         document.body.classList.remove("auth-body-bg");
-        document.body.classList.add("page-task");
+        document.body.classList.add("page-task");        
     },
 };
 </script>
@@ -188,7 +261,12 @@ export default {
         size="lg"
         hide-footer
         hide-header
+        @paste="onPaste"
     >
+        <input type="file" v-modal="file" @change="upload" class="form-control">
+        <div class="img-wrapper">
+            <img style="max-width:230px; max-height: 230px;" thumbnail center rounded  class="max-image-upload" :src="image">
+        </div>
         <div :class="['container-fluid']">
             <div :class="['row']">
                 <div
@@ -293,7 +371,9 @@ export default {
                                 </div>
                             </div>
                         </div>                                                
-                        <CheckList :works="currentTask.works"></CheckList>                        
+                        <CheckList :works="currentTask.works"></CheckList>   
+                        <FilesTask :attachments="currentTask.list_files"></FilesTask>   
+                                             
                     </div>
                     <div :class="['content-main-detail']">
                         <h6 d-flex flex-row align-items-center>
@@ -597,7 +677,7 @@ export default {
                                             ><i class="ri-close-line"></i
                                         ></a>
                                     </div>
-                                    <SelectCard :cards="listCard"></SelectCard>                                   
+                                    <MoveCard :cards="listCard"></MoveCard>                                   
                                 </div>
                             </b-list-group-item>
                         </b-list-group>

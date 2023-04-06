@@ -69,7 +69,6 @@ export default {
         // update check list
         async updateData(data){
             if (this.works[data['work_id']].check_list[data['id']].title) {
-                console.log(this.works[data['work_id']].check_list[data['id']].status)
                 var _data = {
                     'title': this.works[data['work_id']].check_list[data['id']].title
                 };
