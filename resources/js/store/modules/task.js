@@ -94,7 +94,10 @@ const actions = {
         let res = await axios.post(`/api/tasks/store`, data, config);
         return res.status;
     },
-
+    // remove File upload
+    async removeFilesMedia({commit}, data){
+        let res = await axios.post(`/api/media/remove/${data['media_id']}`, data);
+    },
     //get data curent tasl
     getCurrentTask({commit}, data) {
         commit('setCurrentTask', data);

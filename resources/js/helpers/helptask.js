@@ -11,6 +11,7 @@ export const taskHelper = {
     removeCheckListTask,
     updatedDataChecklist,
     calculateDate,
+    dateUploadFiles
 };
 
 function isEmptyObject(obj) {
@@ -170,7 +171,11 @@ async function removeCheckListTask(data){
         delete  store.getters.listTasks[task_id].works[work_id]['check_list'][data['id']];
     }
 }
-
+/**
+ * 
+ * @param {*} dateTasks 
+ * @returns 
+ */
 function calculateDate(dateTasks){
     var today    = moment(new Date());
     dateTasks    = moment(new Date(dateTasks))
@@ -193,5 +198,18 @@ function calculateDate(dateTasks){
             }
         }
     });
+    return results;
+}
+/**
+ * 
+ * @param {*} dateFiles 
+ * @returns 
+ */
+function dateUploadFiles(dateFiles){
+    var today    = moment(new Date());
+    dateFiles    = moment(new Date(dateFiles))
+    var duration = moment.duration(dateFiles.diff(today));
+    var days     = Math.round(duration.asDays());
+    var results = moment().add(days, 'days').calendar();
     return results;
 }

@@ -10,7 +10,7 @@ import MoveCard from "./project/MoveCard.vue";
 import CheckList from "./project/checklists.vue";
 import TaskDeadline from "./project/taskdeadline.vue";
 import FilesTask from "./project/FilesTask.vue";
-export default {
+export default {   
     page: {
         title: "Gosu Board",
         meta: [{ name: "description" }],
@@ -247,9 +247,9 @@ export default {
         this.getListTasks(this.$route.params.id);
     },
 
-    mounted() {
+    mounted() {        
         document.body.classList.remove("auth-body-bg");
-        document.body.classList.add("page-task");        
+        document.body.classList.add("page-task"); 
     },
 };
 </script>
@@ -372,7 +372,7 @@ export default {
                             </div>
                         </div>                                                
                         <CheckList :works="currentTask.works"></CheckList>   
-                        <FilesTask :attachments="currentTask.list_files"></FilesTask>   
+                        <FilesTask :attachments="currentTask.list_files" :path="publicPath"></FilesTask>   
                                              
                     </div>
                     <div :class="['content-main-detail']">

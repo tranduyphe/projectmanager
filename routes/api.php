@@ -9,6 +9,7 @@ use App\Http\Controllers\CardController;
 use App\Http\Controllers\LabelController;
 use App\Http\Controllers\WorkTodoController;
 use App\Http\Controllers\CheckListController;
+use App\Http\Controllers\MediaController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -78,6 +79,13 @@ Route::group(
                 Route::post( '/create', array( CheckListController::class, 'create' ) );			
                 Route::post( '/remove/{id}', array( CheckListController::class, 'destroy' ) );			
                 Route::post( '/update/{id}', array( CheckListController::class, 'update' ) );			
+            }
+		);
+
+        Route::group(
+			array( 'prefix' => 'media' ),
+			function () {			
+                Route::post( '/remove/{id}', array( MediaController::class, 'destroy' ) );			
             }
 		);
 	}
