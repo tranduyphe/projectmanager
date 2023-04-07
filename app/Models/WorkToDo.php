@@ -15,7 +15,7 @@ class WorkToDo extends Model
         'task_id',
         'title',
         'slug',
-        'dealine'
+        'deadline'
     ];
 
     public function tasks()

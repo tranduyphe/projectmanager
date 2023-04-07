@@ -1,13 +1,16 @@
 <script>
 import { VueDraggableNext } from "vue-draggable-next";
-import { mapGetters, mapActions, mutations } from "vuex";
 import PageHeader from "../layouts/page-header.vue";
 import moment from "moment";
 import { VueEditor } from "vue3-editor";
 import { taskHelper } from "../../helpers/helptask";
 import { taskMethods, authMethods, labelMethods, taskGetters, labelGetters, authGetters } from "../../store/helpers";
-import CheckList from "./project/checklists.vue"
-export default {
+import MoveCard from "./project/MoveCard.vue";
+import CheckList from "./project/checklists.vue";
+import TaskDeadline from "./project/taskdeadline.vue";
+import FilesTask from "./project/FilesTask.vue";
+import FileUploads from "./project/UploadFiles.vue";
+export default {   
     page: {
         title: "Gosu Board",
         meta: [{ name: "description" }],
@@ -16,18 +19,22 @@ export default {
         draggable: VueDraggableNext,
         PageHeader,
         VueEditor,
-        CheckList
+        CheckList,
+        TaskDeadline,
+        MoveCard,
+        FilesTask,
+        FileUploads
     },
     data() {
         return {
             buttonAdd: {},
             newTasks: {},
-                        showModal: false,
+            allPopUp: {},
+            showModal: false,
             showActive: false,
             showModalMember: false,
             showModalFilter: false,
             showModalWorkToDo: false,
-            showModalFile: false,
             showModalMove: false,
             showEditor: false,
             project_id: parseInt(this.$route.params.id),
@@ -46,6 +53,7 @@ export default {
             ],
             dataUpdated: {},
             nameWorkTodo: "Việc cần làm",
+            image:"",
         };
     },
     computed: {
@@ -139,7 +147,7 @@ export default {
             }
         },
         //updated data task
-        async updateDataCurrentTask(obj ) {
+        async updateDataCurrentTask( obj ) {
             await taskHelper.updateDataTask( obj )
         },
 
@@ -159,6 +167,46 @@ export default {
         calulateCheckList(data){
             return taskHelper.calculateListWorkTodo(data);
         },
+        onPaste (pasteEvent, callback) {
+            if (!this.showEditor) {
+                if(pasteEvent.clipboardData == false){
+                    if(typeof(callback) == "function"){
+                        callback(undefined);
+                    }
+                };
+                var url = pasteEvent.clipboardData.getData('text');
+                if (taskHelper.validateUrl(url)) {
+                    var dataUrl = taskHelper.validateUrl(url)
+                    var data = {
+                        'url': url,
+                        'name': dataUrl[4],
+                        'task_id': this.currentTask.id
+                    }
+                    this.uploadFile(data);
+                }else{
+                    var items = pasteEvent.clipboardData.items;
+                    if(items == undefined){
+                        if(typeof(callback) == "function"){
+                            callback(undefined);
+                        }
+                    };
+                    for (var i = 0; i < items.length; i++) {
+                        if (items[i].type.indexOf("image") == -1) continue;
+                        var blob = items[i].getAsFile();
+                        const fileUpload = new Blob([blob], blob);
+                        const formData = new FormData();
+                        formData.append('file', fileUpload, blob.name);
+                        formData.append('task_id', this.currentTask.id);
+                        this.uploadFile(formData);
+                    }
+                }
+            }            
+        },
+
+        // hidden modal 
+        hideModalPopup(data){
+            this.allPopUp[data] = false;
+        }
     },
     created() {
         this.auth();
@@ -167,13 +215,14 @@ export default {
         this.getListTasks(this.$route.params.id);
     },
 
-    mounted() {
+    mounted() {        
         document.body.classList.remove("auth-body-bg");
-        document.body.classList.add("page-task");
+        document.body.classList.add("page-task"); 
     },
 };
 </script>
 <template>
+
     <!-- <pre>{{ JSON.stringify(listItemLabels, undefined, 4) }}</pre> -->
     <b-modal
         v-model="showModal"
@@ -181,6 +230,7 @@ export default {
         size="lg"
         hide-footer
         hide-header
+        @paste="onPaste"
     >
         <div :class="['container-fluid']">
             <div :class="['row']">
@@ -245,6 +295,7 @@ export default {
                                 <p>Theo dõi</p>
                             </div>
                         </div>
+                        <TaskDeadline :deadline="currentTask.deadline"></TaskDeadline>
                     </div>
                     <div :class="['content-main-detail']">
                         <h6 d-flex flex-row align-items-center>
@@ -284,8 +335,10 @@ export default {
                                     >
                                 </div>
                             </div>
-                        </div>
-                        <CheckList :works="currentTask.works"></CheckList>                        
+                        </div>                                                
+                        <CheckList :works="currentTask.works"></CheckList>   
+                        <FilesTask :attachments="currentTask.list_files" :path="publicPath"></FilesTask>   
+                                             
                     </div>
                     <div :class="['content-main-detail']">
                         <h6 d-flex flex-row align-items-center>
@@ -499,62 +552,29 @@ export default {
                             </b-list-group-item>
                             <b-list-group-item
                                 >
-                                <VueDatePicker
-                                    auto-apply
-                                    :month-change-on-scroll="false"
+                                <VueDatePicker    
+                                    v-model="currentTask.deadline"                                
+                                    :month-change-on-scroll="false"                                    
                                 >
-                                <template #trigger><i class="ri-time-line"></i> Ngày hết
-                                hạn</template>
+                                    <template #trigger #action-select>
+                                        <i class="ri-time-line"></i> Ngày hết hạn
+                                        
+                                    </template>
+                                    <template #action-select="{ value }">
+                                        <b-button variant="primary" @click="updateDataCurrentTask(
+                                            {
+                                                'key' : 'deadline',
+                                                'field': 'deadline',
+                                                'data' : value
+                                            }
+                                            )">
+                                            Save
+                                        </b-button>
+                                    </template>
                                 </VueDatePicker> 
                             </b-list-group-item
                             >
-                            <b-list-group-item @click="showModalFile = true">
-                                <div class="item">
-                                    <i class="ri-attachment-2"></i> File đính
-                                    kèm
-                                </div>
-                                <div class="modalFile" v-if="showModalFile">
-                                    <div
-                                        :class="[
-                                            'modalFile-header d-flex flex-row align-items-center justify-content-center',
-                                        ]"
-                                    >
-                                        <span>Đính kèm từ</span>
-                                        <a
-                                            @click.stop="
-                                                showModalFile = !showModalFile
-                                            "
-                                            ><i class="ri-close-line"></i
-                                        ></a>
-                                    </div>
-                                    <div class="list_upload">
-                                        <div class="upload">Máy tính</div>
-                                        <div class="upload">Trello</div>
-                                        <div class="upload">Google Driver</div>
-                                        <div class="upload">Dropbox</div>
-                                        <div class="upload">Box</div>
-                                        <div class="upload">OneDriver</div>
-                                    </div>
-                                    <hr />
-                                    <div class="attach_link">
-                                        <b>Đính kèm liên kết</b>
-                                        <input
-                                            type="text"
-                                            placeholder="Dán liên kết vào đây"
-                                        />
-                                        <div class="btn">Đính kèm</div>
-                                    </div>
-                                    <hr />
-                                    <p class="note">
-                                        Mẹo: Bạn có thể kéo thả các tập tin và
-                                        liên kết vào thẻ để tải chúng lên.
-                                    </p>
-                                </div>
-                            </b-list-group-item>
-                            <!-- <b-list-group-item
-                                ><i class="ri-image-line"></i> Ảnh
-                                bìa</b-list-group-item
-                            > -->
+                            <FileUploads @hideModalPopup = "hideModalPopup" :popupFiles="allPopUp['files']"></FileUploads> 
                         </b-list-group>
                     </div>
                     <div :class="['list-item']">
@@ -576,32 +596,9 @@ export default {
                                             ><i class="ri-close-line"></i
                                         ></a>
                                     </div>
-                                    <p class="title">Chọn đích đến</p>
-                                    <div class="modal_move-content">
-                                        <div class="btn select_table">
-                                            <p>Bảng</p>
-                                            <div class="name_table">Demo</div>
-                                        </div>
-                                        <div class="btn select_list">
-                                            <p>Danh sách</p>
-                                            <div class="name_list">Cần làm</div>
-                                        </div>
-                                        <div class="btn select_location">
-                                            <p>Vị trí</p>
-                                            <div class="number">1</div>
-                                        </div>
-                                    </div>
-                                    <div class="btn_move">Di chuyển</div>
+                                    <MoveCard :cards="listCard"></MoveCard>                                   
                                 </div>
                             </b-list-group-item>
-                            <!-- <b-list-group-item
-                                ><i class="ri-price-tag-3-line"></i> Sao
-                                chép</b-list-group-item
-                            >
-                            <b-list-group-item
-                                ><i class="ri-checkbox-line"></i>
-                                share</b-list-group-item
-                            > -->
                         </b-list-group>
                     </div>
                 </div>
@@ -781,7 +778,7 @@ export default {
                 </div>
                 <div class="card">
                     <div class="card-body border-bottom">
-                        <div id="todo-task" class="task-list">
+                        <div :id="`${'wrap_card_'+card.id}`" class="task-list">
                             <draggable
                                 class="list-group"
                                 group="tasks"
@@ -794,7 +791,7 @@ export default {
                                         card.id
                                     ]"
                                     :key="index"
-                                    :data-cardid="card.id"
+                                    :id="`${'task_'+task}`"
                                     @click="showTask(listTasks[task])"
                                 >
                                     <!-- <pre>{{ JSON.stringify(task, undefined, 4) }}</pre> -->
@@ -849,6 +846,10 @@ export default {
                                             </h5>
                                         </div>
                                         <div class="d-flex team mb-0">
+                                            <div :class="['d-flex align-items-center']" v-if="listTasks[task].list_files">
+                                                <i class="ri-attachment-2"></i>
+                                                {{ listTasks[task].list_files.length }}
+                                            </div>
                                             <div 
                                                 :class="['d-flex align-items-center']"
                                                 v-if = "calulateCheckList(listTasks[task].works).total != 0"

@@ -48,6 +48,9 @@ class TaskController extends Controller
                     
                     // get works to do in current task
                     $list_tasks[$key]['works'] = $this->listWorks($tasks->id);
+
+                    // get list files in task
+                    $list_tasks[$key]['list_files'] = $this->listFiles($tasks->list_files);
                 }
             }
 
@@ -87,9 +90,7 @@ class TaskController extends Controller
             'project_id'    => $project_id,
             'card_id'       => $card_id,
             'department_id' => $department_id,
-            'list_user_ids' => "",
             'slug'          => $slug,
-            'description'   => "",
             'created_at'    => date('Y-m-d H:i:s'),
             'updated_at'    => date('Y-m-d H:i:s'),
         ]);
@@ -105,11 +106,29 @@ class TaskController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $task_id = $request->input('task_id');
+        $task = Tasks::find($task_id);
+        $id = $this->upLoadFiles($request);
+        if ($id) {
+            if (!empty($task->list_files)) {
+                $files = explode(',',$task->list_files);
+                $files[] = $id;
+            }else{
+                $files = [];
+                $files[] = $id;
+            }
+            $data = array(
+                'list_files' => implode(',', $files)
+            );
+            Tasks::where('id', $task_id)->update($data);
+            $task = Tasks::find($task_id);
+            $task['list_files'] = $this->listFiles($task->list_files);
+        }
+        return response()->json($task);
     }
 
     /**
-     * Display the specified resource.
+     * Display the specified resource. 04005224
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
@@ -161,6 +180,10 @@ class TaskController extends Controller
         if (!empty($task->labels)) {
             $task['task_labels'] = $this->listMembers($task->labels);
         }
+        // get works to do in current task
+        $task['works'] = $this->listWorks($task->id);
+        // get list files in task
+        $task[$key]['list_files'] = $this->listFiles($tasks->list_files);
         return response()->json($task);
     }
 

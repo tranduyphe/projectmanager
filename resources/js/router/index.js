@@ -2,58 +2,65 @@ import { createRouter, createWebHistory } from 'vue-router';
 import Dashboard from '../components/layouts/Dashboard.vue';
 import Single from '../components/layouts/single-project.vue';
 import Login from '../components/account/Login.vue';
-import Register from '../components/account/Register.vue';
-import Layout from '../components/layouts/Layout.vue';
-// import htmldemo from "../components/layouts/htmldemo.vue";
 import ViewProject from '../components/projects/ViewProject.vue'
 export const routes = [
     {
         name: 'login',
-        path: '/',
+        path: '/login',
         component: Login,
-        meta: { requiresAuth: false } // thêm meta để kiểm tra xem route này cần đăng nhập hay không
     },
     {
         name: 'dashboard',
         path: '/dashboard',
         component: Dashboard,
+        meta: { requiresAuth: true }
     },
+    // {
+    //     name: 'dashboard',
+    //     path: '/',
+    //     component: Dashboard,
+    //     meta: { requiresAuth: true }
+    // },
     {
         path: '/viewproject/:id',
         name: 'viewproject',
-        component: ViewProject
+        component: ViewProject,
+        meta: { requiresAuth: true }
     },
 
     {
         name: 'single',
         path: '/single',
         component: Single,
+        meta: { requiresAuth: true }
     },
-    // {
-    //     path: '/htmldemo',
-    //     name: 'htmldemo',
-    //     component: htmldemo
-    // },
 ];
 const router = createRouter({
     history: createWebHistory(),
     routes
 })
-export default router
 
-// router.beforeEach((to, from, next) => {
-//     const isAuthenticated = sessionStorage.getItem('loginResponse')
-//     if (to.matched.some(record => record.meta.requiresAuth)) {
-//         // if the route requires authentication and the user is not authenticated, redirect to login page
-//         if (!isAuthenticated) {
-//             next({
-//                 path: '/login',
-//                 query: { redirect: to.fullPath }
-//             })
-//         } else {
-//             next()
-//         }
+// router.beforeEach((to, from, next) => {   
+//     console.log('name', to.name)
+//     console.log('isAuthenticated', isAuthenticated())
+//     if (isAuthenticated() || to.name === 'login') {
+//         next()
 //     } else {
-//         next() // proceed to the next middleware
+//         // Not logged in, redirect to login.
+//         next({name: 'login'})
 //     }
-// })
+// });
+  
+// function isAuthenticated() {
+//     // Check if the user is authenticated
+//     let output = undefined;
+
+//     if (sessionStorage.getItem('loginResponse')) {
+//         output = true;
+//     }else{
+//         output = false
+//     }
+//     return output;
+// }
+
+export default router

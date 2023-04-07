@@ -14,7 +14,7 @@ class CheckList extends Model
         'title',
         'work_todo_id',
         'slug',
-        'dealine',
+        'deadline',
         'status',
         'list_user_ids',
     ];

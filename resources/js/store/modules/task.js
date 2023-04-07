@@ -46,6 +46,7 @@ const actions = {
         if (res.status == 200) { 
             commit('setCurrentTask', res.data);             
         }
+        return res.status;
     },
 
     // add new work to do
@@ -78,6 +79,24 @@ const actions = {
     async removeCheckList({commit}, id){
         let res = await axios.post(`/api/checklist/remove/${id}`);
         return res.status;
+    },
+
+    // upload file 
+    async uploadFile({commit}, data){
+        var config = "";
+        if (typeof data['url'] == 'undefined') {
+            config = {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            }
+        }
+        let res = await axios.post(`/api/tasks/store`, data, config);
+        return res.data;
+    },
+    // remove File upload
+    async removeFilesMedia({commit}, data){
+        let res = await axios.post(`/api/media/remove/${data['media_id']}`, data);
     },
     //get data curent tasl
     getCurrentTask({commit}, data) {

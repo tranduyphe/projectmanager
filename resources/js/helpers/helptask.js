@@ -1,5 +1,6 @@
 import { forEach } from 'lodash';
 import { store } from '../store/store';
+import moment from "moment";
 export const taskHelper = {
     isEmptyObject,
     convertToObject,
@@ -9,6 +10,10 @@ export const taskHelper = {
     calculateListWorkTodo,
     removeCheckListTask,
     updatedDataChecklist,
+    calculateDate,
+    dateUploadFiles,
+    validateUrl,
+    uploadFilesTask
 };
 
 function isEmptyObject(obj) {
@@ -33,11 +38,11 @@ function convertToObject(obj) {
  * @param {*} key key get data of current task use key
  * @param {*} field field data task by field
  */
-async function updateDataTask( obj ) {
+async function updateDataTask( obj ) { 
     // action, id_data, data, key, field, task_id
     var dataUpdated = store.getters.currentTask[obj['key']];
     var task_id = store.getters.currentTask.id;
-
+    
     if (!dataUpdated) {
         dataUpdated = {};
     }
@@ -45,15 +50,23 @@ async function updateDataTask( obj ) {
     if ( obj['action'] == 'deactive' ) {
         delete dataUpdated[obj['id']];
     }else{
-        dataUpdated[obj['id']] = obj['data'];
-    } 
-
+        if (obj['action'] == 'active') {
+            dataUpdated[obj['id']] = obj['data'];
+        }else{
+            dataUpdated = obj['data']
+        }        
+    }     
     var listArray = Object.keys(dataUpdated); // convert data Obj to array by key dataupdated
     var fields = {};
+    if (typeof obj['action'] != 'undefined') {
         fields[obj['field']] = listArray ? listArray.join(",") : "";
+    }else{
+        fields[obj['field']] = dataUpdated ? moment(dataUpdated).format('YYYY-MM-DD HH:mm:ss') : null  // update date deadline in task
+    }
+        
     var data = {};
     data["task_id"] = task_id;
-    data["info_task"] = fields;
+    data["info_task"] = fields; 
     // update task
     await store.dispatch( 'updateTask', data ); // callback function
 
@@ -159,4 +172,63 @@ async function removeCheckListTask(data){
         delete store.getters.currentTask.works[work_id].check_list[data['id']];
         delete  store.getters.listTasks[task_id].works[work_id]['check_list'][data['id']];
     }
+}
+/**
+ * 
+ * @param {*} dateTasks 
+ * @returns 
+ */
+function calculateDate(dateTasks){
+    var today    = moment(new Date());
+    dateTasks    = moment(new Date(dateTasks))
+    var duration = moment.duration(dateTasks.diff(today));
+    var days     = Math.round(duration.asDays());
+    var timeTask = ' [at] '+moment(dateTasks).format('HH:ss')
+    var danger = "[<span class='danger'>out of date</span>]";
+    var warning = "[<span class='warning'>near due</span>]";
+    var results = moment().add(days, 'days').calendar({
+        sameDay: '[Today]'+ timeTask,
+        nextDay: '[Tomorrow]' + timeTask + warning,
+        nextWeek: 'dddd'+ timeTask,
+        lastDay: '[Yesterday]' + timeTask + danger,
+        lastWeek: '[Last] dddd'+ timeTask + danger,
+        sameElse: function (now) {
+            if (this.isBefore(now)) {
+                return 'DD/MM/YYYY'+ timeTask + danger;
+            } else {
+                return 'DD/MM/YYYY'+ timeTask;
+            }
+        }
+    });
+    return results;
+}
+/**
+ * 
+ * @param {*} dateFiles 
+ * @returns 
+ */
+function dateUploadFiles(dateFiles){
+    var today    = moment(new Date());
+    dateFiles    = moment(new Date(dateFiles))
+    var duration = moment.duration(dateFiles.diff(today));
+    var days     = Math.round(duration.asDays());
+    var results = moment().add(days, 'days').calendar();
+    return results;
+}
+/**
+ * 
+ * @param {*} url 
+ * @returns 
+ */
+function validateUrl(url) {
+    const regex = RegExp('(https?:\\/\\/)?((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|((\\d{1,3}\\.){3}\\d{1,3}))(\\:\\d+)?(\\/[-a-z\\d%_.~+@]*)*(\\?[;&a-z\\d%_.~+=-@]*)?(\\#[-a-z\\d_@]*)?$', 'i');
+    return url.match(regex);
+}
+
+async function uploadFilesTask(data){
+    let formData = new FormData();
+    formData.append('file', data['file']);
+    formData.append('task_id', data['task_id']);
+    var data = await store.dispatch( 'uploadFile', formData );
+    return data;
 }
