@@ -22,10 +22,11 @@ export default {
         return {
             buttonAdd: {},
             newTasks: {},
-                        showModal: false,
+            showModal: false,
             showActive: false,
             showModalMember: false,
             showModalFilter: false,
+            showModalFilter2: false,
             showModalWorkToDo: false,
             showModalFile: false,
             showModalMove: false,
@@ -204,7 +205,8 @@ export default {
                     <div :class="['content-main-info']">
                         <div class="member" v-if="currentTask.members">
                             <p>Thành viên</p>
-                            <div class="list_user">
+                            <div class="d-flex align-items-center">
+                             <div class="list_user">
                                 <div
                                     class="user"
                                     v-for="(
@@ -216,16 +218,18 @@ export default {
                                         src="/images/avatar-2.jpg?feb0f89de58f0ef9b424b1beec766bd2"
                                         :title="userTask.name"
                                     />
-                                </div>
-                            </div>
+                                  </div>
+                             </div>
                             <div class="btn_add_user">
                                 <i class="ri-add-line"></i>
                             </div>
+                         </div>
                         </div>
-                        <div class="label" v-if="currentTask.task_labels">
+                        <div class="label" v-if="currentTask.task_labels" >
                             <p>Nhãn</p>
                             <div class="list_label">
-                                <div class="name_label"
+                                <div class="name_label" 
+                                :style="{ 'background': label.color}"
                                 v-for="(
                                     label, index
                                 ) in currentTask.task_labels"
@@ -233,8 +237,47 @@ export default {
                                 >
                                     <div class="label_active"></div>
                                 </div> 
-                                <div class="btn_add_label">
-                                    <i class="ri-add-line"></i>
+                                <div class="btn_add_label" @click="showModalFilter2 = true">
+                                    <div class="d-flex align-items-center justify-content-center btn_add_label_container">
+                                        <i class="ri-add-line"></i>
+                                    </div>
+                                    <div class="modalFilter" v-if="showModalFilter2">
+                                    <div
+                                        :class="[
+                                            'modalFilter-header d-flex flex-row align-items-center justify-content-between',
+                                        ]"
+                                    >
+                                        <span>Nhãn</span>
+                                        <a
+                                            @click.stop="
+                                                showModalFilter2 =
+                                                    !showModalFilter2
+                                            "
+                                            ><i class="ri-close-line"></i
+                                        ></a>
+                                    </div>
+                                    <div class="filter_of_table" v-for="(label,index) in listItemLabels">
+                                        <div
+                                            class="list_color d-flex flex-row align-items-center"
+                                            
+                                            @click="updateDataCurrentTask(
+                                                {
+                                                    'action' : currentTask.task_labels ? !currentTask.task_labels[label.id] ? 'active' : 'deactive' : 'active',
+                                                    'id' : label.id,
+                                                    'data': label,
+                                                    'key' : 'task_labels',
+                                                    'field': 'labels',
+                                                }
+                                            )"
+                                        >
+                                            <i :class="`${ currentTask.task_labels ? !currentTask.task_labels[label.id] ? 'ri-checkbox-blank-line' : 'ri-checkbox-line' : 'ri-checkbox-blank-line' }`"></i>
+                                            <div class="color color1" :style="{ 'background': label.color}">
+                                                <div class="color_child"></div>
+                                                <p class="ms-2">{{ label.name }}</p>
+                                            </div>
+                                        </div>                                       
+                                    </div>
+                                </div>
                                 </div>                               
                             </div>
                         </div>
@@ -245,6 +288,28 @@ export default {
                                 <p>Theo dõi</p>
                             </div>
                         </div>
+                    </div>
+                    <div :class="['expiration_date']">
+                          <p>Ngày hết hạn</p>
+                          <div class="d-flex align-items-center">
+                               <b-form-checkbox
+                                  id="checkbox-1"
+                                  v-model="check_expiration_date"
+                                  name="checkbox-1"
+                                  value="accepted"
+                                  unchecked-value="not_accepted"
+                                  :class="['d-flex align-items-center']"
+                                >
+                                   
+                                 </b-form-checkbox>
+                                 <div class="d-flex align-items-center label">
+                                       <p> 13 tháng 4 lúc 10:36</p>
+                                       <p class="status1">Hoàn tất</p>
+                                       <p class="status2">quá hạn</p>
+                                        <p class="status3">sắp đến hạn</p>
+                                       <i class="ri-arrow-drop-down-line"></i>
+                                   </div>
+                          </div>
                     </div>
                     <div :class="['content-main-detail']">
                         <h6 d-flex flex-row align-items-center>
@@ -291,12 +356,15 @@ export default {
                         <h6 d-flex flex-row align-items-center>
                             <i class="ri-list-check"></i><span>Hoạt động</span>
                         </h6>
-                        <textarea
+                        <div class="ps-4 ms-3">
+                            <textarea
                             class="textarea_active"
                             placeholder="Viết bình luận..."
                             v-if="!showActive"
                             @click-outside="showActive = !showActive"
                         ></textarea>
+                        </div>
+                       
                         <div :class="['description']" v-if="showActive">
                             <div :class="['content-desc']"></div>
                             <div :class="['content-editor']">
@@ -452,8 +520,9 @@ export default {
                                             )"
                                         >
                                             <i :class="`${ currentTask.task_labels ? !currentTask.task_labels[label.id] ? 'ri-checkbox-blank-line' : 'ri-checkbox-line' : 'ri-checkbox-blank-line' }`"></i>
-                                            <div class="color color1">
-                                                <div class="color_child">{{ label.name }}</div>
+                                            <div class="color color1" :style="{ 'background': label.color}">
+                                                <div class="color_child"></div>
+                                                <p class="ms-2">{{ label.name }}</p>
                                             </div>
                                         </div>                                       
                                     </div>
@@ -859,7 +928,7 @@ export default {
                                                 }}
                                             </div>
                                             <div
-                                                class="align-self-center"
+                                                class="align-self-center d-flex"
                                                 v-if="listTasks[task].members"
                                             >
                                                 <div

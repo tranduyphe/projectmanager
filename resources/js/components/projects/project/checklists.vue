@@ -18,7 +18,8 @@ export default {
             activeEditChecklist: {},
             calculateChecklist:  {},
             nameChecklist: "",
-            checked: true
+            checked: true,
+            isActive:false,
         };
     },
     computed: {
@@ -59,7 +60,8 @@ export default {
                 await taskHelper.addcheckLists(data);
                 this.showAddChecklist(id);
                 this.nameChecklist = "";
-            }            
+            }    
+            this.showActiveChecklist = false;         
         },
         // remove check list
         async deleteCheckList(data){
@@ -92,7 +94,6 @@ export default {
     created() {
     },
     mounted() {
-       
     },
 }
 </script>
@@ -108,7 +109,7 @@ export default {
                 </div> 
                 <b-button variant="light" @click="deleteWordToto(work.id)">Xóa</b-button>       
             </div>
-            <div>
+            <div class="d-flex align-items-center">
                 <span>{{ percent(works)['percent'][work.id]+'%' }}</span>
                 <b-progress :value="percent(works)['percent'][work.id]" :max="100" :variant="`${percent(works)['percent'][work.id] == 100 ? 'success' : ''}`"></b-progress>
             </div>
@@ -117,15 +118,16 @@ export default {
                     v-for="(checklist, index) in work.check_list"
                     :key="index"
                 >
-                    <div class='d-flex justify-content-between align-items-center'>
+                    <div class='d-flex justify-content-between align-items-center check'>
                         <b-form-checkbox
+                            :class="{ shake: percent(works)['percent'][work.id]==100 }"
                             class='d-flex justify-content-between align-items-center'
                             v-model="checklist.status"  
-                            @click="updateData({'id': checklist.id, 'work_id':work.id})"                                                                
+                            @click="updateData({'id': checklist.id, 'work_id':work.id});"                                                                
                         >
                         <!-- @click="updateData({'id': checklist.id, 'work_id':work.id})"  -->
                         </b-form-checkbox>
-                        <div>
+                        <div class="textarea">
                             <div @click="showEditChecklist(index)">
                                 <b-form-textarea
                                     :class="[`${ activeEditChecklist[index] ? 'show-textarea' : ''}`, 'form-control']"
@@ -170,7 +172,7 @@ export default {
                     </div>
                 </div>
             </div>
-            <div v-if="showActiveChecklist[work.id]">
+            <div :class="['mt-3 ms-3 ps-1']" v-if="showActiveChecklist[work.id]">
                 <div>
                     <b-form-textarea
                         v-model="nameChecklist"
@@ -179,12 +181,12 @@ export default {
                         max-rows="6"
                     ></b-form-textarea>
                 </div>
-                <div>
-                    <b-button @click="newCheckList(work.id)" variant="primary">Thêm</b-button>
+                <div :class="['mt-2']">
+                    <b-button @click="newCheckList(work.id);" variant="primary">Thêm</b-button>
                     <b-button @click="showActiveChecklist[work.id] = !showActiveChecklist[work.id]" variant="light">Hủy</b-button>
                 </div>
             </div>
-            <b-button v-if="!showActiveChecklist[work.id]" variant="light" @click="showAddChecklist(work.id)">Thêm một mục</b-button>
+            <b-button class="btn_add mb-3" v-if="!showActiveChecklist[work.id]" variant="light" @click="showAddChecklist(work.id)">Thêm một mục</b-button>
         </div>
     </div>
 </template>
