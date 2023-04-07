@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\TaskController;
+use Illuminate\Support\Facades\File;
 use App\Models\Media;
 use App\Models\Tasks;
 
@@ -83,6 +84,9 @@ class MediaController extends Controller
         if (!empty($data)) {
             Tasks::where('id', $task_id)->update($data);            
         }
+        $files = Media::find($id);
+        $files_name = $files->name_files;
+        File::delete(public_path("uploads/".$files_name));
         Media::destroy($id);
     }
 }

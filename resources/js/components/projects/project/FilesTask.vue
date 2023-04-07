@@ -34,9 +34,8 @@ export default {
             var data = {
                 'task_id':task_id,
                 'media_id':id,
-                'info_task':{'list_files': listids.join(",")}
+                'info_task':{'list_files': listids ? listids.join(",") : "" }
             }
-            console.log(data)
             await this.removeFilesMedia(data);
         }
     },

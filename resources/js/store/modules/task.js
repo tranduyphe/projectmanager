@@ -92,7 +92,7 @@ const actions = {
             }
         }
         let res = await axios.post(`/api/tasks/store`, data, config);
-        return res.status;
+        return res.data;
     },
     // remove File upload
     async removeFilesMedia({commit}, data){

@@ -1,6 +1,5 @@
 <script>
 import { VueDraggableNext } from "vue-draggable-next";
-import { mapGetters, mapActions, mutations } from "vuex";
 import PageHeader from "../layouts/page-header.vue";
 import moment from "moment";
 import { VueEditor } from "vue3-editor";
@@ -10,6 +9,7 @@ import MoveCard from "./project/MoveCard.vue";
 import CheckList from "./project/checklists.vue";
 import TaskDeadline from "./project/taskdeadline.vue";
 import FilesTask from "./project/FilesTask.vue";
+import FileUploads from "./project/UploadFiles.vue";
 export default {   
     page: {
         title: "Gosu Board",
@@ -22,18 +22,19 @@ export default {
         CheckList,
         TaskDeadline,
         MoveCard,
-        FilesTask
+        FilesTask,
+        FileUploads
     },
     data() {
         return {
             buttonAdd: {},
             newTasks: {},
+            allPopUp: {},
             showModal: false,
             showActive: false,
             showModalMember: false,
             showModalFilter: false,
             showModalWorkToDo: false,
-            showModalFile: false,
             showModalMove: false,
             showEditor: false,
             project_id: parseInt(this.$route.params.id),
@@ -53,7 +54,6 @@ export default {
             dataUpdated: {},
             nameWorkTodo: "Việc cần làm",
             image:"",
-            file: null,
         };
     },
     computed: {
@@ -175,8 +175,8 @@ export default {
                     }
                 };
                 var url = pasteEvent.clipboardData.getData('text');
-                if (this.validateUrl(url)) {
-                    var dataUrl = this.validateUrl(url)
+                if (taskHelper.validateUrl(url)) {
+                    var dataUrl = taskHelper.validateUrl(url)
                     var data = {
                         'url': url,
                         'name': dataUrl[4],
@@ -198,47 +198,15 @@ export default {
                         formData.append('file', fileUpload, blob.name);
                         formData.append('task_id', this.currentTask.id);
                         this.uploadFile(formData);
-                        this.addImage(blob);
                     }
                 }
-               
             }            
         },
-        validateUrl(url) {
-            const regex = RegExp('(https?:\\/\\/)?((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|((\\d{1,3}\\.){3}\\d{1,3}))(\\:\\d+)?(\\/[-a-z\\d%_.~+@]*)*(\\?[;&a-z\\d%_.~+=-@]*)?(\\#[-a-z\\d_@]*)?$', 'i');
-            return url.match(regex);
-        },
-        addImage(file){
-            if (!file.type.match('image.*')) {
-                return new Promise((reject) => {
-                    const error = {
-                        message: 'Solo puede arrastrar imágenes.',
-                        response: {
-                            status: 200
-                        }
-                    }
-                    this.$obtenerError(error)
-                    reject()
-                    return;
-                })
-            }
-            const img = new Image(),
-                reader = new FileReader();
 
-            reader.onload = (e) => this.image = e.target.result;
-            reader.readAsDataURL(file);
-        },
-        upload(e){
-            let files = e.target.files || e.dataTransfer.files;
-            if (!files.length)
-                return;
-            this.file = e.target.files[0];
-            let formData = new FormData();
-                formData.append('file', this.file);
-                formData.append('task_id', this.currentTask.id);
-                this.uploadFile(formData);
-        },
-
+        // hidden modal 
+        hideModalPopup(data){
+            this.allPopUp[data] = false;
+        }
     },
     created() {
         this.auth();
@@ -254,6 +222,7 @@ export default {
 };
 </script>
 <template>
+
     <!-- <pre>{{ JSON.stringify(listItemLabels, undefined, 4) }}</pre> -->
     <b-modal
         v-model="showModal"
@@ -263,10 +232,6 @@ export default {
         hide-header
         @paste="onPaste"
     >
-        <input type="file" v-modal="file" @change="upload" class="form-control">
-        <div class="img-wrapper">
-            <img style="max-width:230px; max-height: 230px;" thumbnail center rounded  class="max-image-upload" :src="image">
-        </div>
         <div :class="['container-fluid']">
             <div :class="['row']">
                 <div
@@ -609,53 +574,7 @@ export default {
                                 </VueDatePicker> 
                             </b-list-group-item
                             >
-                            <b-list-group-item @click="showModalFile = true">
-                                <div class="item">
-                                    <i class="ri-attachment-2"></i> File đính
-                                    kèm
-                                </div>
-                                <div class="modalFile" v-if="showModalFile">
-                                    <div
-                                        :class="[
-                                            'modalFile-header d-flex flex-row align-items-center justify-content-center',
-                                        ]"
-                                    >
-                                        <span>Đính kèm từ</span>
-                                        <a
-                                            @click.stop="
-                                                showModalFile = !showModalFile
-                                            "
-                                            ><i class="ri-close-line"></i
-                                        ></a>
-                                    </div>
-                                    <div class="list_upload">
-                                        <div class="upload">Máy tính</div>
-                                        <div class="upload">Trello</div>
-                                        <div class="upload">Google Driver</div>
-                                        <div class="upload">Dropbox</div>
-                                        <div class="upload">Box</div>
-                                        <div class="upload">OneDriver</div>
-                                    </div>
-                                    <hr />
-                                    <div class="attach_link">
-                                        <b>Đính kèm liên kết</b>
-                                        <input
-                                            type="text"
-                                            placeholder="Dán liên kết vào đây"
-                                        />
-                                        <div class="btn">Đính kèm</div>
-                                    </div>
-                                    <hr />
-                                    <p class="note">
-                                        Mẹo: Bạn có thể kéo thả các tập tin và
-                                        liên kết vào thẻ để tải chúng lên.
-                                    </p>
-                                </div>
-                            </b-list-group-item>
-                            <!-- <b-list-group-item
-                                ><i class="ri-image-line"></i> Ảnh
-                                bìa</b-list-group-item
-                            > -->
+                            <FileUploads @hideModalPopup = "hideModalPopup" :popupFiles="allPopUp['files']"></FileUploads> 
                         </b-list-group>
                     </div>
                     <div :class="['list-item']">
@@ -927,6 +846,10 @@ export default {
                                             </h5>
                                         </div>
                                         <div class="d-flex team mb-0">
+                                            <div :class="['d-flex align-items-center']" v-if="listTasks[task].list_files">
+                                                <i class="ri-attachment-2"></i>
+                                                {{ listTasks[task].list_files.length }}
+                                            </div>
                                             <div 
                                                 :class="['d-flex align-items-center']"
                                                 v-if = "calulateCheckList(listTasks[task].works).total != 0"

@@ -11,7 +11,9 @@ export const taskHelper = {
     removeCheckListTask,
     updatedDataChecklist,
     calculateDate,
-    dateUploadFiles
+    dateUploadFiles,
+    validateUrl,
+    uploadFilesTask
 };
 
 function isEmptyObject(obj) {
@@ -212,4 +214,21 @@ function dateUploadFiles(dateFiles){
     var days     = Math.round(duration.asDays());
     var results = moment().add(days, 'days').calendar();
     return results;
+}
+/**
+ * 
+ * @param {*} url 
+ * @returns 
+ */
+function validateUrl(url) {
+    const regex = RegExp('(https?:\\/\\/)?((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|((\\d{1,3}\\.){3}\\d{1,3}))(\\:\\d+)?(\\/[-a-z\\d%_.~+@]*)*(\\?[;&a-z\\d%_.~+=-@]*)?(\\#[-a-z\\d_@]*)?$', 'i');
+    return url.match(regex);
+}
+
+async function uploadFilesTask(data){
+    let formData = new FormData();
+    formData.append('file', data['file']);
+    formData.append('task_id', data['task_id']);
+    var data = await store.dispatch( 'uploadFile', formData );
+    return data;
 }
