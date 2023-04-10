@@ -345,7 +345,7 @@ export default {
                             </div>
                         </div>                                                
                         <CheckList :works="currentTask.works"></CheckList>   
-                        <FilesTask :attachments="currentTask.list_files" @showModalPopup = "showModalPopup" @hideModalPopup = "hideModalPopup" :popupFiles="allPopUp['files1']"></FilesTask>   
+                        <FilesTask @showModalPopup = "showModalPopup" @hideModalPopup = "hideModalPopup" :popupFiles="allPopUp['files1']"></FilesTask>   
                                              
                     </div>
                     <div :class="['content-main-detail']">

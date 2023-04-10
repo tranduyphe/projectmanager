@@ -152,8 +152,6 @@ function calculateListWorkTodo(data) {
             }
             number++;
         }
-        // console.log('done_check', done_check);
-        // console.log('number', number);
         if (number > 0) {
             percent[key] = Math.round(100/number * done_check)
         }else{

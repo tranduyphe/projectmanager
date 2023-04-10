@@ -10,12 +10,6 @@ export default {
         FileUploads
     },
     props: {
-        attachments: {
-            type: Object,
-            default: () => {
-                return false
-            },
-        },
         popupFiles: {
             type: Boolean,
             default: () => {
@@ -38,19 +32,20 @@ export default {
             return taskHelper.convertDate(date);
         },
         async removeFiles(id){
-            var task_id = this.currentTask.id
-            delete this.attachments[id];
-            var listids = Object.keys(this.attachments);
+            var task_id = this.currentTask.id;
+            delete this.currentTask['list_files'][id];           
+            var listids = Object.keys(this.currentTask['list_files']);            
             var data = {
                 'task_id':task_id,
                 'media_id':id,
                 'info_task':{'list_files': listids ? listids.join(",") : "" }
             }
-            await this.removeFilesMedia(data);
             delete this.listTasks[task_id]['list_files'][id];
+            if ( Object.keys(this.currentTask['list_files']).length == 0) {
+                this.currentTask['list_files'] = false;
+            }
+            await this.removeFilesMedia(data);
             
-            console.log('attachments', Object.keys(this.attachments).length);
-            console.log('attachments', this.attachments);
         },
         // hidden modal 
         hideModalPopup(data){
@@ -70,12 +65,12 @@ export default {
 </script>
 <template>
     <div>
-        <h6 d-flex="" flex-row="" align-items-center="">
-            <i class="ri-attachment-2"></i><span>Các tập tin đính kèm</span>
-        </h6>
-        {{ attachments.length }}
-        <div v-if="attachments">
-            <div v-for="attachment in attachments" :class="['attachment-item']">
+        
+        <div v-if="currentTask.list_files">
+            <h6 d-flex="" flex-row="" align-items-center="">
+                <i class="ri-attachment-2"></i><span>Các tập tin đính kèm</span>
+            </h6>
+            <div v-for="attachment in currentTask.list_files" :class="['attachment-item']">
                 <div v-if="attachment.type === 'link'">
                     <a :href="attachment.name_file" :target="['_blank']">
                         <span><i class="ri-attachment-2"></i></span>

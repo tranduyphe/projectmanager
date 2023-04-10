@@ -85,7 +85,7 @@ class MediaController extends Controller
             Tasks::where('id', $task_id)->update($data);            
         }
         $files = Media::find($id);
-        $files_name = $files->name_files;
+        $files_name = $files->name_file;
         File::delete(public_path("uploads/".$files_name));
         Media::destroy($id);
     }
