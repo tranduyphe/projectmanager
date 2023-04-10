@@ -10,6 +10,7 @@ import CheckList from "./project/checklists.vue";
 import TaskDeadline from "./project/taskdeadline.vue";
 import FilesTask from "./project/FilesTask.vue";
 import FileUploads from "./project/UploadFiles.vue";
+import UserTask from "./project/Users.vue";
 export default {   
     page: {
         title: "Gosu Board",
@@ -23,7 +24,8 @@ export default {
         TaskDeadline,
         MoveCard,
         FilesTask,
-        FileUploads
+        FileUploads, 
+        UserTask
     },
     data() {
         return {
@@ -32,7 +34,6 @@ export default {
             allPopUp: {},
             showModal: false,
             showActive: false,
-            showModalMember: false,
             showModalFilter: false,
             showModalWorkToDo: false,
             showModalMove: false,
@@ -102,10 +103,6 @@ export default {
             // taskHelper.updateDataTask();
         },
 
-        show_ModalMember(array) {
-            this.showModalMember = !this.showModalMember;
-        },
-
         show_Filter() {
             this.showModalFilter = !this.showModalFilter;
         },
@@ -137,7 +134,7 @@ export default {
         // check hiden modal
         onHideModal(evt) {
             if (evt.trigger === "backdrop") {
-                if (this.showEditor == true || this.showModalMember == true) {
+                if (this.showEditor == true) {
                     evt.preventDefault();
                     this.showEditor = false;
                     this.showModalMember = false;
@@ -348,7 +345,7 @@ export default {
                             </div>
                         </div>                                                
                         <CheckList :works="currentTask.works"></CheckList>   
-                        <FilesTask :attachments="currentTask.list_files" :path="publicPath"></FilesTask>   
+                        <FilesTask :attachments="currentTask.list_files" @showModalPopup = "showModalPopup" @hideModalPopup = "hideModalPopup" :popupFiles="allPopUp['files1']"></FilesTask>   
                                              
                     </div>
                     <div :class="['content-main-detail']">
@@ -404,84 +401,7 @@ export default {
                     <div :class="['list-item']">
                         <h6>Thêm vào thẻ</h6>
                         <b-list-group>
-                            <b-list-group-item>
-                                <div
-                                    class="item"
-                                    @click="
-                                        show_ModalMember(currentTask.members)
-                                    "
-                                >
-                                    <i class="ri-user-fill"></i> Thêm thành viên
-                                </div>
-                                <div class="modalMember" v-if="showModalMember">
-                                    <div :class="['modalMember-header']">
-                                        <span>Thành viên</span>
-                                        <a
-                                            @click="
-                                                show_ModalMember(
-                                                    currentTask.members
-                                                )
-                                            "
-                                            ><i class="ri-close-line"></i
-                                        ></a>
-                                    </div>
-                                    <input
-                                        type="text"
-                                        placeholder="Tìm kiếm các thành viên"
-                                    />
-                                    <p>Thành viên của task</p>
-                                    <div class="member_of_table">
-                                        <div
-                                            v-for="(user, index) in listUsers"
-                                            :key="user.id"
-                                            :class="[
-                                                'list_member d-flex flex-row align-items-center',
-                                            ]"
-                                            @click="                                                
-                                                updateDataCurrentTask(
-                                                {
-                                                    'action' : currentTask.members ? !currentTask.members[user.id] ? 'active' : 'deactive' : 'active',
-                                                    'id' : user.id,
-                                                    'data': user,
-                                                    'key' : 'members',
-                                                    'field': 'list_user_ids',
-                                                }
-                                            )
-                                            "
-                                            :data-check="`${
-                                                currentTask.members ? !currentTask.members[user.id] ? 'active' : 'deactive' : 'active'
-                                            }`"
-                                        >
-                                            <div
-                                                :class="[
-                                                    'list_member d-flex flex-row align-items-center',
-                                                ]"
-                                            >
-                                                <div class="avatar">
-                                                    <div class="image">
-                                                        <img
-                                                            src="/images/avatar-2.jpg?feb0f89de58f0ef9b424b1beec766bd2"
-                                                            alt=""
-                                                        />
-                                                    </div>
-                                                </div>
-                                                <div class="name">
-                                                    <p>{{ user.name }}</p>
-                                                </div>
-                                                <span
-                                                    v-if="
-                                                        currentTask.members && currentTask.members[user.id]
-                                                    "
-                                                >
-                                                    <i
-                                                        class="ri-check-line"
-                                                    ></i>
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </b-list-group-item>
+                            <UserTask @showModalPopup = "showModalPopup" @hideModalPopup = "hideModalPopup" :popupFiles="allPopUp['user']"></UserTask>
                             <b-list-group-item @click="showModalFilter = true">
                                 <div class="item">
                                     <i class="ri-price-tag-3-line"></i> Nhãn

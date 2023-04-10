@@ -13,7 +13,8 @@ export default {
     data() {
         return {
             file:null,
-            linkUrl: "",         
+            linkUrl: "",
+            modal: false         
         };
     },
     computed: {
@@ -55,7 +56,7 @@ export default {
             }
             
         },
-        setModal(){
+        onSetShowModal(){          
             this.$emit('showModalPopup', 'files');
         }
     },
@@ -66,8 +67,8 @@ export default {
 }
 </script>
 <template>
-    <b-list-group-item @click="setModal">
-        <div class="item">
+    <b-list-group-item>
+        <div class="item" @click="onSetShowModal">
             <i class="ri-attachment-2"></i> File đính
             kèm
         </div>

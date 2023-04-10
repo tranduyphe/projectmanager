@@ -3,11 +3,21 @@
 import { taskHelper } from "@/js/helpers/helptask";
 import { taskMethods, taskGetters} from "@/js/store/helpers";
 import { store } from '@/js/store/store';
+import FileUploads from "./UploadFiles.vue";
 export default {
     // inject: ['publicPath'],
+    components: {
+        FileUploads
+    },
     props: {
         attachments: {
             type: Object,
+            default: () => {
+                return false
+            },
+        },
+        popupFiles: {
+            type: Boolean,
             default: () => {
                 return false
             },
@@ -38,7 +48,18 @@ export default {
             }
             await this.removeFilesMedia(data);
             delete this.listTasks[task_id]['list_files'][id];
-        }
+            
+            console.log('attachments', Object.keys(this.attachments).length);
+            console.log('attachments', this.attachments);
+        },
+        // hidden modal 
+        hideModalPopup(data){
+            this.$emit('hideModalPopup', 'files1')
+        },
+        // hidden modal 
+        showModalPopup(data){
+            this.$emit('showModalPopup', 'files1')
+        },
     },
     created() {
     },
@@ -52,6 +73,7 @@ export default {
         <h6 d-flex="" flex-row="" align-items-center="">
             <i class="ri-attachment-2"></i><span>Các tập tin đính kèm</span>
         </h6>
+        {{ attachments.length }}
         <div v-if="attachments">
             <div v-for="attachment in attachments" :class="['attachment-item']">
                 <div v-if="attachment.type === 'link'">
@@ -104,6 +126,7 @@ export default {
                     </p>
                 </div>
             </div>
+            <FileUploads @showModalPopup = "showModalPopup" @hideModalPopup = "hideModalPopup" :popupFiles="popupFiles"></FileUploads>
         </div>
     </div>
 </template>

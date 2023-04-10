@@ -32,7 +32,9 @@ class CardController extends Controller
             $department_id = 2;
         }
         $results['list_user'] = [];
-        $department_user = DepartmentUser::where('department_id',$department_id)->get();
+        $department_user = Card::with('department')->find($department_id);
+        // $department_user = $department_user->department()->take(2)->get();
+        $department_user = $department_user->department;
         if (!empty($department_user)) {
             foreach ($department_user as $key => $v) {   
                 $info_user = User::find($v->user_id);
