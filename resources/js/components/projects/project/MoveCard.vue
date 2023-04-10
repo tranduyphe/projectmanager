@@ -35,8 +35,6 @@ export default {
             var oldCardId = this.currentTask.card_id;
             var taskId    = this.currentTask.id;
             var newCardId = this.card_id;
-            console.log('newCardId', newCardId);
-            console.log('oldCardId', oldCardId);
             if (oldCardId != newCardId) {
                 this.listTasks[taskId]['card_id'] = newCardId;
                 var listOldCards = this.listTaskDraggable[oldCardId];
@@ -88,7 +86,6 @@ export default {
                 <div class="modal_move-content">
                     <div class="btn select_list">
                         <p>Danh sách</p>
-                        {{ card_id }}
                         <select v-model="card_id" class="mb-3"  @change="moveTask()">
                             <option v-for="(card, index) in cards" :selected="card.id == card_id" :value="`${card.id}`" :key="card.id">{{ card.title }}</option>
                         </select>
