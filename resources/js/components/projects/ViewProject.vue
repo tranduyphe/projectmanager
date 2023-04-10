@@ -2,7 +2,6 @@
 import { VueDraggableNext } from "vue-draggable-next";
 import PageHeader from "../layouts/page-header.vue";
 import moment from "moment";
-import { VueEditor } from "vue3-editor";
 import { taskHelper } from "../../helpers/helptask";
 import { taskMethods, authMethods, labelMethods, taskGetters, labelGetters, authGetters } from "../../store/helpers";
 import MoveCard from "./project/MoveCard.vue";
@@ -10,6 +9,11 @@ import CheckList from "./project/checklists.vue";
 import TaskDeadline from "./project/taskdeadline.vue";
 import FilesTask from "./project/FilesTask.vue";
 import FileUploads from "./project/UploadFiles.vue";
+import UserTask from "./project/Users.vue";
+import Labels from "./project/Labels.vue";
+import Works from "./project/Words.vue";
+import DateTasks from "./project/DateTask.vue";
+import Description from "./project/Description.vue";
 export default {   
     page: {
         title: "Gosu Board",
@@ -18,12 +22,16 @@ export default {
     components: {
         draggable: VueDraggableNext,
         PageHeader,
-        VueEditor,
         CheckList,
         TaskDeadline,
         MoveCard,
         FilesTask,
-        FileUploads
+        FileUploads, 
+        UserTask,
+        Labels,
+        Works,
+        DateTasks,
+        Description
     },
     data() {
         return {
@@ -32,11 +40,6 @@ export default {
             allPopUp: {},
             showModal: false,
             showActive: false,
-            showModalMember: false,
-            showModalFilter: false,
-            showModalWorkToDo: false,
-            showModalMove: false,
-            showEditor: false,
             project_id: parseInt(this.$route.params.id),
             placeholder: "Nhập tiêu đề cho thẻ này...",
             taskUpdate: {},
@@ -52,8 +55,6 @@ export default {
                 },
             ],
             dataUpdated: {},
-            nameWorkTodo: "Việc cần làm",
-            image:"",
         };
     },
     computed: {
@@ -99,15 +100,6 @@ export default {
         showTask(data) {
             this.getCurrentTask(data);
             this.showModal = true;
-            // taskHelper.updateDataTask();
-        },
-
-        show_ModalMember(array) {
-            this.showModalMember = !this.showModalMember;
-        },
-
-        show_Filter() {
-            this.showModalFilter = !this.showModalFilter;
         },
 
         /**
@@ -118,57 +110,28 @@ export default {
             return moment(value).format("ll");
         },
 
-        // click show editor description
-        handlerShowEditor() {
-            this.showEditor = !this.showEditor;
-        },
-
-        // updated data current task
-        async updateDataTask() {
-            this.taskUpdate["task_id"] = this.currentTask.id;
-            var description = {
-                description: this.currentTask.description,
-            };
-            this.taskUpdate["info_task"] = description;
-            await this.updateTask(this.taskUpdate);
-            this.showEditor = false;
-        },
-
         // check hiden modal
         onHideModal(evt) {
             if (evt.trigger === "backdrop") {
-                if (this.showEditor == true || this.showModalMember == true) {
-                    evt.preventDefault();
-                    this.showEditor = false;
-                    this.showModalMember = false;
-                } else {
-                    this.showModal = false;
-                }
+                // if (this.showEditor == true) {
+                //     evt.preventDefault();
+                //     this.showEditor = false;
+                //     this.showModalMember = false;
+                // } else {
+                //     this.showModal = false;
+                // }
             }
         },
         //updated data task
         async updateDataCurrentTask( obj ) {
             await taskHelper.updateDataTask( obj )
         },
-
-        // add new  work todo
-        async addNewWordToto(){
-            if (this.nameWorkTodo) {
-                var data = {
-                    'title': this.nameWorkTodo,
-                    'task_id': this.currentTask.id,
-                };
-                await taskHelper.addWorkTodo( data );
-                this.showModalWorkToDo = !this.showModalWorkToDo
-            }
-        },
-
         // calculate number check list
         calulateCheckList(data){
             return taskHelper.calculateListWorkTodo(data);
         },
-        onPaste (pasteEvent, callback) {
-            if (!this.showEditor) {
+        async onPaste (pasteEvent, callback) {            
+            if (!this.allPopUp['editor']) {
                 if(pasteEvent.clipboardData == false){
                     if(typeof(callback) == "function"){
                         callback(undefined);
@@ -182,7 +145,11 @@ export default {
                         'name': dataUrl[4],
                         'task_id': this.currentTask.id
                     }
-                    this.uploadFile(data);
+                    var results = await this.uploadFile(data);
+                    if (results) {
+                        this.listTasks[this.currentTask.id]['list_files'] = results.list_files;
+                        this.currentTask['list_files'] = results.list_files
+                    }
                 }else{
                     var items = pasteEvent.clipboardData.items;
                     if(items == undefined){
@@ -196,9 +163,16 @@ export default {
                         const fileUpload = new Blob([blob], blob);
                         const formData = new FormData();
                         formData.append('file', fileUpload, blob.name);
-                        formData.append('task_id', this.currentTask.id);
-                        this.uploadFile(formData);
+                        formData.append('task_id', this.currentTask.id);                        
                     }
+                    if (typeof formData != 'undefined') {
+                        var results = await this.uploadFile(formData);
+                        if (results) {
+                            this.listTasks[this.currentTask.id] = results;
+                            this.currentTask['list_files'] = results.list_files
+                        }
+                    }
+                    
                 }
             }            
         },
@@ -206,31 +180,38 @@ export default {
         // hidden modal 
         hideModalPopup(data){
             this.allPopUp[data] = false;
+        },
+        // hidden modal 
+        showModalPopup(data){
+            this.allPopUp[data] = true;
+        },
+
+        // calculate files cards
+        fileTasks(data){
+            return taskHelper.countFileTasks(data);
         }
     },
-    created() {
-        this.auth();
-        this.getListCards();
-        this.getLabels();
-        this.getListTasks(this.$route.params.id);
+    async created() {
+        await this.auth();
+        await this.getListCards();
+        await this.getLabels();        
+        await this.getListTasks(this.$route.params.id);
     },
 
-    mounted() {        
+    async mounted() {        
         document.body.classList.remove("auth-body-bg");
         document.body.classList.add("page-task"); 
     },
 };
 </script>
 <template>
-
-    <!-- <pre>{{ JSON.stringify(listItemLabels, undefined, 4) }}</pre> -->
+    <!-- <pre>{{ JSON.stringify(listItemLabels, undefined, 4) }}</pre> @paste="onPaste"-->
     <b-modal
         v-model="showModal"
         @hide="onHideModal"
         size="lg"
         hide-footer
-        hide-header
-        @paste="onPaste"
+        hide-header        
     >
         <div :class="['container-fluid']">
             <div :class="['row']">
@@ -288,56 +269,12 @@ export default {
                                 </div>                               
                             </div>
                         </div>
-                        <div class="notification">
-                            <p>Thông báo</p>
-                            <div class="btn_follow">
-                                <i class="ri-eye-line"></i>
-                                <p>Theo dõi</p>
-                            </div>
-                        </div>
                         <TaskDeadline :deadline="currentTask.deadline"></TaskDeadline>
                     </div>
                     <div :class="['content-main-detail']">
-                        <h6 d-flex flex-row align-items-center>
-                            <i class="ri-menu-2-line"></i>
-                            <span>Mô tả</span>
-                        </h6>
-                        <div :class="['description']">
-                            <div
-                                v-if="!showEditor"
-                                v-bind:innerHTML="`${
-                                    currentTask.description
-                                        ? currentTask.description
-                                        : 'Thêm mô tả chi tiết hơn...'
-                                }`"
-                                :class="['content-desc']"
-                                @click="handlerShowEditor()"
-                            ></div>
-                            <div
-                                v-else="showEditor"
-                                :class="['content-editor']"
-                            >
-                                <vue-editor
-                                    id="edit-current-task"
-                                    v-model="currentTask.description"
-                                ></vue-editor>
-                                <div class="mt-3 mb-3">
-                                    <b-button
-                                        variant="btn_save primary me-2"
-                                        @click="updateDataTask()"
-                                        >Lưu</b-button
-                                    >
-                                    <b-button
-                                        :class="['btn_cancel']"
-                                        variant="light btn_cancel"
-                                        @click="handlerShowEditor()"
-                                        >Hủy</b-button
-                                    >
-                                </div>
-                            </div>
-                        </div>                                                
+                        <Description @showModalPopup = "showModalPopup" @hideModalPopup = "hideModalPopup" :popupFiles="allPopUp['editor']"></Description>                                               
                         <CheckList :works="currentTask.works"></CheckList>   
-                        <FilesTask :attachments="currentTask.list_files" :path="publicPath"></FilesTask>   
+                        <FilesTask @showModalPopup = "showModalPopup" @hideModalPopup = "hideModalPopup" :popupFiles="allPopUp['files1']"></FilesTask>   
                                              
                     </div>
                     <div :class="['content-main-detail']">
@@ -393,213 +330,15 @@ export default {
                     <div :class="['list-item']">
                         <h6>Thêm vào thẻ</h6>
                         <b-list-group>
-                            <b-list-group-item>
-                                <div
-                                    class="item"
-                                    @click="
-                                        show_ModalMember(currentTask.members)
-                                    "
-                                >
-                                    <i class="ri-user-fill"></i> Thêm thành viên
-                                </div>
-                                <div class="modalMember" v-if="showModalMember">
-                                    <div :class="['modalMember-header']">
-                                        <span>Thành viên</span>
-                                        <a
-                                            @click="
-                                                show_ModalMember(
-                                                    currentTask.members
-                                                )
-                                            "
-                                            ><i class="ri-close-line"></i
-                                        ></a>
-                                    </div>
-                                    <input
-                                        type="text"
-                                        placeholder="Tìm kiếm các thành viên"
-                                    />
-                                    <p>Thành viên của task</p>
-                                    <div class="member_of_table">
-                                        <div
-                                            v-for="(user, index) in listUsers"
-                                            :key="user.id"
-                                            :class="[
-                                                'list_member d-flex flex-row align-items-center',
-                                            ]"
-                                            @click="                                                
-                                                updateDataCurrentTask(
-                                                {
-                                                    'action' : currentTask.members ? !currentTask.members[user.id] ? 'active' : 'deactive' : 'active',
-                                                    'id' : user.id,
-                                                    'data': user,
-                                                    'key' : 'members',
-                                                    'field': 'list_user_ids',
-                                                }
-                                            )
-                                            "
-                                            :data-check="`${
-                                                currentTask.members ? !currentTask.members[user.id] ? 'active' : 'deactive' : 'active'
-                                            }`"
-                                        >
-                                            <div
-                                                :class="[
-                                                    'list_member d-flex flex-row align-items-center',
-                                                ]"
-                                            >
-                                                <div class="avatar">
-                                                    <div class="image">
-                                                        <img
-                                                            src="/images/avatar-2.jpg?feb0f89de58f0ef9b424b1beec766bd2"
-                                                            alt=""
-                                                        />
-                                                    </div>
-                                                </div>
-                                                <div class="name">
-                                                    <p>{{ user.name }}</p>
-                                                </div>
-                                                <span
-                                                    v-if="
-                                                        currentTask.members && currentTask.members[user.id]
-                                                    "
-                                                >
-                                                    <i
-                                                        class="ri-check-line"
-                                                    ></i>
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </b-list-group-item>
-                            <b-list-group-item @click="showModalFilter = true">
-                                <div class="item">
-                                    <i class="ri-price-tag-3-line"></i> Nhãn
-                                </div>
-                                <div class="modalFilter" v-if="showModalFilter">
-                                    <div
-                                        :class="[
-                                            'modalFilter-header d-flex flex-row align-items-center justify-content-between',
-                                        ]"
-                                    >
-                                        <span>Nhãn</span>
-                                        <a
-                                            @click.stop="
-                                                showModalFilter =
-                                                    !showModalFilter
-                                            "
-                                            ><i class="ri-close-line"></i
-                                        ></a>
-                                    </div>
-                                    <div class="filter_of_table" v-for="(label,index) in listItemLabels">
-                                        <div
-                                            class="list_color d-flex flex-row align-items-center"
-                                            
-                                            @click="updateDataCurrentTask(
-                                                {
-                                                    'action' : currentTask.task_labels ? !currentTask.task_labels[label.id] ? 'active' : 'deactive' : 'active',
-                                                    'id' : label.id,
-                                                    'data': label,
-                                                    'key' : 'task_labels',
-                                                    'field': 'labels',
-                                                }
-                                            )"
-                                        >
-                                            <i :class="`${ currentTask.task_labels ? !currentTask.task_labels[label.id] ? 'ri-checkbox-blank-line' : 'ri-checkbox-line' : 'ri-checkbox-blank-line' }`"></i>
-                                            <div class="color color1">
-                                                <div class="color_child">{{ label.name }}</div>
-                                            </div>
-                                        </div>                                       
-                                    </div>
-                                </div>
-                            </b-list-group-item>
-                            <b-list-group-item
-                                @click="showModalWorkToDo = true"
-                            >
-                                <div class="item">
-                                    <i class="ri-checkbox-line"></i> Việc cần
-                                    làm
-                                </div>
-                                <div
-                                    class="modal_work_todo"
-                                    v-if="showModalWorkToDo"
-                                >
-                                    <div
-                                        :class="[
-                                            ' modal_work_todo-header d-flex flex-row align-items-center justify-content-center',
-                                        ]"
-                                    >
-                                        <span>Thêm danh sách công việc</span>
-                                        <a
-                                            @click.stop="
-                                                showModalWorkToDo = false
-                                            "
-                                            ><i class="ri-close-line"></i
-                                        ></a>
-                                    </div>
-                                    <b-form-group
-                                        label="Tiêu đề"
-                                        label-for="title-input"
-                                    >
-                                        <b-form-input
-                                            id=""
-                                            v-model="nameWorkTodo"
-                                            :value ="nameWorkTodo"
-                                        >
-                                        </b-form-input>
-                                    </b-form-group>
-                                    <div class="btn_add" @click="addNewWordToto()">Thêm</div>
-                                </div>
-                            </b-list-group-item>
-                            <b-list-group-item
-                                >
-                                <VueDatePicker    
-                                    v-model="currentTask.deadline"                                
-                                    :month-change-on-scroll="false"                                    
-                                >
-                                    <template #trigger #action-select>
-                                        <i class="ri-time-line"></i> Ngày hết hạn
-                                        
-                                    </template>
-                                    <template #action-select="{ value }">
-                                        <b-button variant="primary" @click="updateDataCurrentTask(
-                                            {
-                                                'key' : 'deadline',
-                                                'field': 'deadline',
-                                                'data' : value
-                                            }
-                                            )">
-                                            Save
-                                        </b-button>
-                                    </template>
-                                </VueDatePicker> 
-                            </b-list-group-item
-                            >
-                            <FileUploads @hideModalPopup = "hideModalPopup" :popupFiles="allPopUp['files']"></FileUploads> 
+                            <UserTask @showModalPopup = "showModalPopup" @hideModalPopup = "hideModalPopup" :popupFiles="allPopUp['user']"></UserTask>
+                            <Labels :labels = "listItemLabels" @showModalPopup = "showModalPopup" @hideModalPopup = "hideModalPopup" :popupFiles="allPopUp['label']"></Labels>                            
+                            <Works @showModalPopup = "showModalPopup" @hideModalPopup = "hideModalPopup" :popupFiles="allPopUp['works']"></Works>                            
+                            <DateTasks></DateTasks>                            
+                            <FileUploads @showModalPopup = "showModalPopup" @hideModalPopup = "hideModalPopup" :popupFiles="allPopUp['files']"></FileUploads> 
                         </b-list-group>
                     </div>
                     <div :class="['list-item']">
-                        <h6>Thao tác</h6>
-                        <b-list-group>
-                            <b-list-group-item @click="showModalMove = true">
-                                <div class="item">
-                                    <i class="ri-arrow-right-line"></i>
-                                    Di chuyển
-                                </div>
-                                <div class="modal_move" v-if="showModalMove">
-                                    <div
-                                        :class="[
-                                            ' modal_move-header d-flex flex-row align-items-center justify-content-center',
-                                        ]"
-                                    >
-                                        <span>Di chuyển thẻ</span>
-                                        <a @click.stop="showModalMove = false"
-                                            ><i class="ri-close-line"></i
-                                        ></a>
-                                    </div>
-                                    <MoveCard :cards="listCard"></MoveCard>                                   
-                                </div>
-                            </b-list-group-item>
-                        </b-list-group>
+                        <MoveCard :cards="listCard"  @showModalPopup = "showModalPopup" @hideModalPopup = "hideModalPopup" :popupFiles="allPopUp['move']"></MoveCard> 
                     </div>
                 </div>
             </div>
@@ -795,19 +534,7 @@ export default {
                                     @click="showTask(listTasks[task])"
                                 >
                                     <!-- <pre>{{ JSON.stringify(task, undefined, 4) }}</pre> -->
-                                    <div
-                                        class="progress progress-sm animated-progess"
-                                        style="height: 3px"
-                                    >
-                                        <div
-                                            class="progress-bar"
-                                            role="progressbar"
-                                            style="width: 72%"
-                                            aria-valuenow="72"
-                                            aria-valuemin="0"
-                                            aria-valuemax="100"
-                                        ></div>
-                                    </div>
+                                    <b-progress :value="calulateCheckList(listTasks[task].works).percentTask" :max="100" :variant="`${calulateCheckList(listTasks[task].works).percentTask == 100 ? 'success' : ''}`"></b-progress>
                                     <div class="card-body">
                                         <div class="list_filter" v-if="listTasks[
                                                         task
@@ -848,7 +575,7 @@ export default {
                                         <div class="d-flex team mb-0">
                                             <div :class="['d-flex align-items-center']" v-if="listTasks[task].list_files">
                                                 <i class="ri-attachment-2"></i>
-                                                {{ listTasks[task].list_files.length }}
+                                                {{ fileTasks(listTasks[task].list_files) }}
                                             </div>
                                             <div 
                                                 :class="['d-flex align-items-center']"

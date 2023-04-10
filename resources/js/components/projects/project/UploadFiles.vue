@@ -13,7 +13,8 @@ export default {
     data() {
         return {
             file:null,
-            linkUrl: "",         
+            linkUrl: "",
+            modal: false         
         };
     },
     computed: {
@@ -32,11 +33,11 @@ export default {
             }
             this.$emit('hideModalPopup', 'files');
             var data = await taskHelper.uploadFilesTask(data);
-            if (!data) {
+            if (data) {
                 this.file = null;
             }
         },
-        onUploadUrl(){
+        async onUploadUrl(){
             if (this.linkUrl) {
                 if (taskHelper.validateUrl(this.linkUrl)) {
                     var dataUrl = taskHelper.validateUrl(this.linkUrl)
@@ -46,11 +47,18 @@ export default {
                         'task_id': this.currentTask.id
                     }
                     this.$emit('hideModalPopup', 'files');
-                    this.uploadFile(data);
+                    var data = await this.uploadFile(data);
+                    if (data) {
+                        this.listTasks[this.currentTask.id]['list_files'] = data.list_files;
+                        this.linkUrl = null;
+                    }
                 }
             }
             
         },
+        onSetShowModal(){          
+            this.$emit('showModalPopup', 'files');
+        }
     },
     created() {
     },
@@ -59,8 +67,8 @@ export default {
 }
 </script>
 <template>
-    <b-list-group-item @click="popupFiles = true">
-        <div class="item">
+    <b-list-group-item>
+        <div class="item" @click="onSetShowModal">
             <i class="ri-attachment-2"></i> File đính
             kèm
         </div>

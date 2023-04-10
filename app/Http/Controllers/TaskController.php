@@ -183,7 +183,7 @@ class TaskController extends Controller
         // get works to do in current task
         $task['works'] = $this->listWorks($task->id);
         // get list files in task
-        $task[$key]['list_files'] = $this->listFiles($tasks->list_files);
+        $task['list_files'] = $this->listFiles($task->list_files);
         return response()->json($task);
     }
 

@@ -15,6 +15,7 @@ import axios from 'axios';
 import { store } from './store/store';
 import "@/assets/scss/app.scss"; 
 const app = createApp(App);
+app.provide('publicPath', PUBLIC_PATH);
 app.use(VueAxios, axios);
 app.use(store);
 app.use(BootstrapVueNext);
