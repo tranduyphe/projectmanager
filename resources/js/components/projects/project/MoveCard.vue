@@ -11,6 +11,12 @@ export default {
                 return {}
             },
         },
+        popupFiles: {
+            type: Boolean,
+            default: () => {
+                return false
+            },
+        },
     },
     data() {
         return {
@@ -18,7 +24,10 @@ export default {
         };
     },
     computed: {
-        ...taskGetters
+        ...taskGetters,
+        // card_id(){
+        //     return this.currentTask.card_id
+        // }
     },
     methods: {
         ...taskMethods,
@@ -26,6 +35,8 @@ export default {
             var oldCardId = this.currentTask.card_id;
             var taskId    = this.currentTask.id;
             var newCardId = this.card_id;
+            console.log('newCardId', newCardId);
+            console.log('oldCardId', oldCardId);
             if (oldCardId != newCardId) {
                 this.listTasks[taskId]['card_id'] = newCardId;
                 var listOldCards = this.listTaskDraggable[oldCardId];
@@ -41,23 +52,49 @@ export default {
                 await this.updateTask(data);
             }
         },
-
+        onShowModal(){ 
+            this.$emit('showModalPopup', 'move');
+        },
+        onHideShowModal(){ 
+            this.$emit('hideModalPopup', 'move');
+        },
     },
     created() {
     },
     mounted() {
-        
     },
 }
 </script>
 <template>
-    <p class="title">Chọn đích đến</p>
-    <div class="modal_move-content">
-        <div class="btn select_list">
-            <p>Danh sách</p>
-            <select v-model="card_id" class="mb-3"  @change="moveTask()">
-                <option v-for="(card, index) in cards" :value="`${card.id}`" :key="card.id">{{ card.title }}</option>
-            </select>
-        </div>
-    </div>
+    <h6>Thao tác</h6>
+    <b-list-group>
+        <b-list-group-item>
+            <div class="item" @click="onShowModal">
+                <i class="ri-arrow-right-line"></i>
+                Di chuyển
+            </div>
+            <div class="modal_move" v-if="popupFiles">
+                <div
+                    :class="[
+                        ' modal_move-header d-flex flex-row align-items-center justify-content-center',
+                    ]"
+                >
+                    <span>Di chuyển thẻ</span>
+                    <a @click="onHideShowModal"
+                        ><i class="ri-close-line"></i
+                    ></a>
+                </div>
+                <p class="title">Chọn đích đến</p>
+                <div class="modal_move-content">
+                    <div class="btn select_list">
+                        <p>Danh sách</p>
+                        {{ card_id }}
+                        <select v-model="card_id" class="mb-3"  @change="moveTask()">
+                            <option v-for="(card, index) in cards" :selected="card.id == card_id" :value="`${card.id}`" :key="card.id">{{ card.title }}</option>
+                        </select>
+                    </div>
+                </div>                                  
+            </div>
+        </b-list-group-item>
+    </b-list-group>
 </template>

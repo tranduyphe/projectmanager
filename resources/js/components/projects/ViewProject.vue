@@ -11,6 +11,9 @@ import TaskDeadline from "./project/taskdeadline.vue";
 import FilesTask from "./project/FilesTask.vue";
 import FileUploads from "./project/UploadFiles.vue";
 import UserTask from "./project/Users.vue";
+import Labels from "./project/Labels.vue";
+import Works from "./project/Words.vue";
+import DateTasks from "./project/DateTask.vue";
 export default {   
     page: {
         title: "Gosu Board",
@@ -25,7 +28,10 @@ export default {
         MoveCard,
         FilesTask,
         FileUploads, 
-        UserTask
+        UserTask,
+        Labels,
+        Works,
+        DateTasks
     },
     data() {
         return {
@@ -34,9 +40,6 @@ export default {
             allPopUp: {},
             showModal: false,
             showActive: false,
-            showModalFilter: false,
-            showModalWorkToDo: false,
-            showModalMove: false,
             showEditor: false,
             project_id: parseInt(this.$route.params.id),
             placeholder: "Nhập tiêu đề cho thẻ này...",
@@ -53,8 +56,6 @@ export default {
                 },
             ],
             dataUpdated: {},
-            nameWorkTodo: "Việc cần làm",
-            image:"",
         };
     },
     computed: {
@@ -103,10 +104,6 @@ export default {
             // taskHelper.updateDataTask();
         },
 
-        show_Filter() {
-            this.showModalFilter = !this.showModalFilter;
-        },
-
         /**
          *
          * @param {*} value returm date
@@ -147,19 +144,6 @@ export default {
         async updateDataCurrentTask( obj ) {
             await taskHelper.updateDataTask( obj )
         },
-
-        // add new  work todo
-        async addNewWordToto(){
-            if (this.nameWorkTodo) {
-                var data = {
-                    'title': this.nameWorkTodo,
-                    'task_id': this.currentTask.id,
-                };
-                await taskHelper.addWorkTodo( data );
-                this.showModalWorkToDo = !this.showModalWorkToDo
-            }
-        },
-
         // calculate number check list
         calulateCheckList(data){
             return taskHelper.calculateListWorkTodo(data);
@@ -402,135 +386,14 @@ export default {
                         <h6>Thêm vào thẻ</h6>
                         <b-list-group>
                             <UserTask @showModalPopup = "showModalPopup" @hideModalPopup = "hideModalPopup" :popupFiles="allPopUp['user']"></UserTask>
-                            <b-list-group-item @click="showModalFilter = true">
-                                <div class="item">
-                                    <i class="ri-price-tag-3-line"></i> Nhãn
-                                </div>
-                                <div class="modalFilter" v-if="showModalFilter">
-                                    <div
-                                        :class="[
-                                            'modalFilter-header d-flex flex-row align-items-center justify-content-between',
-                                        ]"
-                                    >
-                                        <span>Nhãn</span>
-                                        <a
-                                            @click.stop="
-                                                showModalFilter =
-                                                    !showModalFilter
-                                            "
-                                            ><i class="ri-close-line"></i
-                                        ></a>
-                                    </div>
-                                    <div class="filter_of_table" v-for="(label,index) in listItemLabels">
-                                        <div
-                                            class="list_color d-flex flex-row align-items-center"
-                                            
-                                            @click="updateDataCurrentTask(
-                                                {
-                                                    'action' : currentTask.task_labels ? !currentTask.task_labels[label.id] ? 'active' : 'deactive' : 'active',
-                                                    'id' : label.id,
-                                                    'data': label,
-                                                    'key' : 'task_labels',
-                                                    'field': 'labels',
-                                                }
-                                            )"
-                                        >
-                                            <i :class="`${ currentTask.task_labels ? !currentTask.task_labels[label.id] ? 'ri-checkbox-blank-line' : 'ri-checkbox-line' : 'ri-checkbox-blank-line' }`"></i>
-                                            <div class="color color1">
-                                                <div class="color_child">{{ label.name }}</div>
-                                            </div>
-                                        </div>                                       
-                                    </div>
-                                </div>
-                            </b-list-group-item>
-                            <b-list-group-item
-                                @click="showModalWorkToDo = true"
-                            >
-                                <div class="item">
-                                    <i class="ri-checkbox-line"></i> Việc cần
-                                    làm
-                                </div>
-                                <div
-                                    class="modal_work_todo"
-                                    v-if="showModalWorkToDo"
-                                >
-                                    <div
-                                        :class="[
-                                            ' modal_work_todo-header d-flex flex-row align-items-center justify-content-center',
-                                        ]"
-                                    >
-                                        <span>Thêm danh sách công việc</span>
-                                        <a
-                                            @click.stop="
-                                                showModalWorkToDo = false
-                                            "
-                                            ><i class="ri-close-line"></i
-                                        ></a>
-                                    </div>
-                                    <b-form-group
-                                        label="Tiêu đề"
-                                        label-for="title-input"
-                                    >
-                                        <b-form-input
-                                            id=""
-                                            v-model="nameWorkTodo"
-                                            :value ="nameWorkTodo"
-                                        >
-                                        </b-form-input>
-                                    </b-form-group>
-                                    <div class="btn_add" @click="addNewWordToto()">Thêm</div>
-                                </div>
-                            </b-list-group-item>
-                            <b-list-group-item
-                                >
-                                <VueDatePicker    
-                                    v-model="currentTask.deadline"                                
-                                    :month-change-on-scroll="false"                                    
-                                >
-                                    <template #trigger #action-select>
-                                        <i class="ri-time-line"></i> Ngày hết hạn
-                                        
-                                    </template>
-                                    <template #action-select="{ value }">
-                                        <b-button variant="primary" @click="updateDataCurrentTask(
-                                            {
-                                                'key' : 'deadline',
-                                                'field': 'deadline',
-                                                'data' : value
-                                            }
-                                            )">
-                                            Save
-                                        </b-button>
-                                    </template>
-                                </VueDatePicker> 
-                            </b-list-group-item
-                            >
+                            <Labels :labels = "listItemLabels" @showModalPopup = "showModalPopup" @hideModalPopup = "hideModalPopup" :popupFiles="allPopUp['label']"></Labels>                            
+                            <Works @showModalPopup = "showModalPopup" @hideModalPopup = "hideModalPopup" :popupFiles="allPopUp['works']"></Works>                            
+                            <DateTasks></DateTasks>                            
                             <FileUploads @showModalPopup = "showModalPopup" @hideModalPopup = "hideModalPopup" :popupFiles="allPopUp['files']"></FileUploads> 
                         </b-list-group>
                     </div>
                     <div :class="['list-item']">
-                        <h6>Thao tác</h6>
-                        <b-list-group>
-                            <b-list-group-item @click="showModalMove = true">
-                                <div class="item">
-                                    <i class="ri-arrow-right-line"></i>
-                                    Di chuyển
-                                </div>
-                                <div class="modal_move" v-if="showModalMove">
-                                    <div
-                                        :class="[
-                                            ' modal_move-header d-flex flex-row align-items-center justify-content-center',
-                                        ]"
-                                    >
-                                        <span>Di chuyển thẻ</span>
-                                        <a @click.stop="showModalMove = false"
-                                            ><i class="ri-close-line"></i
-                                        ></a>
-                                    </div>
-                                    <MoveCard :cards="listCard"></MoveCard>                                   
-                                </div>
-                            </b-list-group-item>
-                        </b-list-group>
+                        <MoveCard :cards="listCard"  @showModalPopup = "showModalPopup" @hideModalPopup = "hideModalPopup" :popupFiles="allPopUp['move']"></MoveCard> 
                     </div>
                 </div>
             </div>

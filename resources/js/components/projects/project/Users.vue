@@ -17,7 +17,18 @@ export default {
         };
     },
     computed: {
-        ...taskGetters
+        ...taskGetters,
+        resultUsers(){
+            var dataUsers = this.$store.getters.listUsers ;
+            const asArray = Object.values(dataUsers);
+            if(this.searchUsers){
+                return asArray.filter((item)=>{
+                    return this.searchUsers.toLowerCase().split(' ').every(v => item.name.toLowerCase().includes(v))
+                })
+            }else{
+                return dataUsers;
+            }
+        },
     },
     methods: {
         ...taskMethods,
@@ -32,23 +43,6 @@ export default {
         async updateDataCurrentTask( obj ) {
             await taskHelper.updateDataTask( obj )
         },          
-    },
-    computed: {
-        resultUsers(){
-            var dataUsers = this.$store.getters.listUsers ;
-            // console.log('dataUsers', dataUsers)
-            const asArray = Object.values(dataUsers);
-            if(this.searchUsers){
-                return asArray.filter((item)=>{
-                    return this.searchUsers.toLowerCase().split(' ').every(v => item.name.toLowerCase().includes(v))
-                })
-            }else{
-                return dataUsers;
-            }
-        },
-        currentTask(){
-            return this.$store.getters.currentTask;
-        }
     },
     created() {
     },
