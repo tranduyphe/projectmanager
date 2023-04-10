@@ -138,6 +138,7 @@ async function updatedDataChecklist( data ) {
 function calculateListWorkTodo(data) {
     var total = 0;
     var done  = 0;
+    var percentTask = 0;
     var percent = {};
     for (const key in data) {
         var listCheck = data[key];
@@ -158,10 +159,14 @@ function calculateListWorkTodo(data) {
             percent[key] = 0
         }
     }
+    if (done > 0) {
+        percentTask = Math.round(100/total * done)
+    }
     var results = {
         'total': total,
         'done': done,
-        'percent' : percent
+        'percent' : percent,
+        'percentTask': percentTask
     };
     return results;
 }

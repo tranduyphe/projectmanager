@@ -87,7 +87,7 @@ export default {
                     <div class="btn select_list">
                         <p>Danh sách</p>
                         <select v-model="card_id" class="mb-3"  @change="moveTask()">
-                            <option v-for="(card, index) in cards" :selected="card.id == card_id" :value="`${card.id}`" :key="card.id">{{ card.title }}</option>
+                            <option v-for="(card, index) in cards" :value="`${card.id}`" :key="card.id" :selected="card.id === 3">{{ card.title }}</option>
                         </select>
                     </div>
                 </div>                                  

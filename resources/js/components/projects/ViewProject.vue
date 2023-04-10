@@ -2,7 +2,6 @@
 import { VueDraggableNext } from "vue-draggable-next";
 import PageHeader from "../layouts/page-header.vue";
 import moment from "moment";
-import { VueEditor } from "vue3-editor";
 import { taskHelper } from "../../helpers/helptask";
 import { taskMethods, authMethods, labelMethods, taskGetters, labelGetters, authGetters } from "../../store/helpers";
 import MoveCard from "./project/MoveCard.vue";
@@ -14,6 +13,7 @@ import UserTask from "./project/Users.vue";
 import Labels from "./project/Labels.vue";
 import Works from "./project/Words.vue";
 import DateTasks from "./project/DateTask.vue";
+import Description from "./project/Description.vue";
 export default {   
     page: {
         title: "Gosu Board",
@@ -22,7 +22,6 @@ export default {
     components: {
         draggable: VueDraggableNext,
         PageHeader,
-        VueEditor,
         CheckList,
         TaskDeadline,
         MoveCard,
@@ -31,7 +30,8 @@ export default {
         UserTask,
         Labels,
         Works,
-        DateTasks
+        DateTasks,
+        Description
     },
     data() {
         return {
@@ -40,7 +40,6 @@ export default {
             allPopUp: {},
             showModal: false,
             showActive: false,
-            showEditor: false,
             project_id: parseInt(this.$route.params.id),
             placeholder: "Nhập tiêu đề cho thẻ này...",
             taskUpdate: {},
@@ -101,7 +100,6 @@ export default {
         showTask(data) {
             this.getCurrentTask(data);
             this.showModal = true;
-            // taskHelper.updateDataTask();
         },
 
         /**
@@ -112,32 +110,16 @@ export default {
             return moment(value).format("ll");
         },
 
-        // click show editor description
-        handlerShowEditor() {
-            this.showEditor = !this.showEditor;
-        },
-
-        // updated data current task
-        async updateDataTask() {
-            this.taskUpdate["task_id"] = this.currentTask.id;
-            var description = {
-                description: this.currentTask.description,
-            };
-            this.taskUpdate["info_task"] = description;
-            await this.updateTask(this.taskUpdate);
-            this.showEditor = false;
-        },
-
         // check hiden modal
         onHideModal(evt) {
             if (evt.trigger === "backdrop") {
-                if (this.showEditor == true) {
-                    evt.preventDefault();
-                    this.showEditor = false;
-                    this.showModalMember = false;
-                } else {
-                    this.showModal = false;
-                }
+                // if (this.showEditor == true) {
+                //     evt.preventDefault();
+                //     this.showEditor = false;
+                //     this.showModalMember = false;
+                // } else {
+                //     this.showModal = false;
+                // }
             }
         },
         //updated data task
@@ -149,7 +131,7 @@ export default {
             return taskHelper.calculateListWorkTodo(data);
         },
         async onPaste (pasteEvent, callback) {            
-            if (!this.showEditor) {
+            if (!this.allPopUp['editor']) {
                 if(pasteEvent.clipboardData == false){
                     if(typeof(callback) == "function"){
                         callback(undefined);
@@ -290,44 +272,7 @@ export default {
                         <TaskDeadline :deadline="currentTask.deadline"></TaskDeadline>
                     </div>
                     <div :class="['content-main-detail']">
-                        <h6 d-flex flex-row align-items-center>
-                            <i class="ri-menu-2-line"></i>
-                            <span>Mô tả</span>
-                        </h6>
-                        <div :class="['description']">
-                            <div
-                                v-if="!showEditor"
-                                v-bind:innerHTML="`${
-                                    currentTask.description
-                                        ? currentTask.description
-                                        : 'Thêm mô tả chi tiết hơn...'
-                                }`"
-                                :class="['content-desc']"
-                                @click="handlerShowEditor()"
-                            ></div>
-                            <div
-                                v-else="showEditor"
-                                :class="['content-editor']"
-                            >
-                                <vue-editor
-                                    id="edit-current-task"
-                                    v-model="currentTask.description"
-                                ></vue-editor>
-                                <div class="mt-3 mb-3">
-                                    <b-button
-                                        variant="btn_save primary me-2"
-                                        @click="updateDataTask()"
-                                        >Lưu</b-button
-                                    >
-                                    <b-button
-                                        :class="['btn_cancel']"
-                                        variant="light btn_cancel"
-                                        @click="handlerShowEditor()"
-                                        >Hủy</b-button
-                                    >
-                                </div>
-                            </div>
-                        </div>                                                
+                        <Description @showModalPopup = "showModalPopup" @hideModalPopup = "hideModalPopup" :popupFiles="allPopUp['editor']"></Description>                                               
                         <CheckList :works="currentTask.works"></CheckList>   
                         <FilesTask @showModalPopup = "showModalPopup" @hideModalPopup = "hideModalPopup" :popupFiles="allPopUp['files1']"></FilesTask>   
                                              
@@ -589,19 +534,7 @@ export default {
                                     @click="showTask(listTasks[task])"
                                 >
                                     <!-- <pre>{{ JSON.stringify(task, undefined, 4) }}</pre> -->
-                                    <div
-                                        class="progress progress-sm animated-progess"
-                                        style="height: 3px"
-                                    >
-                                        <div
-                                            class="progress-bar"
-                                            role="progressbar"
-                                            style="width: 72%"
-                                            aria-valuenow="72"
-                                            aria-valuemin="0"
-                                            aria-valuemax="100"
-                                        ></div>
-                                    </div>
+                                    <b-progress :value="calulateCheckList(listTasks[task].works).percentTask" :max="100" :variant="`${calulateCheckList(listTasks[task].works).percentTask == 100 ? 'success' : ''}`"></b-progress>
                                     <div class="card-body">
                                         <div class="list_filter" v-if="listTasks[
                                                         task
