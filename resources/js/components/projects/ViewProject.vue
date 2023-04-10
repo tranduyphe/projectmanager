@@ -167,7 +167,7 @@ export default {
         calulateCheckList(data){
             return taskHelper.calculateListWorkTodo(data);
         },
-        onPaste (pasteEvent, callback) {
+        async onPaste (pasteEvent, callback) {            
             if (!this.showEditor) {
                 if(pasteEvent.clipboardData == false){
                     if(typeof(callback) == "function"){
@@ -182,7 +182,11 @@ export default {
                         'name': dataUrl[4],
                         'task_id': this.currentTask.id
                     }
-                    this.uploadFile(data);
+                    var results = await this.uploadFile(data);
+                    if (results) {
+                        this.listTasks[this.currentTask.id]['list_files'] = results.list_files;
+                        this.currentTask['list_files'] = results.list_files
+                    }
                 }else{
                     var items = pasteEvent.clipboardData.items;
                     if(items == undefined){
@@ -196,9 +200,16 @@ export default {
                         const fileUpload = new Blob([blob], blob);
                         const formData = new FormData();
                         formData.append('file', fileUpload, blob.name);
-                        formData.append('task_id', this.currentTask.id);
-                        this.uploadFile(formData);
+                        formData.append('task_id', this.currentTask.id);                        
                     }
+                    if (typeof formData != 'undefined') {
+                        var results = await this.uploadFile(formData);
+                        if (results) {
+                            this.listTasks[this.currentTask.id] = results;
+                            this.currentTask['list_files'] = results.list_files
+                        }
+                    }
+                    
                 }
             }            
         },
@@ -206,31 +217,38 @@ export default {
         // hidden modal 
         hideModalPopup(data){
             this.allPopUp[data] = false;
+        },
+        // hidden modal 
+        showModalPopup(data){
+            this.allPopUp[data] = true;
+        },
+
+        // calculate files cards
+        fileTasks(data){
+            return taskHelper.countFileTasks(data);
         }
     },
-    created() {
-        this.auth();
-        this.getListCards();
-        this.getLabels();
-        this.getListTasks(this.$route.params.id);
+    async created() {
+        await this.auth();
+        await this.getListCards();
+        await this.getLabels();        
+        await this.getListTasks(this.$route.params.id);
     },
 
-    mounted() {        
+    async mounted() {        
         document.body.classList.remove("auth-body-bg");
         document.body.classList.add("page-task"); 
     },
 };
 </script>
 <template>
-
-    <!-- <pre>{{ JSON.stringify(listItemLabels, undefined, 4) }}</pre> -->
+    <!-- <pre>{{ JSON.stringify(listItemLabels, undefined, 4) }}</pre> @paste="onPaste"-->
     <b-modal
         v-model="showModal"
         @hide="onHideModal"
         size="lg"
         hide-footer
-        hide-header
-        @paste="onPaste"
+        hide-header        
     >
         <div :class="['container-fluid']">
             <div :class="['row']">
@@ -574,7 +592,7 @@ export default {
                                 </VueDatePicker> 
                             </b-list-group-item
                             >
-                            <FileUploads @hideModalPopup = "hideModalPopup" :popupFiles="allPopUp['files']"></FileUploads> 
+                            <FileUploads @showModalPopup = "showModalPopup" @hideModalPopup = "hideModalPopup" :popupFiles="allPopUp['files']"></FileUploads> 
                         </b-list-group>
                     </div>
                     <div :class="['list-item']">
@@ -848,7 +866,7 @@ export default {
                                         <div class="d-flex team mb-0">
                                             <div :class="['d-flex align-items-center']" v-if="listTasks[task].list_files">
                                                 <i class="ri-attachment-2"></i>
-                                                {{ listTasks[task].list_files.length }}
+                                                {{ fileTasks(listTasks[task].list_files) }}
                                             </div>
                                             <div 
                                                 :class="['d-flex align-items-center']"

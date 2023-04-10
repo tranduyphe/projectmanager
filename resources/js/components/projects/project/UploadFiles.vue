@@ -32,11 +32,11 @@ export default {
             }
             this.$emit('hideModalPopup', 'files');
             var data = await taskHelper.uploadFilesTask(data);
-            if (!data) {
+            if (data) {
                 this.file = null;
             }
         },
-        onUploadUrl(){
+        async onUploadUrl(){
             if (this.linkUrl) {
                 if (taskHelper.validateUrl(this.linkUrl)) {
                     var dataUrl = taskHelper.validateUrl(this.linkUrl)
@@ -46,11 +46,18 @@ export default {
                         'task_id': this.currentTask.id
                     }
                     this.$emit('hideModalPopup', 'files');
-                    this.uploadFile(data);
+                    var data = await this.uploadFile(data);
+                    if (data) {
+                        this.listTasks[this.currentTask.id]['list_files'] = data.list_files;
+                        this.linkUrl = null;
+                    }
                 }
             }
             
         },
+        setModal(){
+            this.$emit('showModalPopup', 'files');
+        }
     },
     created() {
     },
@@ -59,7 +66,7 @@ export default {
 }
 </script>
 <template>
-    <b-list-group-item @click="popupFiles = true">
+    <b-list-group-item @click="setModal">
         <div class="item">
             <i class="ri-attachment-2"></i> File đính
             kèm

@@ -25,7 +25,7 @@ export default {
     methods: {
         ...taskMethods,
         convertDate(date){
-            return taskHelper.dateUploadFiles(date);
+            return taskHelper.convertDate(date);
         },
         async removeFiles(id){
             var task_id = this.currentTask.id
@@ -37,6 +37,7 @@ export default {
                 'info_task':{'list_files': listids ? listids.join(",") : "" }
             }
             await this.removeFilesMedia(data);
+            delete this.listTasks[task_id]['list_files'][id];
         }
     },
     created() {

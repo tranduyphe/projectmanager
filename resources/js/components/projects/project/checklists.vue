@@ -83,6 +83,9 @@ export default {
                 var result = await taskHelper.updatedDataChecklist(data);
                 if (result == 200) {
                     this.activeEditChecklist  = {};
+                    if (typeof data['data'] != 'undefined') {   
+                        this.currentTask.works[data['work_id']].check_list[data['id']]['deadline'] = _data['deadline'];
+                    }
                 }
 
             }
@@ -91,7 +94,10 @@ export default {
         percent(data){
             return taskHelper.calculateListWorkTodo(data);
         },
-        
+        // show date deline check list
+        convertDate(date){
+            return taskHelper.convertDate(date);
+        },
     },
     created() {
     },
@@ -121,6 +127,7 @@ export default {
                     v-for="(checklist, index) in work.check_list"
                     :key="index"
                 >
+                    <div v-if="checklist.deadline"><span>{{ convertDate(checklist.deadline) }}</span></div>
                     <div class='d-flex justify-content-between align-items-center'>
                         <input
                             type="checkbox"

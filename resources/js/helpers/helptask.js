@@ -11,9 +11,10 @@ export const taskHelper = {
     removeCheckListTask,
     updatedDataChecklist,
     calculateDate,
-    dateUploadFiles,
+    convertDate,
     validateUrl,
-    uploadFilesTask
+    uploadFilesTask,
+    countFileTasks
 };
 
 function isEmptyObject(obj) {
@@ -151,7 +152,13 @@ function calculateListWorkTodo(data) {
             }
             number++;
         }
-        percent[key] = Math.round(100/number * done_check)
+        // console.log('done_check', done_check);
+        // console.log('number', number);
+        if (number > 0) {
+            percent[key] = Math.round(100/number * done_check)
+        }else{
+            percent[key] = 0
+        }
     }
     var results = {
         'total': total,
@@ -207,7 +214,7 @@ function calculateDate(dateTasks){
  * @param {*} dateFiles 
  * @returns 
  */
-function dateUploadFiles(dateFiles){
+function convertDate(dateFiles){
     var today    = moment(new Date());
     dateFiles    = moment(new Date(dateFiles))
     var duration = moment.duration(dateFiles.diff(today));
@@ -225,10 +232,31 @@ function validateUrl(url) {
     return url.match(regex);
 }
 
+/**
+ * 
+ * @param {*} data 
+ * @returns 
+ */
 async function uploadFilesTask(data){
     let formData = new FormData();
     formData.append('file', data['file']);
     formData.append('task_id', data['task_id']);
-    var data = await store.dispatch( 'uploadFile', formData );
-    return data;
+    var results = await store.dispatch( 'uploadFile', formData );
+    if (results) {
+        store.getters.listTasks[data['task_id']]['list_files'] = results.list_files
+    }
+    return results;
+}
+
+/**
+ * 
+ * @param {*} data 
+ * @returns 
+ */
+function countFileTasks(data){
+    var count = 0;
+    if (data) {
+        count = Object.keys(data).length;
+    }
+    return count;
 }
