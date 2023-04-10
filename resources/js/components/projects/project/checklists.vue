@@ -83,7 +83,7 @@ export default {
                 var result = await taskHelper.updatedDataChecklist(data);
                 if (result == 200) {
                     this.activeEditChecklist  = {};
-                    if (typeof data['data'] != 'undefined') {   
+                    if (typeof _data['deadline'] != 'undefined') { 
                         this.currentTask.works[data['work_id']].check_list[data['id']]['deadline'] = _data['deadline'];
                     }
                 }

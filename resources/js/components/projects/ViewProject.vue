@@ -306,13 +306,6 @@ export default {
                                 </div>                               
                             </div>
                         </div>
-                        <div class="notification">
-                            <p>Thông báo</p>
-                            <div class="btn_follow">
-                                <i class="ri-eye-line"></i>
-                                <p>Theo dõi</p>
-                            </div>
-                        </div>
                         <TaskDeadline :deadline="currentTask.deadline"></TaskDeadline>
                     </div>
                     <div :class="['content-main-detail']">
