@@ -1,0 +1,6 @@
+FTP
+user: tranduyphe@blueline.drweb.com.vn
+pass: U7An7xo2L
+database
+blueline_slutions
+QiNK4w3BD
