@@ -81,8 +81,12 @@ export default {
             if (this.newTasks && this.newTasks["title_" + $id]) {
                 var newTask = await this.createNewTask(this.newTasks);
                 if (typeof newTask != "undefined") {
+                    if (typeof this.listTaskDraggable[newTask.card_id] == 'undefined') {
+                        this.listTaskDraggable[newTask.card_id] = [];
+                    }
+                    this.listTasks[newTask.id] = newTask
                     this.listTaskDraggable[newTask.card_id].push(newTask.id);
-                    this.listTasks[newTask.id] = newTask;
+                    
                 }
                 this.newTasks = {};
             }
