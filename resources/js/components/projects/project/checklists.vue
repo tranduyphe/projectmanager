@@ -118,24 +118,26 @@ export default {
                 </div> 
                 <b-button variant="light" @click="deleteWordToto(work.id)">Xóa</b-button>       
             </div>
-            <div>
+            <div class="d-flex align-items-center">
                 <span>{{ percent(works)['percent'][work.id]+'%' }}</span>
                 <b-progress :value="percent(works)['percent'][work.id]" :max="100" :variant="`${percent(works)['percent'][work.id] == 100 ? 'success' : ''}`"></b-progress>
             </div>
             <div v-if="work.check_list && work.check_list.length != 0">
-                <div :class="['d-flex justify-content-between align-items-center']" 
+                <div :class="['mt-2']" 
                     v-for="(checklist, index) in work.check_list"
                     :key="index"
                 >
-                    <div v-if="checklist.deadline"><span>{{ convertDate(checklist.deadline) }}</span></div>
+                    <div v-if="checklist.deadline" class="time"><span>{{ convertDate(checklist.deadline) }}</span></div>
                     <div class='d-flex justify-content-between align-items-center'>
+                        <div class='d-flex justify-content-between align-items-center check'>
                         <input
+                            :class="{ shake: percent(works)['percent'][work.id]==100}"
                             type="checkbox"
                             v-model="checklist.status"
                             :checked="checklist.status"
                             @click="updateData({'id': checklist.id, 'work_id':work.id, 'status': checklist.status})"
                         />
-                        <div>
+                        <div style="width: 100%;">
                             <div @click="showEditChecklist(index)">
                                 <b-form-textarea
                                     :class="[`${ activeEditChecklist[index] ? 'show-textarea' : ''}`, 'form-control']"
@@ -186,7 +188,7 @@ export default {
                     </div>
                 </div>
             </div>
-            <div v-if="showActiveChecklist[work.id]">
+            <div v-if="showActiveChecklist[work.id]" class="ms-5 mt-1">
                 <div>
                     <b-form-textarea
                         v-model="nameChecklist"
@@ -196,11 +198,13 @@ export default {
                     ></b-form-textarea>
                 </div>
                 <div>
-                    <b-button @click="newCheckList(work.id)" variant="primary">Thêm</b-button>
-                    <b-button @click="showActiveChecklist[work.id] = !showActiveChecklist[work.id]" variant="light">Hủy</b-button>
+                    <b-button @click="newCheckList(work.id);showActiveChecklist[work.id] =false" variant="primary" class="mt-2">Thêm</b-button>
+                    <b-button @click="showActiveChecklist[work.id] = !showActiveChecklist[work.id]" variant="light" class="mt-2 ms-2">Hủy</b-button>
                 </div>
+                    </div>
+                    
             </div>
-            <b-button v-if="!showActiveChecklist[work.id]" variant="light" @click="showAddChecklist(work.id)">Thêm một mục</b-button>
+            <b-button class="btn_add_work" v-if="!showActiveChecklist[work.id]" variant="light" @click="showAddChecklist(work.id)">Thêm một mục</b-button>
         </div>
     </div>
 </template>

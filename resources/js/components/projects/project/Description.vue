@@ -71,12 +71,12 @@ export default {
             ></vue-editor>
             <div class="mt-3 mb-3">
                 <b-button
-                    variant="btn_save primary me-2"
+                    variant="btn_save bg-primary me-2 text-light"
                     @click="updateDataTask()"
                     >Lưu</b-button
                 >
                 <b-button
-                    :class="['btn_cancel']"
+                    :class="['btn_cancel bg-danger text-light']"
                     variant="light btn_cancel"
                     @click="onHideShowModal"
                     >Hủy</b-button

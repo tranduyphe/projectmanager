@@ -40,6 +40,7 @@ export default {
             allPopUp: {},
             showModal: false,
             showActive: false,
+            showModalFilter2: false,
             project_id: parseInt(this.$route.params.id),
             placeholder: "Nhập tiêu đề cho thẻ này...",
             taskUpdate: {},
@@ -235,6 +236,7 @@ export default {
                     <div :class="['content-main-info']">
                         <div class="member" v-if="currentTask.members">
                             <p>Thành viên</p>
+                            <div :class="['d-flex align-items-center']" >
                             <div class="list_user">
                                 <div
                                     class="user"
@@ -249,14 +251,16 @@ export default {
                                     />
                                 </div>
                             </div>
-                            <div class="btn_add_user">
+                            <div class="btn_add_user d-flex align-items-center justify-content-center ms-2">
                                 <i class="ri-add-line"></i>
                             </div>
+                          </div>
+                            
                         </div>
                         <div class="label" v-if="currentTask.task_labels">
                             <p>Nhãn</p>
                             <div class="list_label">
-                                <div class="name_label"
+                                <div class="name_label" :style="{ background: label.color}"
                                 v-for="(
                                     label, index
                                 ) in currentTask.task_labels"
@@ -264,9 +268,49 @@ export default {
                                 >
                                     <div class="label_active"></div>
                                 </div> 
-                                <div class="btn_add_label">
-                                    <i class="ri-add-line"></i>
-                                </div>                               
+                                <div class="btn_add_label" @click="showModalFilter2 =true">
+                                   
+                                   <div class="item">
+                                       <i class="ri-add-line"></i>
+                                   </div>
+                               <div class="modalFilter modalFilter2" v-if="showModalFilter2">
+                                   <div
+                                       :class="[
+                                           'modalFilter-header d-flex flex-row align-items-center justify-content-between',
+                                       ]"
+                                   >
+                                       <span>Nhãn</span>
+                                       <a
+                                           @click.stop="
+                                               showModalFilter2 =
+                                                   !showModalFilter2
+                                           "
+                                           ><i class="ri-close-line"></i
+                                       ></a>
+                                   </div>
+                                   <div class="filter_of_table" v-for="(label,index) in listItemLabels" :key="index">
+                                       <div
+                                           class="list_color d-flex flex-row align-items-center"
+                                           
+                                           @click="updateDataCurrentTask(
+                                               {
+                                                   'action' : currentTask.task_labels ? !currentTask.task_labels[label.id] ? 'active' : 'deactive' : 'active',
+                                                   'id' : label.id,
+                                                   'data': label,
+                                                   'key' : 'task_labels',
+                                                   'field': 'labels',
+                                               }
+                                           )"
+                                       >
+                                           <i :class="`${ currentTask.task_labels ? !currentTask.task_labels[label.id] ? 'ri-checkbox-blank-line' : 'ri-checkbox-line' : 'ri-checkbox-blank-line' }`"></i>
+                                           <div class="color color1"  :style="{ background: label.color}">
+                                               <div class="color_child"></div>
+                                               <p class="ms-2">{{ label.name }}</p>
+                                           </div>
+                                       </div>                                       
+                                   </div>
+                               </div>
+                               </div>                                
                             </div>
                         </div>
                         <TaskDeadline :deadline="currentTask.deadline"></TaskDeadline>
@@ -281,12 +325,15 @@ export default {
                         <h6 d-flex flex-row align-items-center>
                             <i class="ri-list-check"></i><span>Hoạt động</span>
                         </h6>
-                        <textarea
+                        <div class="textarea">
+                            <textarea
                             class="textarea_active"
                             placeholder="Viết bình luận..."
                             v-if="!showActive"
                             @click-outside="showActive = !showActive"
                         ></textarea>
+                        </div>
+                        
                         <div :class="['description']" v-if="showActive">
                             <div :class="['content-desc']"></div>
                             <div :class="['content-editor']">
@@ -296,9 +343,9 @@ export default {
                                 ></vue-editor>
                             </div>
                             <div class="list_button">
-                                <div class="btn_save">Lưu</div>
+                                <div class="btn_save bg-primary">Lưu</div>
                                 <div
-                                    class="btn_cancel"
+                                    class="btn_cancel bg-danger"
                                     @click="showActive = !showActive"
                                 >
                                     Hủy
@@ -587,7 +634,7 @@ export default {
                                                 }}
                                             </div>
                                             <div
-                                                class="align-self-center"
+                                                class="align-self-center d-flex"
                                                 v-if="listTasks[task].members"
                                             >
                                                 <div
