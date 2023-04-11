@@ -6,7 +6,7 @@ import { taskHelper } from "../../helpers/helptask";
 import { taskMethods, authMethods, labelMethods, taskGetters, labelGetters, authGetters } from "../../store/helpers";
 import MoveCard from "./project/MoveCard.vue";
 import CheckList from "./project/checklists.vue";
-import TaskDeadline from "./project/taskdeadline.vue";
+import TaskDeadline from "./project/TaskDeadline.vue";
 import FilesTask from "./project/FilesTask.vue";
 import FileUploads from "./project/UploadFiles.vue";
 import UserTask from "./project/Users.vue";
