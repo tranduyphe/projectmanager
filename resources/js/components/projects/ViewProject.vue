@@ -549,7 +549,7 @@ export default {
                 :class="['col-3']"
             >
                 
-                <div class="card">
+                <div class="card card_main">
                   <div class="card-body card_header">
                     <h4 class="card-title">{{ card.title }}</h4>
                     <b-dropdown right class="float-end" variant="white">
