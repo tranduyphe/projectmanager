@@ -123,6 +123,7 @@ body.page-task {
                         display: flex;
                         margin-top: 20px;
                         column-gap: 20px;
+                        flex-wrap: wrap;
                         @media (max-width: 850px) {
                              flex-wrap: wrap;
                        }
@@ -143,23 +144,23 @@ body.page-task {
                                 .user:first-child{
                                      margin-left: 0 !important;
                                 }
-
-                                .btn_add_user{
-                                    width: 32px;
-                                    height: 32px;
-                                    background: #eaecf0;
-                                    border-radius: 100%;
-                                    display: flex;
-                                    justify-content: center;
-                                    align-items: center;
-                                     margin-left: 5px;
-                                }
-                                .btn_add_user:hover{
-                                    opacity: 0.6;
-                                    transform: scale(1.06);
-                                    cursor: pointer;
-                                  }
+                           
                              }
+                             .btn_add_user{
+                                width: 32px;
+                                height: 32px;
+                                background: #eaecf0;
+                                border-radius: 100%;
+                                display: flex;
+                                justify-content: center;
+                                align-items: center;
+                                 margin-left: 5px;
+                            }
+                            .btn_add_user:hover{
+                                opacity: 0.6;
+                                transform: scale(1.06);
+                                cursor: pointer;
+                              }
                         }
 
                         .label{
@@ -171,7 +172,11 @@ body.page-task {
                                     background: #d6ecd2;
                                     display: flex;
                                     align-items: center;
-                                    padding: 4px 11px;
+                                    padding: 7px 0px;
+                                    padding-left: 7px;
+                                    padding-right: 25px;
+                                    margin-left: 3px;
+                                    cursor: pointer;
                                     cursor: pointer;
                                     .label_active{
                                         width: 16px;
@@ -193,7 +198,7 @@ body.page-task {
                                     align-items: center;
                                     margin-left: 5px;
                                  }
-                                 .btn_add_label:hover{
+                                 .btn_add_label .item:hover{
                                     opacity: 0.6;
                                     transform: scale(1.06);
                                     cursor: pointer;
@@ -232,6 +237,14 @@ body.page-task {
             }
         }
          .content-main-detail{
+            .btn_add_file{
+                width: 152px;
+                text-align: center;
+                margin-top: 16px;
+            }
+            .textarea{
+                padding-left: 38px;
+            }
              margin-top: 25px;
             .description{
                  padding-left: 40px;
@@ -240,7 +253,7 @@ body.page-task {
             padding-left: 40px;
         }
            textarea,.content-desc{
-                height: 60px;
+                min-height: 60px;
                 margin-left: 0;
                 width: 100%;
                 background: #eaecf0;
@@ -248,6 +261,9 @@ body.page-task {
                 border: 0;
                 padding: 5px;
                 margin-top: 5px;
+            }
+            .content-desc{
+                 img{width: 100%;}
             }
             .textarea_active{
                  background: #fff !important;
@@ -311,6 +327,27 @@ body.page-task {
             .list_work_todo{
                 margin-top: 27px;
                 .work-todo{
+                    .time{
+                        margin-bottom: -4px;
+                        margin-left: 47px;
+                        margin-top: 10px;
+                    }
+                    .btn_add_work{
+                        background: #eaecf0;
+                        margin: 7px 0px 10px 44px;
+                    }
+                    .check{
+                        width: 78%;
+                        textarea{
+                            width: 100%;
+                            margin-left: 25px;
+                        }
+                        input{
+                             width: 20px;
+                             height: 20px;
+                        }
+
+                    }
                      .work-todo-header{
                         justify-content: space-between;
                         font-size: 16px;
@@ -331,23 +368,21 @@ body.page-task {
                         }
                        
                      }
-                     .work-todo-content{
-                        font-size: 16px;
+                     
                         .progress{
                             border-radius: 4px;
                             clear: both;
-                            height: 8px;
-                            margin: 0px 0 0 15px;
+                            height: 9px;
+                            margin: 0px 0 0 6px;
                             overflow: hidden;
-                            background: #091e4214;
                             width: 100%;
-                            .progress-line{
-                                height: 8px;
-                                width: 30%;
-                                background: #7bc86c;
-                            }
+                            // .progress-line{
+                            //     height: 8px;
+                            //     width: 30%;
+                            //     background: #7bc86c;
+                            // }
                         }
-                     }
+                     
 
                      .btn_add{
                         background: #eaecf0;
@@ -476,7 +511,10 @@ body.page-task {
      }
     
 }
-
+.modalFilter2{
+    left: 182px !important;
+    top: 80px !important;
+}
 .modalFilter{
     position: absolute;
     z-index: 100;
@@ -487,6 +525,11 @@ body.page-task {
     top: 38px;
     border-radius: 3px;
     padding-bottom: 20px;
+    .filter_of_table{
+         i{
+             font-size: 20px;
+         }
+    }
     .modalFilter-header{
         display: flex;
         justify-content: center;
@@ -648,6 +691,9 @@ body.page-task {
      }
      .upload{
          margin-top: 10px;
+         input{
+            display: none;
+         }
      }
      .attach_link{
          input{
@@ -976,3 +1022,102 @@ body.page-task {
 #item{
      background: #ebecf0;
 }
+
+.coollightbox{
+    display: block;
+    height: 100px;
+    image{
+        width: 100px;
+        height: 100px;
+    }
+}
+
+.shake {
+    background-color: #2BD993;
+    color: #FFF;
+    text-transform: uppercase;
+    animation: shake 150ms 2 linear;
+  }
+
+
+  @keyframes shake {
+    0% {
+      transform: translate(3px, 0);
+    }
+    50% {
+      transform: translate(-3px, 0);
+    }
+    100% {
+      transform: translate(0, 0);
+    }
+  }
+
+
+  .attachment-item{
+    a img{
+        width: 112px;
+        height: 80px;
+        display: block;
+    }
+    strong{
+        font-family: 'Inter';
+    }
+
+    .action{
+        span{
+            width: 5px;
+            height: 5px;
+            display: inline-block;
+            background: #000;
+            border-radius: 100%;
+            margin-left: 14px;
+            margin-right: 5px;
+        }
+        a:before {
+            content: " • ";
+        }
+        a{
+            cursor: pointer;
+            text-decoration:underline;
+        }
+        p{
+            column-gap: 5px;
+        }
+    }
+    .attachment_pdf{
+        display: flex;
+        align-items: center;
+
+        .image{
+            width: 112px;
+            display: flex;
+            height: 80px;
+            align-items: center;
+            justify-content: center;
+            background: #eaecf0;
+            span{
+                font-size: 18px;
+                font-weight: 700;
+              color: #44546f;
+            }
+        }
+    }
+  }
+
+  .card-body{
+    .team-member{
+        margin-right: 1px !important;
+    }
+     .card{
+        .progress{
+            height: 8px;
+        }
+     }
+  }
+  .fancybox-button{
+    display: none !important;
+   }
+   .fancybox-button--close{
+    display: block !important;
+   }
+  

@@ -72,8 +72,9 @@ export default {
                     )"
                 >
                     <i :class="`${ currentTask.task_labels ? !currentTask.task_labels[label.id] ? 'ri-checkbox-blank-line' : 'ri-checkbox-line' : 'ri-checkbox-blank-line' }`"></i>
-                    <div class="color color1">
-                        <div class="color_child">{{ label.name }}</div>
+                    <div class="color color1" :style="{ background: label.color}">
+                        <div class="color_child"></div>
+                        <p class="ms-2">{{ label.name }}</p>
                     </div>
                 </div>                                       
             </div>
