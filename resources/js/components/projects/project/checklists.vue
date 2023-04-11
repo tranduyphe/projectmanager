@@ -14,7 +14,7 @@ export default {
     },
     data() {
         return {
-            showActiveChecklist: {},
+            showActiveChecklist:false,
             activeEditChecklist: {},
             calculateChecklist:  {},
             nameChecklist: "",
@@ -59,7 +59,8 @@ export default {
                 await taskHelper.addcheckLists(data);
                 this.showAddChecklist(id);
                 this.nameChecklist = "";
-            }            
+            }  
+            this.showActiveChecklist=false;          
         },
         // remove check list
         async deleteCheckList(data){
@@ -147,11 +148,15 @@ export default {
                                 </b-form-textarea>
                             </div>
                             <div :class="['d-flex justify-content-between align-items-center']" v-if="activeEditChecklist[index]">
-                                <div :class="['d-flex justify-content-between align-items-center']">
+                                <div :class="['d-flex justify-content-between align-items-center mt-2 ms-4']">
                                     <b-button @click="updateData({'id': checklist.id, 'work_id':work.id})" variant="primary">Lưu</b-button>
-                                    <b-button @click="activeEditChecklist[index] = !activeEditChecklist[index]" variant="light"><i class="ri-close-fill"></i></b-button>
+                                    <b-button class="ms-2 bg-secondary text-light" @click="activeEditChecklist[index] = !activeEditChecklist[index]" variant="light"><i class="ri-close-fill"></i></b-button>
                                 </div>
-                                <div :class="['d-flex justify-content-between align-items-center']">
+                                
+                            </div>
+                        </div>
+                    </div>
+                    <div :class="['d-flex justify-content-between align-items-center']" v-if="activeEditChecklist[index]">
                                     <b-button variant="light">
                                         <VueDatePicker
                                             v-model="checklist.deadline"                                
@@ -167,9 +172,6 @@ export default {
                                     </b-button>
                                     <b-button variant="light" @click="deleteCheckList({'id': checklist.id, 'work_id':work.id})"><i class="ri-delete-bin-7-line"></i></b-button>  
                                 </div>
-                            </div>
-                        </div>
-                    </div>
                     <div v-if="!activeEditChecklist[index]" :class="['d-flex justify-content-between align-items-center']">
                         <b-button variant="light">
                             <VueDatePicker
@@ -198,10 +200,10 @@ export default {
                     ></b-form-textarea>
                 </div>
                 <div>
-                    <b-button @click="newCheckList(work.id);showActiveChecklist[work.id] =false" variant="primary" class="mt-2">Thêm</b-button>
+                    <b-button @click.stop="newCheckList(work.id);showActiveChecklist[work.id] =false" variant="primary" class="mt-2">Thêm</b-button>
                     <b-button @click="showActiveChecklist[work.id] = !showActiveChecklist[work.id]" variant="light" class="mt-2 ms-2">Hủy</b-button>
-                </div>
-                    </div>
+                </div>                
+            </div>
                     
             </div>
             <b-button class="btn_add_work" v-if="!showActiveChecklist[work.id]" variant="light" @click="showAddChecklist(work.id)">Thêm một mục</b-button>
