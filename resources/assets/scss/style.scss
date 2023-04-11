@@ -173,9 +173,7 @@ body.page-task {
                                     background: #d6ecd2;
                                     display: flex;
                                     align-items: center;
-                                    padding: 7px 0px;
-                                    padding-left: 7px;
-                                    padding-right: 25px;
+                                    padding: 16px 25px;
                                     margin-left: 3px;
                                     cursor: pointer;
                                     cursor: pointer;
@@ -1146,5 +1144,8 @@ body.page-task {
    }
    .fancybox-button--close{
     display: block !important;
+   }
+   .cursor-pointer{
+    cursor: pointer;
    }
   

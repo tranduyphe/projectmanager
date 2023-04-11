@@ -266,7 +266,7 @@ export default {
                                 ) in currentTask.task_labels"
                                 :key="index"
                                 >
-                                    <div class="label_active"></div>
+                                    <!-- <div class="label_active"></div> -->
                                 </div> 
                                 <div class="btn_add_label" @click="showModalFilter2 =true">
                                    
@@ -586,7 +586,7 @@ export default {
                                 >
                                     <!-- <pre>{{ JSON.stringify(task, undefined, 4) }}</pre> -->
                                     <b-progress :value="calulateCheckList(listTasks[task].works).percentTask" :max="100" :variant="`${calulateCheckList(listTasks[task].works).percentTask == 100 ? 'success' : ''}`"></b-progress>
-                                    <div class="card-body">
+                                    <div class="card-body cursor-pointer">
                                         <div class="list_filter" v-if="listTasks[
                                                         task
                                                     ].task_labels">
