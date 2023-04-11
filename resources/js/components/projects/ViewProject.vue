@@ -270,7 +270,7 @@ export default {
                                 ) in currentTask.task_labels"
                                 :key="index"
                                 >
-                                    <div class="label_active"></div>
+                                    <!-- <div class="label_active"></div> -->
                                 </div> 
                                 <div class="btn_add_label" @click="showModalFilter2 =true">
                                    
@@ -308,7 +308,7 @@ export default {
                                        >
                                            <i :class="`${ currentTask.task_labels ? !currentTask.task_labels[label.id] ? 'ri-checkbox-blank-line' : 'ri-checkbox-line' : 'ri-checkbox-blank-line' }`"></i>
                                            <div class="color color1"  :style="{ background: label.color}">
-                                               <div class="color_child"></div>
+                                               <!-- <div class="color_child"></div> -->
                                                <p class="ms-2">{{ label.name }}</p>
                                            </div>
                                        </div>                                       
@@ -552,22 +552,26 @@ export default {
                 :key="index++"
                 :class="['col-3']"
             >
-                <div class="card-body">
+                
+                <div class="card card_main">
+                  <div class="card-body card_header">
+                    <h4 class="card-title">{{ card.title }}</h4>
                     <b-dropdown right class="float-end" variant="white">
                         <template v-slot:button-content>
-                            <i
+                            <!-- <i
                                 class="mdi mdi-dots-vertical m-0 text-muted font-size-20"
-                            ></i>
+                                
+                            ></i> -->
+                            <i class="ri-more-fill m-0 text-muted font-size-20"></i>
                         </template>
                         <b-dropdown-item>Edit</b-dropdown-item>
                         <b-dropdown-item>Delete</b-dropdown-item>
                     </b-dropdown>
 
                     <!-- end dropdown -->
-                    <h4 class="card-title">{{ card.title }}</h4>
+                    
                 </div>
-                <div class="card">
-                    <div class="card-body border-bottom">
+                    <div class="card-body border-bottom card-content">
                         <div :id="`${'wrap_card_'+card.id}`" class="task-list">
                             <draggable
                                 class="list-group"
@@ -586,7 +590,7 @@ export default {
                                 >
                                     <!-- <pre>{{ JSON.stringify(task, undefined, 4) }}</pre> -->
                                     <b-progress :value="calulateCheckList(listTasks[task].works).percentTask" :max="100" :variant="`${calulateCheckList(listTasks[task].works).percentTask == 100 ? 'success' : ''}`"></b-progress>
-                                    <div class="card-body">
+                                    <div class="card-body cursor-pointer">
                                         <div class="list_filter" v-if="listTasks[
                                                         task
                                                     ].task_labels">

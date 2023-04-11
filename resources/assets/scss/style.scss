@@ -124,6 +124,7 @@ body.page-task {
                         margin-top: 20px;
                         column-gap: 20px;
                         flex-wrap: wrap;
+                        row-gap: 15px;
                         @media (max-width: 850px) {
                              flex-wrap: wrap;
                        }
@@ -172,9 +173,7 @@ body.page-task {
                                     background: #d6ecd2;
                                     display: flex;
                                     align-items: center;
-                                    padding: 7px 0px;
-                                    padding-left: 7px;
-                                    padding-right: 25px;
+                                    padding: 16px 25px;
                                     margin-left: 3px;
                                     cursor: pointer;
                                     cursor: pointer;
@@ -815,8 +814,11 @@ body.page-task {
              width: 100%;
          }
          .select_list{
-             width: 70%;
+             width: 100%;
              margin-top: 8px;
+             select{
+                width: 100%;
+             }
          }
          .select_location{
             width: 25%;
@@ -844,6 +846,11 @@ body.page-task {
 }
 
 .card{
+    width: 100%;
+    .card-content{
+        background: #f7f8f9;
+        padding-top: 0 !important;
+    }
      .list_filter{
         display: flex;
         flex-wrap: wrap;
@@ -1103,10 +1110,32 @@ body.page-task {
         }
     }
   }
-
+  .card_header{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 0px !important;
+    padding-top: 0 !important;
+    background: #f7f8f9;
+    border-radius: 16px 16px 0px 0px;
+  }
+  .card_main{
+    border-radius: 16px !important;
+  }
   .card-body{
+    .team{
+        column-gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+    }
     .team-member{
         margin-right: 1px !important;
+        a{  
+                img{
+                    height: 24px !important;
+                    width: 24px !important;
+                }     
+        }
     }
      .card{
         .progress{
@@ -1119,5 +1148,8 @@ body.page-task {
    }
    .fancybox-button--close{
     display: block !important;
+   }
+   .cursor-pointer{
+    cursor: pointer;
    }
   
