@@ -67,46 +67,52 @@ export default {
     <div>
         
         <div v-if="currentTask.list_files">
-            <h6 d-flex="" flex-row="" align-items-center="">
+            <h6 d-flex="" flex-row="" align-items-center="" class="mt-4">
                 <i class="ri-attachment-2"></i><span>Các tập tin đính kèm</span>
             </h6>
-            <div v-for="attachment in currentTask.list_files" :class="['attachment-item']">
+            <div v-for="attachment in currentTask.list_files" :class="['attachment-item']" class="mt-3">
                 <div v-if="attachment.type === 'link'">
                     <a :href="attachment.name_file" :target="['_blank']">
                         <span><i class="ri-attachment-2"></i></span>
                     </a>
-                    <p>
+                    <div class="ms-4 ">
                         <strong>{{ attachment.title }}</strong>
-                        <div>
-                            <span>{{ convertDate(attachment.updated_at) }}</span>
-                            <b-button variant="danger" @click="removeFiles(attachment.id)">Xóa</b-button>
-                        </div>
-                    </p>
-                </div>
-                <div v-else-if="attachment.type === 'pdf'">
-                    <a :href="publicPath+attachment.name_file">
-                        <span>{{ attachment.type }}</span>
-                    </a>
-                    <div>
-                        <strong>{{ attachment.title }}</strong>
-                        <div>
-                            <span>{{ convertDate(attachment.updated_at) }}</span>
-                            <b-button variant="danger"  @click="removeFiles(attachment.id)">Xóa</b-button>
+                        <div class="action">
+                            <!-- <span>{{ convertDate(attachment.updated_at) }}</span> -->
+                            <p>Đã thêm vào lúc {{ convertDate(attachment.updated_at) }} </p>
+                            <p class="d-flex align-items-center">
+                               
+                                <a @click="removeFiles(attachment.id)">Xóa</a>
+                                
+                            </p>
+                            <!-- <b-button variant="danger" @click="removeFiles(attachment.id)">Xóa</b-button> -->
                         </div>
                     </div>
                 </div>
+                <div v-else-if="attachment.type === 'pdf'" class="attachment_pdf">
+                    <a :href="publicPath+attachment.name_file" class="image" data-fancybox>
+                        <span>{{ attachment.type }}</span>
+                    </a>
+                    <div class="ms-4 d-flex align-items-center">
+                        <div>
+                            <strong>{{ attachment.title }}</strong>
+                            <p>Đã thêm vào lúc {{ convertDate(attachment.updated_at) }} </p>
+                        </div>                
+                            <b-button variant="danger"  @click="removeFiles(attachment.id)" class="ms-4">Xóa</b-button>
+                    </div>
+                </div>
                 
-                <div v-else-if="attachment.type === 'png' || attachment.type === 'jpg' || attachment.type === 'jpeg'">
-                    <a :href="attachment.name_file">
+                <div class="d-flex align-items-center" v-else-if="attachment.type === 'png' || attachment.type === 'jpg' || attachment.type === 'jpeg'">
+                    <a :href="publicPath+attachment.name_file" data-fancybox>
                         <img :src="publicPath+attachment.name_file" :alt="attachment.title">
                     </a>
-                    <p>
-                        <strong>{{ attachment.title }}</strong>
+                    <div class="ms-4 d-flex align-items-center">
                         <div>
-                            <span>{{ convertDate(attachment.updated_at) }}</span>
-                            <b-button variant="danger" @click="removeFiles(attachment.id)">Xóa</b-button>
-                        </div>
-                    </p>
+                            <strong>{{ attachment.title }}</strong>
+                            <p>Đã thêm vào lúc {{ convertDate(attachment.updated_at) }} </p>
+                        </div>                
+                            <b-button variant="danger"  @click="removeFiles(attachment.id)" class="ms-4">Xóa</b-button>
+                    </div>
                 </div>
                 <div v-else>
                     <a :href="publicPath+attachment.name_file" :target="['_blank']">

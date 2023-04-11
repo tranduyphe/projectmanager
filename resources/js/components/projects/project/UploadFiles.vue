@@ -1,7 +1,9 @@
 <script>
 import { taskHelper } from "@/js/helpers/helptask";
 import { taskMethods, taskGetters} from "@/js/store/helpers";
+import Labels from './Labels.vue';
 export default {
+  components: { Labels },
     props: {
         popupFiles: {
             type: Boolean,
@@ -67,7 +69,7 @@ export default {
 }
 </script>
 <template>
-    <b-list-group-item>
+    <b-list-group-item class="btn_add_file">
         <div class="item" @click="onSetShowModal">
             <i class="ri-attachment-2"></i> File đính
             kèm
@@ -88,8 +90,8 @@ export default {
             </div>
             <div class="list_upload">
                 <div class="upload">
-                    <span>Máy tính</span>
-                    <input type="file" v-modal="file" @change="upload" class="form-control">
+                    <label for="choose_file">Máy tính</label>
+                    <input type="file" v-modal="file" @change="upload" class="form-control" id="choose_file">
                 </div>
             </div>
             <hr />
