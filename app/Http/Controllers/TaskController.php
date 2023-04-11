@@ -110,6 +110,18 @@ class TaskController extends Controller
             'updated_at'    => date('Y-m-d H:i:s'),
         ]);
         $tasks->save();
+        $tasks = Tasks::find($tasks->id);
+        if (!empty($tasks->list_user_ids)) {
+            $task['members'] = $this->listMembers($tasks->list_user_ids);
+        }
+        // get list labels add in task
+        if (!empty($tasks->labels)) {
+            $tasks['task_labels'] = $this->listMembers($tasks->labels);
+        }
+        // get works to do in current task
+        $tasks['works'] = $this->listWorks($tasks->id);
+        // get list files in task
+        $tasks['list_files'] = $this->listFiles($tasks->list_files);
         return response()->json($tasks);
     }
 
