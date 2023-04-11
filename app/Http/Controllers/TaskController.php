@@ -55,8 +55,10 @@ class TaskController extends Controller
             }
 
         }
-        $data['list_draggable'] = $list_draggable;
-        $data['list_task'] = $results;
+        if (!empty($list_draggable)) {
+            $data['list_draggable'] = $list_draggable;
+            $data['list_task'] = $results;
+        }
         return response()->json($data);
     }
 

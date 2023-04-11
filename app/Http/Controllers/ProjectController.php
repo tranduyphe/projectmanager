@@ -68,12 +68,32 @@ class ProjectController extends Controller
         $user     = Auth::user();
         $user_id  = $user->id;
         $roles    = $user->getRoleNames()->first();
+        $users    = User::with('detail_user_department')->find($user_id);
+        
+        if (!empty($users)) {
+            $details = $users->detail_user_department;
+            $department_id = $details->department_id;
+        }else{
+            $department_id = 2;
+        }
         
         if ( $roles === 'administrator' || $roles === 'leader' ) {
             $projects = Project::all();
         } elseif ($roles === 'manager') {
             $user     = User::with('projects')->find($user_id);
             $projects = $user->projects;
+        }
+        if (!empty($projects)) {
+            foreach ($projects as $key => $project) {
+                if ($roles === 'leader') {
+                    $tasks = Project::with(["tasks" => function($q) use( $department_id ){
+                        $q->where('department_id', '=', $department_id);
+                    }])->find($project->id);
+                }else{
+                    $tasks = Project::with('tasks')->find($project->id);
+                }
+                $projects[$key]['data_task'] = $tasks->tasks;
+            }
         }
         return response()->json($projects);
     }
