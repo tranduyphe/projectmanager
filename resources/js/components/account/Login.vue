@@ -68,7 +68,7 @@ export default {
                                             <div class="text-center">
                                                 <div>
                                                     <a href="/" class="logo">
-                                                        <img src="../../../images/logo-dark.png" height="20" alt="logo" />
+                                                        <img src="../../../images/logo.png" height="20" alt="logo" />
                                                     </a>
                                                 </div>
 

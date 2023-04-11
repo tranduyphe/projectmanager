@@ -54,10 +54,6 @@ export default {
         this.auth();
     },
     mounted() {
-        // console.log(this.authUserData);
-        // console.log(this.loginResponse)
-        // console.log(this.authUser);
-        // console.log(this.loginResponse.authenticated)
     },
 };
 </script>
@@ -88,14 +84,14 @@ export default {
                     <a href="index.htms" class="logo logo-light">
                         <span class="logo-sm">
                             <img
-                                src="@/assets/images/logo-sm-light.png"
+                                src="@/assets/images/logo.png"
                                 alt
                                 height="22"
                             />
                         </span>
                         <span class="logo-lg">
                             <img
-                                src="@/assets/images/logo-light.png"
+                                src="@/assets/images/logo.png"
                                 alt
                                 height="20"
                             />
