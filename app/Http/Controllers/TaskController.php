@@ -21,16 +21,26 @@ class TaskController extends Controller
      */
     public function index($project_id)
     {
+        $user     = Auth::user();
+        $user_id  = $user->id;
+        $roles    = $user->getRoleNames()->first();
+        $users    = User::with('detail_user_department')->find($user_id);
         $cards = Card::all();
         $results = [];
         $tests = [];
         $data = [];
+        if (!empty($users)) {
+            $details = $users->detail_user_department;
+            $department_id = $details->department_id;
+        }else{
+            $department_id = 2;
+        }
         foreach ($cards as $key => $card) {            
             $card_id = $card->id;
             $list_tasks = Tasks::where([
                 ['card_id', '=', $card_id],
                 ['project_id', '=', $project_id],
-                ['department_id', '=', 1],
+                ['department_id', '=', $department_id],
             ])->get();
 
             if (!empty($list_tasks)) {
@@ -58,6 +68,9 @@ class TaskController extends Controller
         if (!empty($list_draggable)) {
             $data['list_draggable'] = $list_draggable;
             $data['list_task'] = $results;
+        }else{
+            $data['list_draggable'] = [];
+            $data['list_task'] = [];
         }
         return response()->json($data);
     }
