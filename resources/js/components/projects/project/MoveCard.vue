@@ -40,6 +40,9 @@ export default {
                 var listOldCards = this.listTaskDraggable[oldCardId];
                 var listNewCards = listOldCards.filter(v => v !== taskId);
                 this.listTaskDraggable[oldCardId] = listNewCards;
+                if (typeof this.listTaskDraggable[newCardId] == 'undefined') {
+                    this.listTaskDraggable[newCardId] = [];
+                }
                 this.listTaskDraggable[newCardId].push(taskId);
                 var data = {
                     'task_id' : taskId,

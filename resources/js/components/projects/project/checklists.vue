@@ -41,7 +41,6 @@ export default {
         showAddChecklist(id) {
             this.showActiveChecklist = {};
             this.showActiveChecklist[id] = !this.showActiveChecklist[id];
-            console.log(this.showActiveChecklist);
         },
 
         // add new list check in work todo
