@@ -31,8 +31,13 @@ const actions = {
         let res = await axios.post(`/api/tasks/index/${id}`) 
         if (res.status == 200) {
             commit('setTask', res.data.list_task); 
-            commit('setTaskDraggable', res.data.list_draggable); 
-            commit('setListProjectUsers', res.data.project_users); 
+            commit('setTaskDraggable', res.data.list_draggable);
+            if (res.data.project_users.length == 0) {
+                commit('setListProjectUsers', {});
+            } else{
+                commit('setListProjectUsers', res.data.project_users);
+            }
+             
         }
     },
 

@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Models\Project;
 use App\Models\Card;
 use App\Models\Tasks;
+use App\Models\ProjectUser;
 use Illuminate\Support\Str;
 
 class ProjectController extends Controller
@@ -82,6 +83,16 @@ class ProjectController extends Controller
         } elseif ($roles === 'manager') {
             $user     = User::with('projects')->find($user_id);
             $projects = $user->projects;
+        } else {
+            $user     = User::with('projects_user')->find($user_id);
+            $project_user = $user->projects_user;
+            // // $user_details = ProjectUser::find(20)->details_user;
+            // $user_details = ProjectUser::with('details_user')->find(20);
+            // var_dump($user_details->details_user);
+            $projects = [];
+            foreach ($project_user as $key => $project) {
+                $projects[] = Project::find($project->project_id);                
+            }
         }
         if (!empty($projects)) {
             foreach ($projects as $key => $project) {

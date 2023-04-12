@@ -20,7 +20,7 @@ export default {
         return {
             searchUsers : "",
             loading : false,
-            path : ''
+            path : '',
         };
     },
     computed: {
@@ -40,21 +40,21 @@ export default {
     methods: {
         ...taskMethods,   
         ... projectMethods,
-        async addUserProject(arr){
+        async addUserProject(event, arr){
             if (arr) {
-                if (this.projectId) {
+                if (this.projectId) {                   
                     var data = {
                         'project_id' : this.projectId,
                         'user_id' : arr['user_id'],
                         'action' : arr['action']
-                    }                    
-                    var results = await this.addRemoveUserInProject(data);
-                    if (arr['action'] == 'deactive') {
-                        delete this.projectUsers[arr['user_id']]
-                    }else{                      
+                    }             
+                    var results = await taskHelper.addRemoveUserInProject(data); 
+                    if ( arr['action'] == 'deactive') {
+                        delete this.projectUsers[arr['user_id']];
+                    }else{
                         if (results) {
-                            this.projectUsers[results.id] = results;
-                        }                        
+                            this.projectUsers[arr['user_id']] = results;
+                        }
                     }
                 }
             }
@@ -93,7 +93,7 @@ export default {
                         v-for="(user, index) in resultUsers"
                         :key="user.id"
                         :class="['list_member d-flex flex-row align-items-center']"
-                        @click="addUserProject({'user_id': user.id, 'action': projectUsers[user.id] ? 'deactive' : 'active'})"
+                        @click="addUserProject($event, {'user_id': user.id, 'action': projectUsers[user.id] ? 'deactive' : 'active'})"
                     >
                         <div class="avatar">
                             <div class="image">
