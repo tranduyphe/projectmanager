@@ -32,9 +32,6 @@ class Tasks extends Model
         return $this->belongsTo(Project::class, 'project_id');
     }
 
-    /**
-     * 
-     */
      /**
      * List worktodo.
      *
@@ -44,4 +41,5 @@ class Tasks extends Model
     {
         return $this->hasMany(WorkToDo::class, 'task_id');
     }
+
 }

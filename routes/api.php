@@ -10,6 +10,7 @@ use App\Http\Controllers\LabelController;
 use App\Http\Controllers\WorkTodoController;
 use App\Http\Controllers\CheckListController;
 use App\Http\Controllers\MediaController;
+use App\Http\Controllers\ProjectUserController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -36,7 +37,7 @@ Route::group(
 			function () {
 				Route::post( 'store', array( ProjectController::class, 'store' ) );
 				Route::post( 'create', array( ProjectController::class, 'create' ) );
-				// Route::get( '/{id}', array( ProjectController::class, 'show' ) );
+				Route::post( 'adduser', array( ProjectUserController::class, 'create' ) );
 			}
 		);
 

@@ -2,11 +2,13 @@ const state = {
     listProjects: [],
     projectData:{},
     loadingState: false,
+    // testdemo : 'hahahaha',
 };
 
 const getters = {
     listProjects: state => state.listProjects,
     projectData: state => state.projectData,
+    // testdemo: state => state.testdemo,
 };
 const actions = {  
     getProjects({ commit }) {
@@ -32,6 +34,11 @@ const actions = {
         if (res.status == 200) {
             commit('addItemProjects', res.data);
         }
+    },
+    // add user in project
+    async addRemoveUserInProject({ commit }, data){
+        let res = await axios.post(`/api/project/adduser`, data);
+        return res.data;
     }
 };
 
