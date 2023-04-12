@@ -36,6 +36,7 @@ export default {
             this.$emit('hideModalPopup', 'files');
             var data = await taskHelper.uploadFilesTask(data);
             if (data) {
+                this.listTasks[this.currentTask.id]['list_files'] = data.list_files;
                 this.file = null;
             }
         },
