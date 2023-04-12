@@ -53,7 +53,7 @@ class TaskController extends Controller
                     }
                     // get list labels add in task
                     if (!empty($tasks->labels)) {
-                        $list_tasks[$key]['task_labels'] = $this->listMembers($tasks->labels);
+                        $list_tasks[$key]['task_labels'] = $this->listLabels($tasks->labels);
                     }
                     
                     // get works to do in current task
@@ -71,6 +71,15 @@ class TaskController extends Controller
         }else{
             $data['list_draggable'] = [];
             $data['list_task'] = [];
+        }
+        $user_project = Project::with('projectuser')->find($project_id);
+        $data['project_users'] = [];
+        if (!empty($user_project->projectuser)) { 
+            $arr_user = [];      
+            foreach ($user_project->projectuser as $key => $user) {
+                $arr_user[$user->user_id] = User::find($user->user_id);
+            }
+            $data['project_users'] = $arr_user;
         }
         return response()->json($data);
     }
@@ -116,7 +125,7 @@ class TaskController extends Controller
         }
         // get list labels add in task
         if (!empty($tasks->labels)) {
-            $tasks['task_labels'] = $this->listMembers($tasks->labels);
+            $tasks['task_labels'] = $this->listLabels($tasks->labels);
         }
         // get works to do in current task
         $tasks['works'] = $this->listWorks($tasks->id);
@@ -168,7 +177,7 @@ class TaskController extends Controller
         }
         // get list labels add in task
         if (!empty($results->labels)) {
-            $results['task_labels'] = $this->listMembers($results->labels);
+            $results['task_labels'] = $this->listLabels($results->labels);
         }
         return response()->json($results);     
     }
@@ -205,7 +214,7 @@ class TaskController extends Controller
         }
         // get list labels add in task
         if (!empty($task->labels)) {
-            $task['task_labels'] = $this->listMembers($task->labels);
+            $task['task_labels'] = $this->listLabels($task->labels);
         }
         // get works to do in current task
         $task['works'] = $this->listWorks($task->id);

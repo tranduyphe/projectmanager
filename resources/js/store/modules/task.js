@@ -3,7 +3,8 @@ const state = {
     listCard: {}, // get all cart
     currentTask: {}, // get current task of project
     listUsers: {}, // get list user of department
-    listTaskDraggable: {}, // get list user of department
+    listTaskDraggable: {}, // get list task add drag,
+    listUserProject: {}, // get list user of project,
 };
 const getters = {
     listTasks: state => state.listTasks,
@@ -11,6 +12,7 @@ const getters = {
     currentTask: state => state.currentTask,
     listUsers: state => state.listUsers,
     listTaskDraggable: state => state.listTaskDraggable,
+    projectUsers: state => state.listUserProject,
 };
 const actions = {
     
@@ -30,6 +32,7 @@ const actions = {
         if (res.status == 200) {
             commit('setTask', res.data.list_task); 
             commit('setTaskDraggable', res.data.list_draggable); 
+            commit('setListProjectUsers', res.data.project_users); 
         }
     },
 
@@ -118,6 +121,9 @@ const mutations = {
     },
     setListUsers(state, payload){       
         state.listUsers = payload;
+    },
+    setListProjectUsers(state, payload){       
+        state.listUserProject = payload;
     },
 };
 

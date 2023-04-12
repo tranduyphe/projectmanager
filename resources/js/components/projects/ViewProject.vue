@@ -3,9 +3,16 @@ import { VueDraggableNext } from "vue-draggable-next";
 import PageHeader from "../layouts/page-header.vue";
 import moment from "moment";
 import { taskHelper } from "../../helpers/helptask";
-import { taskMethods, authMethods, labelMethods, taskGetters, labelGetters, authGetters } from "../../store/helpers";
+import {
+    taskMethods,
+    authMethods,
+    labelMethods,
+    taskGetters,
+    labelGetters,
+    authGetters
+} from "../../store/helpers";
 import MoveCard from "./project/MoveCard.vue";
-import CheckList from "./project/checklists.vue";
+import CheckList from "./project/CheckLists.vue";
 import TaskDeadline from "./project/TaskDeadline.vue";
 import FilesTask from "./project/FilesTask.vue";
 import FileUploads from "./project/UploadFiles.vue";
@@ -14,7 +21,10 @@ import Labels from "./project/Labels.vue";
 import Works from "./project/Words.vue";
 import DateTasks from "./project/DateTask.vue";
 import Description from "./project/Description.vue";
-export default {   
+import AddUser from "./project/AddUsers.vue";
+import MemberTask from "./project/MemberTask.vue";
+import LabelTask from "./project/LabelTask.vue";
+export default {
     page: {
         title: "Gosu Board",
         meta: [{ name: "description" }],
@@ -26,12 +36,15 @@ export default {
         TaskDeadline,
         MoveCard,
         FilesTask,
-        FileUploads, 
+        FileUploads,
         UserTask,
         Labels,
         Works,
         DateTasks,
-        Description
+        Description,
+        AddUser,
+        MemberTask,
+        LabelTask
     },
     data() {
         return {
@@ -40,7 +53,6 @@ export default {
             allPopUp: {},
             showModal: false,
             showActive: false,
-            showModalFilter2: false,
             project_id: parseInt(this.$route.params.id),
             placeholder: "Nhập tiêu đề cho thẻ này...",
             taskUpdate: {},
@@ -61,7 +73,7 @@ export default {
     computed: {
         ...taskGetters,
         ...labelGetters,
-        ...authGetters
+        ...authGetters,
     },
     methods: {
         ...taskMethods,
@@ -81,12 +93,14 @@ export default {
             if (this.newTasks && this.newTasks["title_" + $id]) {
                 var newTask = await this.createNewTask(this.newTasks);
                 if (typeof newTask != "undefined") {
-                    if (typeof this.listTaskDraggable[newTask.card_id] == 'undefined') {
+                    if (
+                        typeof this.listTaskDraggable[newTask.card_id] ==
+                        "undefined"
+                    ) {
                         this.listTaskDraggable[newTask.card_id] = [];
                     }
-                    this.listTasks[newTask.id] = newTask
+                    this.listTasks[newTask.id] = newTask;
                     this.listTaskDraggable[newTask.card_id].push(newTask.id);
-                    
                 }
                 this.newTasks = {};
             }
@@ -127,85 +141,81 @@ export default {
                 // }
             }
         },
-        //updated data task
-        async updateDataCurrentTask( obj ) {
-            await taskHelper.updateDataTask( obj )
-        },
         // calculate number check list
-        calulateCheckList(data){
+        calulateCheckList(data) {
             return taskHelper.calculateListWorkTodo(data);
         },
-        async onPaste (pasteEvent, callback) {            
-            if (!this.allPopUp['editor']) {
-                if(pasteEvent.clipboardData == false){
-                    if(typeof(callback) == "function"){
+        async onPaste(pasteEvent, callback) {
+            if (!this.allPopUp["editor"]) {
+                if (pasteEvent.clipboardData == false) {
+                    if (typeof callback == "function") {
                         callback(undefined);
                     }
-                };
-                var url = pasteEvent.clipboardData.getData('text');
+                }
+                var url = pasteEvent.clipboardData.getData("text");
                 if (taskHelper.validateUrl(url)) {
-                    var dataUrl = taskHelper.validateUrl(url)
+                    var dataUrl = taskHelper.validateUrl(url);
                     var data = {
-                        'url': url,
-                        'name': dataUrl[4],
-                        'task_id': this.currentTask.id
-                    }
+                        url: url,
+                        name: dataUrl[4],
+                        task_id: this.currentTask.id,
+                    };
                     var results = await this.uploadFile(data);
                     if (results) {
-                        this.listTasks[this.currentTask.id]['list_files'] = results.list_files;
-                        this.currentTask['list_files'] = results.list_files
+                        this.listTasks[this.currentTask.id]["list_files"] =
+                            results.list_files;
+                        this.currentTask["list_files"] = results.list_files;
                     }
-                }else{
+                } else {
                     var items = pasteEvent.clipboardData.items;
-                    if(items == undefined){
-                        if(typeof(callback) == "function"){
+                    if (items == undefined) {
+                        if (typeof callback == "function") {
                             callback(undefined);
                         }
-                    };
+                    }
                     for (var i = 0; i < items.length; i++) {
                         if (items[i].type.indexOf("image") == -1) continue;
                         var blob = items[i].getAsFile();
                         const fileUpload = new Blob([blob], blob);
                         const formData = new FormData();
-                        formData.append('file', fileUpload, blob.name);
-                        formData.append('task_id', this.currentTask.id);                        
+                        formData.append("file", fileUpload, blob.name);
+                        formData.append("task_id", this.currentTask.id);
                     }
-                    if (typeof formData != 'undefined') {
+                    if (typeof formData != "undefined") {
                         var results = await this.uploadFile(formData);
                         if (results) {
                             this.listTasks[this.currentTask.id] = results;
-                            this.currentTask['list_files'] = results.list_files
+                            this.currentTask["list_files"] = results.list_files;
                         }
                     }
-                    
                 }
-            }            
+            }
         },
 
-        // hidden modal 
-        hideModalPopup(data){
+        // hidden modal
+        hideModalPopup(data) {
             this.allPopUp[data] = false;
         },
-        // hidden modal 
-        showModalPopup(data){
+        // hidden modal
+        showModalPopup(data) {
             this.allPopUp[data] = true;
         },
 
         // calculate files cards
-        fileTasks(data){
+        fileTasks(data) {
             return taskHelper.countFileTasks(data);
-        }
+        },
     },
     async created() {
         await this.auth();
         await this.getListCards();
-        await this.getLabels();        
+        await this.getLabels();
         await this.getListTasks(this.$route.params.id);
     },
 
-    async mounted() {        
+    async mounted() {
         document.body.classList.remove("auth-body-bg");
-        document.body.classList.add("page-task"); 
+        document.body.classList.add("page-task");
     },
 };
 </script>
@@ -216,7 +226,7 @@ export default {
         @hide="onHideModal"
         size="lg"
         hide-footer
-        hide-header        
+        hide-header
     >
         <div :class="['container-fluid']">
             <div :class="['row']">
@@ -238,92 +248,24 @@ export default {
                 </div>
                 <div :class="['col-9']">
                     <div :class="['content-main-info']">
-                        <div class="member" v-if="currentTask.members">
-                            <p>Thành viên</p>
-                            <div :class="['d-flex align-items-center']" >
-                            <div class="list_user">
-                                <div
-                                    class="user"
-                                    v-for="(
-                                        userTask, index
-                                    ) in currentTask.members"
-                                    :key="index"
-                                >
-                                    <img
-                                        src="/images/avatar-2.jpg?feb0f89de58f0ef9b424b1beec766bd2"
-                                        :title="userTask.name"
-                                    />
-                                </div>
-                            </div>
-                            <div class="btn_add_user d-flex align-items-center justify-content-center ms-2">
-                                <i class="ri-add-line"></i>
-                            </div>
-                          </div>
-                            
-                        </div>
-                        <div class="label" v-if="currentTask.task_labels">
-                            <p>Nhãn</p>
-                            <div class="list_label">
-                                <div class="name_label" :style="{ background: label.color}"
-                                v-for="(
-                                    label, index
-                                ) in currentTask.task_labels"
-                                :key="index"
-                                >
-                                    <!-- <div class="label_active"></div> -->
-                                </div> 
-                                <div class="btn_add_label" @click="showModalFilter2 =true">
-                                   
-                                   <div class="item">
-                                       <i class="ri-add-line"></i>
-                                   </div>
-                               <div class="modalFilter modalFilter2" v-if="showModalFilter2">
-                                   <div
-                                       :class="[
-                                           'modalFilter-header d-flex flex-row align-items-center justify-content-between',
-                                       ]"
-                                   >
-                                       <span>Nhãn</span>
-                                       <a
-                                           @click.stop="
-                                               showModalFilter2 =
-                                                   !showModalFilter2
-                                           "
-                                           ><i class="ri-close-line"></i
-                                       ></a>
-                                   </div>
-                                   <div class="filter_of_table" v-for="(label,index) in listItemLabels" :key="index">
-                                       <div
-                                           class="list_color d-flex flex-row align-items-center"
-                                           
-                                           @click="updateDataCurrentTask(
-                                               {
-                                                   'action' : currentTask.task_labels ? !currentTask.task_labels[label.id] ? 'active' : 'deactive' : 'active',
-                                                   'id' : label.id,
-                                                   'data': label,
-                                                   'key' : 'task_labels',
-                                                   'field': 'labels',
-                                               }
-                                           )"
-                                       >
-                                           <i :class="`${ currentTask.task_labels ? !currentTask.task_labels[label.id] ? 'ri-checkbox-blank-line' : 'ri-checkbox-line' : 'ri-checkbox-blank-line' }`"></i>
-                                           <div class="color color1"  :style="{ background: label.color}">
-                                               <!-- <div class="color_child"></div> -->
-                                               <p class="ms-2">{{ label.name }}</p>
-                                           </div>
-                                       </div>                                       
-                                   </div>
-                               </div>
-                               </div>                                
-                            </div>
-                        </div>
-                        <TaskDeadline :deadline="currentTask.deadline"></TaskDeadline>
+                        <MemberTask />
+                        <LabelTask />
+                        <TaskDeadline
+                            :deadline="currentTask.deadline"
+                        ></TaskDeadline>
                     </div>
                     <div :class="['content-main-detail']">
-                        <Description @showModalPopup = "showModalPopup" @hideModalPopup = "hideModalPopup" :popupFiles="allPopUp['editor']"></Description>                                               
-                        <CheckList :works="currentTask.works"></CheckList>   
-                        <FilesTask @showModalPopup = "showModalPopup" @hideModalPopup = "hideModalPopup" :popupFiles="allPopUp['files1']"></FilesTask>   
-                                             
+                        <Description
+                            @showModalPopup="showModalPopup"
+                            @hideModalPopup="hideModalPopup"
+                            :popupFiles="allPopUp['editor']"
+                        ></Description>
+                        <CheckList :works="currentTask.works"></CheckList>
+                        <FilesTask
+                            @showModalPopup="showModalPopup"
+                            @hideModalPopup="hideModalPopup"
+                            :popupFiles="allPopUp['files1']"
+                        ></FilesTask>
                     </div>
                     <div :class="['content-main-detail']">
                         <h6 d-flex flex-row align-items-center>
@@ -331,13 +273,13 @@ export default {
                         </h6>
                         <div class="textarea">
                             <textarea
-                            class="textarea_active"
-                            placeholder="Viết bình luận..."
-                            v-if="!showActive"
-                            @click-outside="showActive = !showActive"
-                        ></textarea>
+                                class="textarea_active"
+                                placeholder="Viết bình luận..."
+                                v-if="!showActive"
+                                @click-outside="showActive = !showActive"
+                            ></textarea>
                         </div>
-                        
+
                         <div :class="['description']" v-if="showActive">
                             <div :class="['content-desc']"></div>
                             <div :class="['content-editor']">
@@ -381,15 +323,37 @@ export default {
                     <div :class="['list-item']">
                         <h6>Thêm vào thẻ</h6>
                         <b-list-group>
-                            <UserTask @showModalPopup = "showModalPopup" @hideModalPopup = "hideModalPopup" :popupFiles="allPopUp['user']"></UserTask>
-                            <Labels :labels = "listItemLabels" @showModalPopup = "showModalPopup" @hideModalPopup = "hideModalPopup" :popupFiles="allPopUp['label']"></Labels>                            
-                            <Works @showModalPopup = "showModalPopup" @hideModalPopup = "hideModalPopup" :popupFiles="allPopUp['works']"></Works>                            
-                            <DateTasks></DateTasks>                            
-                            <FileUploads @showModalPopup = "showModalPopup" @hideModalPopup = "hideModalPopup" :popupFiles="allPopUp['files']"></FileUploads> 
+                            <UserTask
+                                @showModalPopup="showModalPopup"
+                                @hideModalPopup="hideModalPopup"
+                                :popupFiles="allPopUp['user']"
+                            ></UserTask>
+                            <Labels
+                                :labels="listItemLabels"
+                                @showModalPopup="showModalPopup"
+                                @hideModalPopup="hideModalPopup"
+                                :popupFiles="allPopUp['label']"
+                            ></Labels>
+                            <Works
+                                @showModalPopup="showModalPopup"
+                                @hideModalPopup="hideModalPopup"
+                                :popupFiles="allPopUp['works']"
+                            ></Works>
+                            <DateTasks></DateTasks>
+                            <FileUploads
+                                @showModalPopup="showModalPopup"
+                                @hideModalPopup="hideModalPopup"
+                                :popupFiles="allPopUp['files']"
+                            ></FileUploads>
                         </b-list-group>
                     </div>
                     <div :class="['list-item']">
-                        <MoveCard :cards="listCard"  @showModalPopup = "showModalPopup" @hideModalPopup = "hideModalPopup" :popupFiles="allPopUp['move']"></MoveCard> 
+                        <MoveCard
+                            :cards="listCard"
+                            @showModalPopup="showModalPopup"
+                            @hideModalPopup="hideModalPopup"
+                            :popupFiles="allPopUp['move']"
+                        ></MoveCard>
                     </div>
                 </div>
             </div>
@@ -442,25 +406,25 @@ export default {
                 <div class="list_user">
                     <div class="avatar">
                         <img
-                            src="/images/avatar-1.jpg?feb0f89de58f0ef9b424b1beec766bd2"
+                            src="/images/avatar-1.jpg"
                             alt=""
                         />
                     </div>
                     <div class="avatar">
                         <img
-                            src="/images/avatar-2.jpg?feb0f89de58f0ef9b424b1beec766bd2"
+                            src="/images/avatar-2.jpg"
                             alt=""
                         />
                     </div>
                     <div class="avatar">
                         <img
-                            src="/images/avatar-3.jpg?feb0f89de58f0ef9b424b1beec766bd2"
+                            src="/images/avatar-3.jpg"
                             alt=""
                         />
                     </div>
                     <div class="avatar">
                         <img
-                            src="/images/avatar-4.jpg?feb0f89de58f0ef9b424b1beec766bd2"
+                            src="/images/avatar-4.jpg"
                             alt=""
                         />
                     </div>
@@ -490,60 +454,8 @@ export default {
                     </div>
                 </div>
             </div>
-            <div class="col-lg-6">
-                <div class="text-end">
-                    <ul class="list-inline mb-0">
-                        <li class="list-inline-item">
-                            <a
-                                href="javascript: void(0);"
-                                class="d-inline-block"
-                                v-b-tooltip.hover
-                                title="Aaron Williams"
-                            >
-                                <img
-                                    src="@/assets/images/users/avatar-2.jpg"
-                                    class="rounded-circle avatar-xs"
-                                    alt
-                                />
-                            </a>
-                        </li>
-                        <li class="list-inline-item">
-                            <a
-                                href="javascript: void(0);"
-                                class="d-inline-block"
-                                v-b-tooltip.hover
-                                title="Jonathan McKinney"
-                            >
-                                <div class="avatar-xs">
-                                    <span
-                                        class="avatar-title rounded-circle bg-soft-primary text-primary"
-                                        >J</span
-                                    >
-                                </div>
-                            </a>
-                        </li>
-                        <li class="list-inline-item">
-                            <a
-                                href="javascript: void(0);"
-                                class="d-inline-block"
-                                v-b-tooltip.hover
-                                title="Carole Connolly"
-                            >
-                                <img
-                                    src="@/assets/images/users/avatar-4.jpg"
-                                    class="rounded-circle avatar-xs"
-                                    alt
-                                />
-                            </a>
-                        </li>
-
-                        <li class="list-inline-item">
-                            <a href="javascript: void(0);" class="py-1">
-                                <i class="mdi mdi-plus me-1"></i> New member
-                            </a>
-                        </li>
-                    </ul>
-                </div>
+            <div class="col-lg-6">                
+                <AddUser :projectId="project_id"/>
             </div>
         </div>
         <div class="row">
@@ -552,27 +464,26 @@ export default {
                 :key="index++"
                 :class="['col-3']"
             >
-                
                 <div class="card card_main">
-                  <div class="card-body card_header">
-                    <h4 class="card-title">{{ card.title }}</h4>
-                    <b-dropdown right class="float-end" variant="white">
-                        <template v-slot:button-content>
-                            <!-- <i
-                                class="mdi mdi-dots-vertical m-0 text-muted font-size-20"
-                                
-                            ></i> -->
-                            <i class="ri-more-fill m-0 text-muted font-size-20"></i>
-                        </template>
-                        <b-dropdown-item>Edit</b-dropdown-item>
-                        <b-dropdown-item>Delete</b-dropdown-item>
-                    </b-dropdown>
+                    <div class="card-body card_header">
+                        <h4 class="card-title">{{ card.title }}</h4>
+                        <b-dropdown right class="float-end" variant="white">
+                            <template v-slot:button-content>
+                                <i
+                                    class="ri-more-fill m-0 text-muted font-size-20"
+                                ></i>
+                            </template>
+                            <b-dropdown-item>Edit</b-dropdown-item>
+                            <b-dropdown-item>Delete</b-dropdown-item>
+                        </b-dropdown>
 
-                    <!-- end dropdown -->
-                    
-                </div>
+                        <!-- end dropdown -->
+                    </div>
                     <div class="card-body border-bottom card-content">
-                        <div :id="`${'wrap_card_'+card.id}`" class="task-list">
+                        <div
+                            :id="`${'wrap_card_' + card.id}`"
+                            class="task-list"
+                        >
                             <draggable
                                 class="list-group"
                                 group="tasks"
@@ -585,21 +496,36 @@ export default {
                                         card.id
                                     ]"
                                     :key="index"
-                                    :id="`${'task_'+task}`"
+                                    :id="`${'task_' + task}`"
                                     @click="showTask(listTasks[task])"
                                 >
                                     <!-- <pre>{{ JSON.stringify(task, undefined, 4) }}</pre> -->
-                                    <b-progress :value="calulateCheckList(listTasks[task].works).percentTask" :max="100" :variant="`${calulateCheckList(listTasks[task].works).percentTask == 100 ? 'success' : ''}`"></b-progress>
+                                    <b-progress
+                                        :value="
+                                            calulateCheckList(
+                                                listTasks[task].works
+                                            ).percentTask
+                                        "
+                                        :max="100"
+                                        :variant="`${
+                                            calulateCheckList(
+                                                listTasks[task].works
+                                            ).percentTask == 100
+                                                ? 'success'
+                                                : ''
+                                        }`"
+                                    ></b-progress>
                                     <div class="card-body cursor-pointer">
-                                        <div class="list_filter" v-if="listTasks[
-                                                        task
-                                                    ].task_labels">
-                                            <div class="filter" 
-                                                v-for="member in listTasks[
-                                                    task
-                                                ].task_labels"                                               
-                                            >
-                                            </div>
+                                        <div
+                                            class="list_filter"
+                                            v-if="listTasks[task].task_labels"
+                                        >
+                                            <div
+                                                class="filter"
+                                                v-for="label in listTasks[task]
+                                                    .task_labels"
+                                                :style="{ backgroundColor: `${label.color}`}"
+                                            ></div>
                                         </div>
                                         <div class="float-end ml-2">
                                             <div>
@@ -628,17 +554,41 @@ export default {
                                             </h5>
                                         </div>
                                         <div class="d-flex team mb-0">
-                                            <div :class="['d-flex align-items-center']" v-if="listTasks[task].list_files">
+                                            <div
+                                                :class="[
+                                                    'd-flex align-items-center',
+                                                ]"
+                                                v-if="
+                                                    listTasks[task].list_files
+                                                "
+                                            >
                                                 <i class="ri-attachment-2"></i>
-                                                {{ fileTasks(listTasks[task].list_files) }}
+                                                {{
+                                                    fileTasks(
+                                                        listTasks[task]
+                                                            .list_files
+                                                    )
+                                                }}
                                             </div>
-                                            <div 
-                                                :class="['d-flex align-items-center']"
-                                                v-if = "calulateCheckList(listTasks[task].works).total != 0"
-                                            >   
+                                            <div
+                                                :class="[
+                                                    'd-flex align-items-center',
+                                                ]"
+                                                v-if="
+                                                    calulateCheckList(
+                                                        listTasks[task].works
+                                                    ).total != 0
+                                                "
+                                            >
                                                 <i class="ri-checkbox-line"></i>
-                                                {{ 
-                                                   calulateCheckList(listTasks[task].works).done+'/'+calulateCheckList(listTasks[task].works).total
+                                                {{
+                                                    calulateCheckList(
+                                                        listTasks[task].works
+                                                    ).done +
+                                                    "/" +
+                                                    calulateCheckList(
+                                                        listTasks[task].works
+                                                    ).total
                                                 }}
                                             </div>
                                             <div
