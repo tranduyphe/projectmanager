@@ -31,17 +31,17 @@ export default {
             this.projectData = {};
         },
 
-        getDataProject() {},
     },
     created() {
-        this.auth();
         this.getProjects();
+        this.auth();
     },
     mounted() {
         // console.log(this.listProjects);
     },
 };
 </script>
+
 <template>
     <div class="container-fluid">
         <div class="row no-gutters">
@@ -112,7 +112,6 @@ export default {
                         >Add new project</b-button
                     >
                 </div>
-
                 <div class="authentication-page-content p-4 d-flex min-vh-100">
                     <div class="w-100">
                         <div class="recently-viewed">
@@ -127,7 +126,17 @@ export default {
                                                 name: 'viewproject',
                                                 params: { id: project.id },
                                             }"
-                                            class="p-1 mr-1 cursor-pointer"
+                                            class="p-1 mr-1 cursor-pointer" 
+                                            v-if="authUserData.roles[0].name != 'manager'"                                       
+                                        >
+                                            <p>{{ project.title }}</p>
+                                        </router-link>
+                                        <router-link
+                                            :to="{
+                                                
+                                            }"
+                                            class="p-1 mr-1 cursor-pointer" 
+                                            v-else                                      
                                         >
                                             <p>{{ project.title }}</p>
                                         </router-link>

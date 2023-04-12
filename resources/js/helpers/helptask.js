@@ -14,7 +14,8 @@ export const taskHelper = {
     convertDate,
     validateUrl,
     uploadFilesTask,
-    countFileTasks
+    countFileTasks,
+    addRemoveUserInProject
 };
 
 function isEmptyObject(obj) {
@@ -262,4 +263,29 @@ function countFileTasks(data){
         count = Object.keys(data).length;
     }
     return count;
+}
+
+/**
+ * 
+ */
+async function addRemoveUserInProject(data){
+    var results =  await store.dispatch( 'addRemoveUserInProject', data );
+    return results;
+    // if (data['action'] == 'deactive') {
+    //     delete store.getters.projectUsers[data['user_id']];
+    // }else{                
+    //     // if (results) {
+    //         console.log(store.getters.projectUsers);
+    //         // if (typeof store.getters.projectUsers.length != 'undefined') {
+    //         //     if (store.getters.projectUsers.length == 0) {
+    //         //         store.getters.projectUsers = []
+    //         //     }
+    //         // }
+    //         // console.log(store.getters.projectUsers[results.id]);
+    //         // if (typeof store.getters.projectUsers[2]  == 'undefined') {
+    //             store.getters.projectUsers[2] = 'aa';
+    //         // }
+    //         // console.log('projectUsers', store.getters.projectUsers)
+    //     // }                 
+    // } 
 }

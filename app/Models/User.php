@@ -10,6 +10,7 @@ use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use App\Models\Project;
 use App\Models\DepartmentUser;
+use App\Models\ProjectUser;
 
 class User extends Authenticatable
 {
@@ -63,5 +64,15 @@ class User extends Authenticatable
     public function detail_user_department()
     {
         return $this->hasOne(DepartmentUser::class, 'user_id');
+    }
+
+    /**
+     * List projetcs user.
+     *
+     * @var $user_id
+     */
+    public function projects_user()
+    {
+        return $this->hasMany(ProjectUser::class, 'user_id');
     }
 }      
