@@ -114,6 +114,11 @@ async function addcheckLists( data ) {
     if (typeof results != 'undefined') {
         if (store.getters.currentTask.works[data.id]['check_list'].length == 0) {
             store.getters.currentTask.works[data.id]['check_list'] = {};
+        }
+        if (typeof store.getters.listTasks[task_id].works[data.id] == 'undefined') {
+            store.getters.listTasks[task_id].works[data.id] = {}
+        }
+        if (typeof store.getters.listTasks[task_id].works[data.id]['check_list'] == 'undefined') {
             store.getters.listTasks[task_id].works[data.id]['check_list'] = {};
         }
         store.getters.currentTask.works[data.id]['check_list'][results.id] = results;
@@ -232,8 +237,11 @@ function convertDate(dateFiles){
  * @returns 
  */
 function validateUrl(url) {
-    const regex = RegExp('(https?:\\/\\/)?((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|((\\d{1,3}\\.){3}\\d{1,3}))(\\:\\d+)?(\\/[-a-z\\d%_.~+@]*)*(\\?[;&a-z\\d%_.~+=-@]*)?(\\#[-a-z\\d_@]*)?$', 'i');
-    return url.match(regex);
+    try {
+        return new URL(url);
+    } catch (error) {
+        return false;
+    }
 }
 
 /**

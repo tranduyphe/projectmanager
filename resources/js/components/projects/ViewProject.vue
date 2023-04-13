@@ -157,7 +157,7 @@ export default {
                     var dataUrl = taskHelper.validateUrl(url);
                     var data = {
                         url: url,
-                        name: dataUrl[4],
+                        name: dataUrl.hostname,
                         task_id: this.currentTask.id,
                     };
                     var results = await this.uploadFile(data);
