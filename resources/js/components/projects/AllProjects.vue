@@ -1,29 +1,39 @@
 <script>
-import { mapGetters, mapActions, mutations } from "vuex";
+// import { mapGetters, mapActions, mutations } from "vuex";
 import { VueEditor } from "vue3-editor";
+import { staticProject } from "../../helpers/statisproject";
+import {
+    projectMethods,
+    projectGetters,
+    authMethods,
+    authGetters
+} from "../../store/helpers";
 export default {
     components: {
         VueEditor,
+        
     },
     data() {
         return {
             projectData: this.$store.getters.projectData,
             authData: this.$store.getters.getAuthUserData,
-            loading: false,
             show: false,
         };
     },
     computed: {
-        ...mapGetters(["listProjects", "authUserData"]),
+        ...projectGetters,
+        ...authGetters,
     },
     methods: {
-        ...mapActions(["getProjects", "createProject", "auth"]),
-        showModal() {
+        ...projectMethods,
+        ...authMethods,
+        showModalCreateProject() {
             this.show = true;
         },
 
-        addProject() {
-            this.createProject(this.projectData);
+        async addProject() {
+            var data = await this.createProject(this.projectData);
+            this.listProjects.push(data);
             this.show = false;
         },
 
@@ -31,13 +41,14 @@ export default {
             this.projectData = {};
         },
 
+        statisticalProject(data){
+            return staticProject.statisticalTasks(data);
+        },
+
     },
-    created() {
-        this.getProjects();
+    async created() {       
         this.auth();
-    },
-    mounted() {
-        // console.log(this.listProjects);
+        await this.getProjects();
     },
 };
 </script>
@@ -108,7 +119,7 @@ export default {
                             </div>
                         </form>
                     </b-modal>
-                    <b-button variant="primary" @click="showModal"
+                    <b-button variant="primary" @click="showModalCreateProject"
                         >Add new project</b-button
                     >
                 </div>
@@ -116,30 +127,36 @@ export default {
                     <div class="w-100">
                         <div class="recently-viewed">
                             <div class="recently-viewed-content">
-                                <ul :class="['list_item']">
-                                    <li
+                                <div :class="['list_item']">
+                                    <div
                                         v-for="(project, index) in listProjects"
                                         :class="['item mb-5']"
                                     >
-                                        <router-link
-                                            :to="{
-                                                name: 'viewproject',
-                                                params: { id: project.id },
-                                            }"
-                                            class="p-1 mr-1 cursor-pointer" 
-                                            v-if="authUserData.roles[0].name != 'manager'"                                       
-                                        >
-                                            <p>{{ project.title }}</p>
-                                        </router-link>
-                                        <router-link
-                                            :to="{
-                                                
-                                            }"
-                                            class="p-1 mr-1 cursor-pointer" 
-                                            v-else                                      
-                                        >
-                                            <p>{{ project.title }}</p>
-                                        </router-link>
+                                        <div class="item-project" v-if="authUserData.roles[0].name != 'manager'">
+                                            <router-link
+                                                :to="{
+                                                    name: 'viewproject',
+                                                    params: { id: project.id },
+                                                }"
+                                                class="p-1 mr-1 cursor-pointer"                                                                                        
+                                            >
+                                                <p>{{ project.title }}</p>  
+                                                {{ statisticalProject(project.data_task) }}                                     
+                                            </router-link>
+                                        </div>
+                                        <div class="item-project" v-else>
+                                            <router-link
+                                                :to="{
+                                                    name: 'viewproject',
+                                                    params: { id: project.id },
+                                                }"
+                                                class="p-1 mr-1 cursor-pointer" 
+                                                                                      
+                                            >
+                                                <p>{{ project.title }}</p>
+                                                {{ statisticalProject(project.data_task) }}
+                                            </router-link>
+                                        </div>
                                         <div class="item-icon">
                                             <div
                                                 class="icon-active"
@@ -152,8 +169,8 @@ export default {
                                                 <i class="ri-star-line"></i>
                                             </div>
                                         </div>
-                                    </li>
-                                </ul>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

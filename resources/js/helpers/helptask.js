@@ -1,5 +1,4 @@
-import { forEach } from 'lodash';
-import { store } from '../store/store';
+import { store } from '../store/store';// không thể dùng nhiều store
 import moment from "moment";
 export const taskHelper = {
     isEmptyObject,
@@ -15,10 +14,11 @@ export const taskHelper = {
     validateUrl,
     uploadFilesTask,
     countFileTasks,
-    addRemoveUserInProject
+    addRemoveUserInProject, 
 };
 
 function isEmptyObject(obj) {
+    console.log(store)
     return Object.keys(obj).length === 0;
 }
 
@@ -274,26 +274,10 @@ function countFileTasks(data){
 }
 
 /**
- * 
+ *  function add or remove user in project
+ *  @param {*} data key action: active or deactive, user_id, project id
  */
 async function addRemoveUserInProject(data){
     var results =  await store.dispatch( 'addRemoveUserInProject', data );
     return results;
-    // if (data['action'] == 'deactive') {
-    //     delete store.getters.projectUsers[data['user_id']];
-    // }else{                
-    //     // if (results) {
-    //         console.log(store.getters.projectUsers);
-    //         // if (typeof store.getters.projectUsers.length != 'undefined') {
-    //         //     if (store.getters.projectUsers.length == 0) {
-    //         //         store.getters.projectUsers = []
-    //         //     }
-    //         // }
-    //         // console.log(store.getters.projectUsers[results.id]);
-    //         // if (typeof store.getters.projectUsers[2]  == 'undefined') {
-    //             store.getters.projectUsers[2] = 'aa';
-    //         // }
-    //         // console.log('projectUsers', store.getters.projectUsers)
-    //     // }                 
-    // } 
 }

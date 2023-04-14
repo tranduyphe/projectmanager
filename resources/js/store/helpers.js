@@ -5,5 +5,5 @@ export const authMethods = mapActions(['auth', 'logout']);
 export const authGetters = mapGetters(['authUserData']);
 export const labelMethods = mapActions(['getLabels']);
 export const labelGetters = mapGetters(['listItemLabels']);
-export const projectMethods = mapActions(['addRemoveUserInProject']);
-// export const projectGetters = mapGetters(['testdemo']);
+export const projectMethods = mapActions(['addRemoveUserInProject', 'getProjects', 'createProject']);
+export const projectGetters = mapGetters(['listProjects', 'projectData']);

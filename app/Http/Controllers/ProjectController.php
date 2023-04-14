@@ -71,11 +71,13 @@ class ProjectController extends Controller
         $roles    = $user->getRoleNames()->first();
         $users    = User::with('detail_user_department')->find($user_id);
         
-        if (!empty($users)) {
-            $details = $users->detail_user_department;
-            $department_id = $details->department_id;
-        }else{
-            $department_id = 2;
+        if ($roles !== 'manager' && $roles !== 'administrator') {
+            if (!empty($users)) {
+                $details = $users->detail_user_department;
+                $department_id = $details->department_id;
+            }else{
+                $department_id = 2;
+            }
         }
         
         if ( $roles === 'administrator' || $roles === 'leader' ) {
