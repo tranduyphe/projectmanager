@@ -65,6 +65,9 @@ const actions = {
     //add department id when role admin
     department({commit}, id) {
         commit('mutateDepartmentId', id);
+        sessionStorage.setItem(
+            'departmentId', id
+        );
     }, 
 };
 

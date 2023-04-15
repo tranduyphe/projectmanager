@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use App\Models\User;
+use App\Models\DepartmentUser;
 use App\Models\Project;
 use App\Models\Card;
 use App\Models\Tasks;
@@ -19,22 +20,29 @@ class TaskController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index($project_id)
+    public function index(Request $request)
     {
         $user     = Auth::user();
         $user_id  = $user->id;
         $roles    = $user->getRoleNames()->first();
         $users    = User::with('detail_user_department')->find($user_id);
-        $cards = Card::all();
-        $results = [];
-        $tests = [];
-        $data = [];
-        if (!empty($users)) {
-            $details = $users->detail_user_department;
-            $department_id = $details->department_id;
+        $cards    = Card::all();
+        $labels   = Label::all();
+        $results  = [];
+        $data     = [];
+        $project_id = $request->input('project_id');
+
+        // check admin
+        if ($roles == 'administrator') {
+            $department_id = $request->input('department_id');
         }else{
-            $department_id = 2;
+            if (!empty($users)) {
+                $details = $users->detail_user_department;
+                $department_id = $details->department_id;
+            }
         }
+
+
         foreach ($cards as $key => $card) {            
             $card_id = $card->id;
             $list_tasks = Tasks::where([
@@ -65,6 +73,7 @@ class TaskController extends Controller
             }
 
         }
+
         if (!empty($list_draggable)) {
             $data['list_draggable'] = $list_draggable;
             $data['list_task'] = $results;
@@ -72,7 +81,10 @@ class TaskController extends Controller
             $data['list_draggable'] = [];
             $data['list_task'] = [];
         }
-        $user_project = Project::with('projectuser')->find($project_id);
+        
+        
+        // get user in project
+        $user_project = Project::with('projectuser')->find($project_id);  
         $data['project_users'] = [];
         if (!empty($user_project->projectuser)) { 
             $arr_user = [];      
@@ -81,6 +93,21 @@ class TaskController extends Controller
             }
             $data['project_users'] = $arr_user;
         }
+
+        // get list user of department
+        $data['list_user'] = [];
+        $list_user = DepartmentUser::where('department_id', '=', $department_id)->get();
+        if (!empty($list_user)) {
+            $arr = [];      
+            foreach ($list_user as $key => $user) {
+                $arr[$user->user_id] = User::find($user->user_id);
+            }
+            $data['list_user'] = $arr;
+        }
+
+        $data['labels'] = $labels;
+        $data['cards'] = $cards;
+
         return response()->json($data);
     }
 
@@ -93,6 +120,7 @@ class TaskController extends Controller
     {
         $user       = Auth::user();
         $user_id    = $user->id;
+        $roles      = $user->getRoleNames()->first();
         $card_id    = $request->input('card_id');
         $title      = $request->input('title_'.$card_id); 
         $project_id = $request->input('project_id'); 
@@ -102,11 +130,13 @@ class TaskController extends Controller
         }
         $users = User::with('detail_user_department')->find($user_id);
         
-        if (!empty($users)) {
-            $details = $users->detail_user_department;
-            $department_id = $details->department_id;
+        if ($roles == 'administrator') {
+            $department_id = $request->input('department_id');
         }else{
-            $department_id = 1;
+            if (!empty($users)) {
+                $details = $users->detail_user_department;
+                $department_id = $details->department_id;
+            }
         }
         
         $tasks = new Tasks([

@@ -5,6 +5,7 @@ const state = {
     listUsers: {}, // get list user of department
     listTaskDraggable: {}, // get list task add drag,
     listUserProject: {}, // get list user of project,
+    listItemLabels: {}, // get list label of task,
     loadingStatus: false,
 };
 const getters = {
@@ -14,26 +15,20 @@ const getters = {
     listUsers: state => state.listUsers,
     listTaskDraggable: state => state.listTaskDraggable,
     projectUsers: state => state.listUserProject,
+    listItemLabels: state => state.listItemLabels,
     loadingStatus: state => state.loadingStatus,
 };
-const actions = {
-    
-    // get list cards
-    async getListCards({commit}) {
-        state.listCard = {}
-        let res = await axios.post(`/api/card`);
-        if (res.status == 200) {           
-            commit('setCard', res.data.cards);
-            commit('setListUsers', res.data.list_user);
-        } 
-    },
+const actions = {   
 
     // get all task
-    async getListTasks({commit}, id) {        
-        let res = await axios.post(`/api/tasks/index/${id}`) 
+    async getListTasks({commit}, data) {        
+        let res = await axios.post(`/api/tasks/index`, data) 
         if (res.status == 200) {
             commit('setTask', res.data.list_task); 
             commit('setTaskDraggable', res.data.list_draggable);
+            commit('setCard', res.data.cards);
+            commit('setListUsers', res.data.list_user);
+            commit('setLabels', res.data.labels); 
             if (res.data.project_users.length == 0) {
                 commit('setListProjectUsers', {});
             } else{
@@ -135,6 +130,9 @@ const mutations = {
     },
     setListProjectUsers(state, payload){       
         state.listUserProject = payload;
+    },
+    setLabels(state, payload){
+        state.listItemLabels = payload;
     },
     loadingStatus: (state, payload) => (state.loadingStatus = payload),
 };

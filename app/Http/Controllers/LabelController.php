@@ -13,8 +13,7 @@ class LabelController extends Controller
      */
     public function index()
     {
-        $results = Label::all();
-        return response()->json($results);
+
     }
 
     /**

@@ -32,7 +32,7 @@ export default {
     methods: {
         ...taskMethods,
         async moveTask(e, card_id) {
-            e.stopPropagation();
+            // e.stopPropagation();
             var oldCardId = this.currentTask.card_id;
             var taskId    = this.currentTask.id;
             var newCardId = this.card_id;

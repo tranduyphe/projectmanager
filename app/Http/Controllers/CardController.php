@@ -18,30 +18,6 @@ class CardController extends Controller
      */
     public function index()
     {
-        $results = array();
-        $user    = Auth::user();
-        $user_id = $user->id;
-        $cards   = Card::all();      
-        $results['cards'] = $cards;
-        $users   = User::with('detail_user_department')->find($user_id); 
-        
-        if (!empty($users->detail_user_department)) {
-            $details = $users->detail_user_department;
-            $department_id = $details->department_id;
-        }else{
-            $department_id = 2;
-        }
-        $results['list_user'] = [];
-        $department_user = Card::with('department')->find($department_id);
-        // $department_user = $department_user->department()->take(2)->get();
-        $department_user = $department_user->department;
-        if (!empty($department_user)) {
-            foreach ($department_user as $key => $v) {   
-                $info_user = User::find($v->user_id);
-                $results['list_user'][$v->user_id] = $info_user;
-            }
-        }
-        return response()->json($results);
     }
 
     /**

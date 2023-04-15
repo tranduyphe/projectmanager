@@ -6,9 +6,7 @@ import { taskHelper } from "../../helpers/helptask";
 import {
     taskMethods,
     authMethods,
-    labelMethods,
     taskGetters,
-    labelGetters,
     authGetters
 } from "../../store/helpers";
 import MoveCard from "./project/MoveCard.vue";
@@ -48,6 +46,7 @@ export default {
     },
     data() {
         return {
+            data: {},
             buttonAdd: {},
             newTasks: {},
             allPopUp: {},
@@ -67,18 +66,15 @@ export default {
                     active: true,
                 },
             ],
-            dataUpdated: {},
         };
     },
     computed: {
         ...taskGetters,
-        ...labelGetters,
         ...authGetters,
     },
     methods: {
         ...taskMethods,
         ...authMethods,
-        ...labelMethods,
         handlerClick($id) {
             for (const key in this.listCard) {
                 const cardProject = this.listCard[key];
@@ -90,6 +86,7 @@ export default {
         async createTask($id) {
             this.newTasks["card_id"] = $id;
             this.newTasks["project_id"] = this.project_id;
+            this.newTasks["department_id"] = parseInt(sessionStorage.getItem('departmentId'));
             if (this.newTasks && this.newTasks["title_" + $id]) {
                 var newTask = await this.createNewTask(this.newTasks);
                 if (typeof newTask != "undefined") {
@@ -207,10 +204,14 @@ export default {
         },
     },
     async created() {
+        this.data = {
+            'department_id' : parseInt(sessionStorage.getItem('departmentId')),
+            'project_id': this.project_id
+        }
+        console.log('data', this.data)
         await this.auth();
-        await this.getListCards();
-        await this.getLabels();
-        await this.getListTasks(this.$route.params.id);
+        // await this.getListTasks(this.$route.params.id);
+        await this.getListTasks(this.data);
     },
 
     async mounted() {

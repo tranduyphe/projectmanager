@@ -43,27 +43,13 @@ Route::group(
 		);
 
         Route::group(
-			array( 'prefix' => 'card' ),
-			function () {
-				Route::post( '/', array( CardController::class, 'index' ) );
-			}
-		);
-
-        Route::group(
 			array( 'prefix' => 'tasks' ),
 			function () {
                 Route::post( '/update', array( TaskController::class, 'update' ) );
 				Route::post( '/create', array( TaskController::class, 'create' ) );
-				Route::post( '/index/{id}', array( TaskController::class, 'index' ) );
+				Route::post( '/index', array( TaskController::class, 'index' ) );
 				Route::post( '/show/{id}', array( TaskController::class, 'show' ) );
 				Route::post( '/store', array( TaskController::class, 'store' ) );
-			}
-		);
-
-        Route::group(
-			array( 'prefix' => 'labels' ),
-			function () {
-                Route::post( '/', array( LabelController::class, 'index' ) );
 			}
 		);
 

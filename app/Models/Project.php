@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Card;
 use App\Models\Tasks;
 use App\Models\Department;
+use App\Models\DepartmentUser;
 use App\Models\ProjectUser;
 
 class Project extends Model
@@ -50,5 +51,15 @@ class Project extends Model
     public function department()
     {
         return $this->hasMany(Department::class);
+    }
+
+     /**
+     * List user in project.
+     *
+     * @var department_id
+     */
+    public function listuser()
+    {
+        return $this->hasMany(DepartmentUser::class);
     }
 }
