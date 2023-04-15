@@ -10,6 +10,7 @@ use App\Models\Project;
 use App\Models\Card;
 use App\Models\Tasks;
 use App\Models\ProjectUser;
+use App\Models\Department;
 use Illuminate\Support\Str;
 
 class ProjectController extends Controller
@@ -20,51 +21,6 @@ class ProjectController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create(Request $request)
-    {
-        $user        = Auth::user();
-        $user_id     = $user->id;
-        $title       = $request->input('title');
-        $description = "";
-        if (!empty($request->input('description')) && $request->input('description')!== null) {
-            $description = $request->input('description');
-        }
-        $starttime   = $request->input('start_time');
-        $endtime     = $request->input('end_time');
-        $slug        = Str::slug($title);
-        if (Project::where('slug', $slug)->exists()) {
-            $slug = $slug . '-' . uniqid();
-        }
-        $data        = array(  
-            'user_id'     => $user_id,         
-            'title'       => $title,
-            'slug'        => $slug,
-            'description' => $description,
-            'start_time'   => date('Y-m-d H:i:s', strtotime($starttime)),
-            'end_time'     => date('Y-m-d H:i:s', strtotime($endtime)),
-        );
-        $project = new Project($data);
-        $project->save();
-        $results = Project::findOrFail($project->id);
-        return response()->json($results);
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
     {
         $user     = Auth::user();
         $user_id  = $user->id;
@@ -111,6 +67,51 @@ class ProjectController extends Controller
         return response()->json($projects);
     }
 
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create(Request $request)
+    {
+        $user        = Auth::user();
+        $user_id     = $user->id;
+        $title       = $request->input('title');
+        $description = "";
+        if (!empty($request->input('description')) && $request->input('description')!== null) {
+            $description = $request->input('description');
+        }
+        $starttime   = $request->input('start_time');
+        $endtime     = $request->input('end_time');
+        $slug        = Str::slug($title);
+        if (Project::where('slug', $slug)->exists()) {
+            $slug = $slug . '-' . uniqid();
+        }
+        $data        = array(  
+            'user_id'     => $user_id,         
+            'title'       => $title,
+            'slug'        => $slug,
+            'description' => $description,
+            'start_time'   => date('Y-m-d H:i:s', strtotime($starttime)),
+            'end_time'     => date('Y-m-d H:i:s', strtotime($endtime)),
+        );
+        $project = new Project($data);
+        $project->save();
+        $results = Project::findOrFail($project->id);
+        return response()->json($results);
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        
+    }
+
 
     /**
      * Display the specified resource.
@@ -118,9 +119,15 @@ class ProjectController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Request $request)
     {
-        
+        $slug        = $request->input('slug');
+        $project     = Project::with('tasks')->where('slug', $slug)->firstOrFail();
+        $departments = Department::with(["tasks" => function($q) use( $project ){
+            $q->where('project_id', '=', $project->id);
+        }])->get();
+        $project['departments'] = $departments;
+        return response()->json($project);
     }
 
     /**

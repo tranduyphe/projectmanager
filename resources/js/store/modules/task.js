@@ -112,10 +112,10 @@ const actions = {
     async removeFilesMedia({commit}, data){
         let res = await axios.post(`/api/media/remove/${data['media_id']}`, data);
     },
-    //get data curent tasl
+    //get data current tasks
     getCurrentTask({commit}, data) {
         commit('setCurrentTask', data);
-    },   
+    },
 };
 const mutations = {
     setCard(state, payload){

@@ -11,7 +11,6 @@ import {
 export default {
     components: {
         VueEditor,
-        
     },
     data() {
         return {
@@ -132,22 +131,22 @@ export default {
                                         v-for="(project, index) in listProjects"
                                         :class="['item mb-5']"
                                     >
-                                        <div class="item-project" v-if="authUserData.roles[0].name != 'manager'">
-                                            <router-link
+                                        <div class="item-project" v-if="authUserData.roles[0].name === 'manager' || authUserData.roles[0].name === 'administrator'">
+                                            <router-link                                                
                                                 :to="{
-                                                    name: 'viewproject',
-                                                    params: { id: project.id },
+                                                    name: 'analytics',
+                                                    params: { slug: project.slug, id: project.id },
                                                 }"
                                                 class="p-1 mr-1 cursor-pointer"                                                                                        
                                             >
-                                                <p>{{ project.title }}</p>  
-                                                {{ statisticalProject(project.data_task) }}                                     
+                                                <p>{{ project.title }}</p> 
+                                                {{ statisticalProject(project.data_task) }}                                    
                                             </router-link>
                                         </div>
                                         <div class="item-project" v-else>
                                             <router-link
                                                 :to="{
-                                                    name: 'viewproject',
+                                                    name: 'project',
                                                     params: { id: project.id },
                                                 }"
                                                 class="p-1 mr-1 cursor-pointer" 

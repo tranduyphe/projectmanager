@@ -1,9 +1,11 @@
 export const staticProject = {
-    statisticalTasks
+    statisticalTasks,
+    statisticalProject
 };
+
 /**
- *  function add or remove user in project
- *  @param {*} data key action: active or deactive, user_id, project id
+ *   function calculate percent of tasks
+ *  @param {*} data list tasks in project
  */
 function statisticalTasks(data){
     var totalTask     = 0;
@@ -17,5 +19,34 @@ function statisticalTasks(data){
         totalTaskDone = taskDone.length;
         percent = Math.round(100/totalTask * totalTaskDone);
     }
-    return percent+"%";
+    return percent;
 }
+
+/**
+ *  function calculate percent of project
+ *  @param {*} data list tasks in department
+ */
+function statisticalProject(data){
+    var countDepart  = data.length;
+    var perNumber    = Math.round(100/countDepart);
+    var totalPercent = 0;
+    var results      = {};
+    var result       = {};
+    for (const key in data) {
+        const depart = data[key];
+        var percent = statisticalTasks(depart.tasks);
+        result[key] = {
+            'title': depart.title,
+            'id': depart.id,
+            'percent' : percent
+        }
+        totalPercent = totalPercent + calculatePercent(percent, perNumber)
+    }
+    var results = {
+        'results' : result,
+        'total'   : totalPercent
+    }
+    return results;
+}
+
+var calculatePercent = (x, y) => Math.round((x * y)/100);

@@ -35,8 +35,9 @@ Route::group(
 		Route::group(
 			array( 'prefix' => 'project' ),
 			function () {
-				Route::post( 'store', array( ProjectController::class, 'store' ) );
+				Route::post( 'index', array( ProjectController::class, 'index' ) );
 				Route::post( 'create', array( ProjectController::class, 'create' ) );
+				Route::post( 'show', array( ProjectController::class, 'show' ) );
 				Route::post( 'adduser', array( ProjectUserController::class, 'create' ) );
 			}
 		);
