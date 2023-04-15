@@ -18,7 +18,7 @@ import FilesTask from "./project/FilesTask.vue";
 import FileUploads from "./project/UploadFiles.vue";
 import UserTask from "./project/Users.vue";
 import Labels from "./project/Labels.vue";
-import Works from "./project/Words.vue";
+import Works from "./project/Works.vue";
 import DateTasks from "./project/DateTask.vue";
 import Description from "./project/Description.vue";
 import AddUser from "./project/AddUsers.vue";
@@ -157,7 +157,7 @@ export default {
                     var dataUrl = taskHelper.validateUrl(url);
                     var data = {
                         url: url,
-                        name: dataUrl[4],
+                        name: dataUrl.hostname,
                         task_id: this.currentTask.id,
                     };
                     var results = await this.uploadFile(data);

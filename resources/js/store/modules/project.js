@@ -2,49 +2,68 @@ const state = {
     listProjects: [],
     projectData:{},
     loadingState: false,
-    // testdemo : 'hahahaha',
+    currentProject: {}
 };
 
 const getters = {
     listProjects: state => state.listProjects,
     projectData: state => state.projectData,
-    // testdemo: state => state.testdemo,
+    currentProject: state => state.currentProject,
 };
 const actions = {  
-    getProjects({ commit }) {
-        state.listProjects = [];
+
+    /**
+     * get all project 
+     * @param {*} param0 
+     */
+    async getProjects({ commit }) {
         commit('loadingState', true);
-        axios
-        .post('/api/project/store')
-        .then(response => {            
-            if (response.status == 200) {
-                for (const key in response.data) {
-                    const project = response.data[key];
-                    commit('addItemProjects', project);
-                }
-                commit('loadingState', false);
-            }
-        })
-        .catch(error => {
-            console.log(error);
-        });
+        let res = await axios.post('/api/project/index');
+        if (res.status == 200) {
+            commit('addItemProjects', res.data);
+            commit('loadingState', false);
+        }
     },
+
+     /**
+     * create project
+     * @param {*} param0 
+     */
     async createProject({commit}, data) {
         let res = await axios.post(`/api/project/create`, data);
         if (res.status == 200) {
-            commit('addItemProjects', res.data);
+            return res.data;
+            // commit('addItemProjects', res.data);
         }
     },
-    // add user in project
+
+    /**
+     * remove or add user in project
+     * @param {data} data => project id, user ud, action 
+     */
     async addRemoveUserInProject({ commit }, data){
         let res = await axios.post(`/api/project/adduser`, data);
         return res.data;
+    },
+
+    /**
+     * remove or add user in project
+     * @param {data} data => project id, user ud, action 
+     */
+    async getProject( {commit}, slug ){
+        commit('loadingState', true);
+        var data = {'slug': slug}
+        let res = await axios.post(`/api/project/show`, data);
+        if (res.status == 200) {
+            commit('setCurrentProject', res.data);
+        }
     }
 };
 
 const mutations = {
-    addItemProjects: (state, payload) => (state.listProjects.push(payload)),
     loadingState: (state, payload) => (state.loadingState = payload),
+    addItemProjects: (state, payload) => (state.listProjects = payload),
+    setCurrentProject: (state, payload) => (state.currentProject = payload),
 };
 export default {
     state,

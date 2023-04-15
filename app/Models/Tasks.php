@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Card;
 use App\Models\Project;
 use App\Models\WorkToDo;
+use App\Models\Department;
 
 class Tasks extends Model
 {
@@ -22,10 +23,10 @@ class Tasks extends Model
         'deadline'
     ];
 
-    // public function card()
-    // {
-    //     return $this->belongsTo(Card::class, 'card_id');
-    // }
+    public function department()
+    {
+        return $this->belongsTo(Department::class, 'department_id');
+    }
 
     public function projects()
     {
@@ -42,4 +43,13 @@ class Tasks extends Model
         return $this->hasMany(WorkToDo::class, 'task_id');
     }
 
+    /**
+     * card id.
+     *
+     * @var card_id
+     */
+    public function card()
+    {
+        return $this->hasOne(Card::class, 'card_id');
+    }
 }

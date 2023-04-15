@@ -1,8 +1,8 @@
 <script>
-import AllProject from "../projects/AllProjects.vue";
+import Index from "../projects/Index.vue";
 export default {
     components: {
-        AllProject
+        Index
     },
     data() {
         return {
@@ -48,5 +48,5 @@ export default {
 };
 </script>
 <template>
-    <AllProject />
+    <Index />
 </template>

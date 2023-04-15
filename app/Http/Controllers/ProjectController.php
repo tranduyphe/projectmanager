@@ -10,6 +10,7 @@ use App\Models\Project;
 use App\Models\Card;
 use App\Models\Tasks;
 use App\Models\ProjectUser;
+use App\Models\Department;
 use Illuminate\Support\Str;
 
 class ProjectController extends Controller
@@ -21,7 +22,49 @@ class ProjectController extends Controller
      */
     public function index()
     {
-        //
+        $user     = Auth::user();
+        $user_id  = $user->id;
+        $roles    = $user->getRoleNames()->first();
+        $users    = User::with('detail_user_department')->find($user_id);
+        
+        if ($roles !== 'manager' && $roles !== 'administrator') {
+            if (!empty($users)) {
+                $details = $users->detail_user_department;
+                $department_id = $details->department_id;
+            }else{
+                $department_id = 2;
+            }
+        }
+        
+        if ( $roles === 'administrator' || $roles === 'leader' ) {
+            $projects = Project::all();
+        } elseif ($roles === 'manager') {
+            $user     = User::with('projects')->find($user_id);
+            $projects = $user->projects;
+        } else {
+            $user     = User::with('projects_user')->find($user_id);
+            $project_user = $user->projects_user;
+            // // $user_details = ProjectUser::find(20)->details_user;
+            // $user_details = ProjectUser::with('details_user')->find(20);
+            // var_dump($user_details->details_user);
+            $projects = [];
+            foreach ($project_user as $key => $project) {
+                $projects[] = Project::find($project->project_id);                
+            }
+        }
+        if (!empty($projects)) {
+            foreach ($projects as $key => $project) {
+                if ($roles === 'leader') {
+                    $tasks = Project::with(["tasks" => function($q) use( $department_id ){
+                        $q->where('department_id', '=', $department_id);
+                    }])->find($project->id);
+                }else{
+                    $tasks = Project::with('tasks')->find($project->id);
+                }
+                $projects[$key]['data_task'] = $tasks->tasks;
+            }
+        }
+        return response()->json($projects);
     }
 
     /**
@@ -66,47 +109,7 @@ class ProjectController extends Controller
      */
     public function store(Request $request)
     {
-        $user     = Auth::user();
-        $user_id  = $user->id;
-        $roles    = $user->getRoleNames()->first();
-        $users    = User::with('detail_user_department')->find($user_id);
         
-        if (!empty($users)) {
-            $details = $users->detail_user_department;
-            $department_id = $details->department_id;
-        }else{
-            $department_id = 2;
-        }
-        
-        if ( $roles === 'administrator' || $roles === 'leader' ) {
-            $projects = Project::all();
-        } elseif ($roles === 'manager') {
-            $user     = User::with('projects')->find($user_id);
-            $projects = $user->projects;
-        } else {
-            $user     = User::with('projects_user')->find($user_id);
-            $project_user = $user->projects_user;
-            // // $user_details = ProjectUser::find(20)->details_user;
-            // $user_details = ProjectUser::with('details_user')->find(20);
-            // var_dump($user_details->details_user);
-            $projects = [];
-            foreach ($project_user as $key => $project) {
-                $projects[] = Project::find($project->project_id);                
-            }
-        }
-        if (!empty($projects)) {
-            foreach ($projects as $key => $project) {
-                if ($roles === 'leader') {
-                    $tasks = Project::with(["tasks" => function($q) use( $department_id ){
-                        $q->where('department_id', '=', $department_id);
-                    }])->find($project->id);
-                }else{
-                    $tasks = Project::with('tasks')->find($project->id);
-                }
-                $projects[$key]['data_task'] = $tasks->tasks;
-            }
-        }
-        return response()->json($projects);
     }
 
 
@@ -116,9 +119,15 @@ class ProjectController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Request $request)
     {
-        
+        $slug        = $request->input('slug');
+        $project     = Project::with('tasks')->where('slug', $slug)->firstOrFail();
+        $departments = Department::with(["tasks" => function($q) use( $project ){
+            $q->where('project_id', '=', $project->id);
+        }])->get();
+        $project['departments'] = $departments;
+        return response()->json($project);
     }
 
     /**

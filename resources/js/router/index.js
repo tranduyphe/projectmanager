@@ -2,7 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router';
 import Dashboard from '../components/layouts/Dashboard.vue';
 import Single from '../components/layouts/single-project.vue';
 import Login from '../components/account/Login.vue';
-import ViewProject from '../components/projects/ViewProject.vue'
+import ViewProject from '../components/projects/ViewProject.vue';
+import Analytics from '../components/projects/Analytics.vue'
 export const routes = [
     {
         name: 'login',
@@ -22,8 +23,15 @@ export const routes = [
     //     meta: { requiresAuth: true }
     // },
     {
-        path: '/viewproject/:id',
-        name: 'viewproject',
+        path: '/analytics/:slug',
+        name: 'analytics',
+        component: Analytics,
+        meta: { requiresAuth: true }
+    },
+
+    {
+        path: '/project/:id',
+        name: 'project',
         component: ViewProject,
         meta: { requiresAuth: true }
     },

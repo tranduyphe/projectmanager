@@ -41,6 +41,7 @@ export default {
         ...taskMethods,   
         ... projectMethods,
         async addUserProject(event, arr){
+            event.stopPropagation();
             if (arr) {
                 if (this.projectId) {                   
                     var data = {
@@ -90,9 +91,10 @@ export default {
                 <div><input type="text" v-model="searchUsers" placeholder="Tìm kiếm các thành viên" /></div>
                 <div class="member_of_table">
                     <div
+                        role="button"
                         v-for="(user, index) in resultUsers"
                         :key="user.id"
-                        :class="['list_member d-flex flex-row align-items-center']"
+                        :class="['list_member d-flex flex-row align-items-center dropdown-item']"
                         @click="addUserProject($event, {'user_id': user.id, 'action': projectUsers[user.id] ? 'deactive' : 'active'})"
                     >
                         <div class="avatar">
@@ -111,7 +113,6 @@ export default {
                                 projectUsers[user.id]
                             "
                         >
-                        
                             <i class="ri-check-line"></i>
                         </span>
                     </div>

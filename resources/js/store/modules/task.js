@@ -5,6 +5,7 @@ const state = {
     listUsers: {}, // get list user of department
     listTaskDraggable: {}, // get list task add drag,
     listUserProject: {}, // get list user of project,
+    loadingStatus: false,
 };
 const getters = {
     listTasks: state => state.listTasks,
@@ -13,6 +14,7 @@ const getters = {
     listUsers: state => state.listUsers,
     listTaskDraggable: state => state.listTaskDraggable,
     projectUsers: state => state.listUserProject,
+    loadingStatus: state => state.loadingStatus,
 };
 const actions = {
     
@@ -50,11 +52,15 @@ const actions = {
     },
     // update data task
     async updateTask({ commit }, data){
-        let res = await axios.post(`/api/tasks/update`, data);
-        if (res.status == 200) { 
-            commit('setCurrentTask', res.data);             
-        }
-        return res.status;
+        if (!state.loadingStatus) {
+            commit('loadingStatus', true);
+            let res = await axios.post(`/api/tasks/update`, data);
+            if (res.status == 200) { 
+                commit('setCurrentTask', res.data);  
+                commit('loadingStatus', false);           
+            }
+            return res.status;
+        }        
     },
 
     // add new work to do
@@ -106,10 +112,10 @@ const actions = {
     async removeFilesMedia({commit}, data){
         let res = await axios.post(`/api/media/remove/${data['media_id']}`, data);
     },
-    //get data curent tasl
+    //get data current tasks
     getCurrentTask({commit}, data) {
         commit('setCurrentTask', data);
-    },   
+    },
 };
 const mutations = {
     setCard(state, payload){
@@ -130,6 +136,7 @@ const mutations = {
     setListProjectUsers(state, payload){       
         state.listUserProject = payload;
     },
+    loadingStatus: (state, payload) => (state.loadingStatus = payload),
 };
 
 export default {

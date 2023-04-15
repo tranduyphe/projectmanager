@@ -42,7 +42,7 @@ class TaskController extends Controller
                 ['project_id', '=', $project_id],
                 ['department_id', '=', $department_id],
             ])->get();
-
+            $list_draggable[$card_id] = [];
             if (!empty($list_tasks)) {
                 foreach ($list_tasks as $key => $tasks) {
                     $results[$tasks->id] = $tasks;

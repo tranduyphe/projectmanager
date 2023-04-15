@@ -16,7 +16,7 @@ export default {
         return {
             file:null,
             linkUrl: "",
-            modal: false         
+            checkUrl: false         
         };
     },
     computed: {
@@ -37,22 +37,24 @@ export default {
             var data = await taskHelper.uploadFilesTask(data);
             if (data) {
                 this.listTasks[this.currentTask.id]['list_files'] = data.list_files;
+                this.currentTask.list_files = data.list_files;
                 this.file = null;
             }
         },
         async onUploadUrl(){
             if (this.linkUrl) {
-                if (taskHelper.validateUrl(this.linkUrl)) {
-                    var dataUrl = taskHelper.validateUrl(this.linkUrl)
+                this.checkUrl = taskHelper.validateUrl(this.linkUrl);                
+                if (this.checkUrl) {
                     var data = {
                         'url': this.linkUrl,
-                        'name': dataUrl[4],
+                        'name': this.checkUrl.hostname,
                         'task_id': this.currentTask.id
                     }
                     this.$emit('hideModalPopup', 'files');
                     var data = await this.uploadFile(data);
                     if (data) {
                         this.listTasks[this.currentTask.id]['list_files'] = data.list_files;
+                        this.currentTask.list_files = data.list_files;
                         this.linkUrl = null;
                     }
                 }

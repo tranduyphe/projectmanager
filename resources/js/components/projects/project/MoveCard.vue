@@ -31,7 +31,8 @@ export default {
     },
     methods: {
         ...taskMethods,
-        async moveTask() {
+        async moveTask(e, card_id) {
+            e.stopPropagation();
             var oldCardId = this.currentTask.card_id;
             var taskId    = this.currentTask.id;
             var newCardId = this.card_id;
@@ -39,11 +40,6 @@ export default {
                 this.listTasks[taskId]['card_id'] = newCardId;
                 var listOldCards = this.listTaskDraggable[oldCardId];
                 var listNewCards = listOldCards.filter(v => v !== taskId);
-                this.listTaskDraggable[oldCardId] = listNewCards;
-                if (typeof this.listTaskDraggable[newCardId] == 'undefined') {
-                    this.listTaskDraggable[newCardId] = [];
-                }
-                this.listTaskDraggable[newCardId].push(taskId);
                 var data = {
                     'task_id' : taskId,
                     'info_task' : {
@@ -51,6 +47,11 @@ export default {
                     }
                 }
                 await this.updateTask(data);
+                this.listTaskDraggable[oldCardId] = listNewCards;
+                if (typeof this.listTaskDraggable[newCardId] == 'undefined') {
+                    this.listTaskDraggable[newCardId] = [];
+                }
+                this.listTaskDraggable[newCardId].push(taskId);
             }
         },
         onShowModal(){ 
@@ -68,6 +69,7 @@ export default {
 </script>
 <template>
     <h6>Thao tác</h6>
+    <!-- <pre>{{ currentTask.card_id }}</pre> -->
     <b-list-group>
         <b-list-group-item>
             <div class="item" @click="onShowModal">
@@ -95,6 +97,26 @@ export default {
                     </div>
                 </div>                                  
             </div>
+            <!-- <div class="btn-group">
+                <button type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="ri-arrow-right-line"></i>
+                    Di chuyển
+                </button>
+                <div class="dropdown-menu">
+                    <div class="modal_move-header d-flex flex-row align-items-center justify-content-center"><span>Di chuyển thẻ</span><a><i class="ri-close-line"></i></a></div>
+                    <h6 class="title">Chọn đích đến</h6>
+                    <div class="modal_move-content">
+                        <div class="btn select_list">
+                            <p>Danh sách</p>
+                            <div v-for="(card, index) in cards" :class="[`${currentTask.card_id == card.id ? 'active' : ''}`,'dropdown-item']" @click="moveTask($event, card.id)">
+                                {{ card_id }}
+                                {{ card.id }}
+                                {{ card.title }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div> -->
         </b-list-group-item>
     </b-list-group>
 </template>

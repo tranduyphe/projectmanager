@@ -3,13 +3,15 @@ import Router from '../../router';
 const state = {
     loginResponse: {}, // check login 
     authUser: {}, // get user data
-    authUserData : {} // user data
+    authUserData : {}, // user data
+    departmentId :  false// 
 };
 
 const getters = {
     getLoginResponse: state => state.loginResponse,
     getAuthUser: state => state.authUser,
     authUserData: state => state.authUserData,
+    departmentId: state => state.departmentId,
 };
 
 const actions = {
@@ -59,12 +61,18 @@ const actions = {
             
         });
     },
+
+    //add department id when role admin
+    department({commit}, id) {
+        commit('mutateDepartmentId', id);
+    }, 
 };
 
 const mutations = {
     mutateLoginResponse: (state, payload) => (state.loginResponse = payload),
     mutateAuthUser: (state, payload) => (state.authUser = payload),
     mutateAuthUserData: (state, payload) => (state.authUserData = payload),
+    mutateDepartmentId: (state, payload) => (state.departmentId = payload),
 };
 
 export default {
