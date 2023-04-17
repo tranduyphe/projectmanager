@@ -81,6 +81,7 @@ export default {
                         authUserData.roles[0].name === 'manager' ||
                         authUserData.roles[0].name === 'administrator'
                     "
+                    class="mb-3"
                 >
                     <b-modal
                         v-model="show"
@@ -156,7 +157,12 @@ export default {
                                     }"                                                                                      
                                 >
                                     <p>{{ project.title }}</p>  
-                                                                   
+                                    <span class="date">
+                                        Start: {{ formatDate(project.start_time) }}
+                                    </span>
+                                    <span class="date">
+                                        End: {{ formatDate(project.end_time) }}
+                                    </span>                     
                                 </router-link>
                             </div>
                             <div class="item-project" v-else>
