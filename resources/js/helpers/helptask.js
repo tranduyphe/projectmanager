@@ -18,7 +18,6 @@ export const taskHelper = {
 };
 
 function isEmptyObject(obj) {
-    console.log(store)
     return Object.keys(obj).length === 0;
 }
 

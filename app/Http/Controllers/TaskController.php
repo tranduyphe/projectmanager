@@ -30,7 +30,9 @@ class TaskController extends Controller
         $labels   = Label::all();
         $results  = [];
         $data     = [];
-        $project_id = $request->input('project_id');
+        $slug = $request->input('slug');
+        $project = Project::where('slug',$slug)->first();
+        $project_id = $project->id;
 
         // check admin
         if ($roles == 'administrator') {
@@ -107,6 +109,7 @@ class TaskController extends Controller
 
         $data['labels'] = $labels;
         $data['cards'] = $cards;
+        $data['project_id'] = $project_id;
 
         return response()->json($data);
     }

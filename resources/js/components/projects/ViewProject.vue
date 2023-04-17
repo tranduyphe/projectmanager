@@ -52,10 +52,11 @@ export default {
             allPopUp: {},
             showModal: false,
             showActive: false,
-            project_id: parseInt(this.$route.params.id),
+            project_id: false,
+            slug: this.$route.params.slug,
             placeholder: "Nhập tiêu đề cho thẻ này...",
             taskUpdate: {},
-            title: "Gosu Board",
+            title: "",
             items: [
                 {
                     text: "Gosu",
@@ -206,12 +207,22 @@ export default {
     async created() {
         this.data = {
             'department_id' : parseInt(sessionStorage.getItem('departmentId')),
-            'project_id': this.project_id
+            'slug': this.slug,
         }
-        console.log('data', this.data)
         await this.auth();
-        // await this.getListTasks(this.$route.params.id);
         await this.getListTasks(this.data);
+        this.project_id = this.$store.getters.projectId;
+        // title: "",
+        //     items: [
+        //     {
+        //         text: "Gosu",
+        //         href: "/",
+        //     },
+        //     {
+        //         text: "Gosu Board",
+        //         active: true,
+        //     },
+        // ],
     },
 
     async mounted() {
@@ -466,18 +477,8 @@ export default {
                 :class="['col-3']"
             >
                 <div class="card card_main">
-                    <div class="card-body card_header">
+                    <div class="card-body card_header pt-3 pb-2">
                         <h4 class="card-title">{{ card.title }}</h4>
-                        <b-dropdown right class="float-end" variant="white">
-                            <template v-slot:button-content>
-                                <i
-                                    class="ri-more-fill m-0 text-muted font-size-20"
-                                ></i>
-                            </template>
-                            <b-dropdown-item>Edit</b-dropdown-item>
-                            <b-dropdown-item>Delete</b-dropdown-item>
-                        </b-dropdown>
-
                         <!-- end dropdown -->
                     </div>
                     <div class="card-body border-bottom card-content">

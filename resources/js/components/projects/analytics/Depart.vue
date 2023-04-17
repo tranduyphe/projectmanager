@@ -39,9 +39,6 @@ export default {
     methods: {
         ...authMethods,
         onViewProject(id){
-            // console.log(this.$store);
-            // console.log('department_id', id)
-            // return;
             if (this.authUserData.roles[0].name === 'administrator') {
                 Router.push({ name: 'project', params: { id: this.id } });
                 this.$store.dispatch( 'department', id )
