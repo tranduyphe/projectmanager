@@ -30,7 +30,7 @@ export const routes = [
     },
 
     {
-        path: '/project/:id',
+        path: '/project/:slug',
         name: 'project',
         component: ViewProject,
         meta: { requiresAuth: true }

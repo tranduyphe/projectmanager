@@ -32,10 +32,10 @@ export default {
     methods: {
         ...taskMethods,
         async moveTask(e, card_id) {
-            // e.stopPropagation();
+            e.stopPropagation();
             var oldCardId = this.currentTask.card_id;
             var taskId    = this.currentTask.id;
-            var newCardId = this.card_id;
+            var newCardId = card_id;
             if (oldCardId != newCardId) {
                 this.listTasks[taskId]['card_id'] = newCardId;
                 var listOldCards = this.listTaskDraggable[oldCardId];
@@ -54,14 +54,10 @@ export default {
                 this.listTaskDraggable[newCardId].push(taskId);
             }
         },
-        onShowModal(){ 
-            this.$emit('showModalPopup', 'move');
-        },
-        onHideShowModal(){ 
-            this.$emit('hideModalPopup', 'move');
-        },
     },
     created() {
+        // console.log(this.card_id)
+        // console.log(this.currentTask)
     },
     mounted() {
     },
@@ -69,54 +65,26 @@ export default {
 </script>
 <template>
     <h6>Thao tác</h6>
-    <!-- <pre>{{ currentTask.card_id }}</pre> -->
     <b-list-group>
         <b-list-group-item>
-            <div class="item" @click="onShowModal">
-                <i class="ri-arrow-right-line"></i>
-                Di chuyển
-            </div>
-            <div class="modal_move" v-if="popupFiles">
-                <div
-                    :class="[
-                        ' modal_move-header d-flex flex-row align-items-center justify-content-center',
-                    ]"
-                >
-                    <span>Di chuyển thẻ</span>
-                    <a @click="onHideShowModal"
-                        ><i class="ri-close-line"></i
-                    ></a>
-                </div>
-                <p class="title">Chọn đích đến</p>
-                <div class="modal_move-content">
-                    <div class="btn select_list">
-                        <p>Danh sách</p>
-                        <select v-model="card_id" class="mb-3"  @change="moveTask()">
-                            <option v-for="(card, index) in cards" :value="`${card.id}`" :key="card.id" :selected="card.id === 3">{{ card.title }}</option>
-                        </select>
-                    </div>
-                </div>                                  
-            </div>
-            <!-- <div class="btn-group">
-                <button type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="ri-arrow-right-line"></i>
+            <div class="btn-group">
+                <button type="button" class="item btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="ri-arrow-right-line" role="button"></i>
                     Di chuyển
                 </button>
-                <div class="dropdown-menu">
+                <div class="dropdown-menu modal_move">
                     <div class="modal_move-header d-flex flex-row align-items-center justify-content-center"><span>Di chuyển thẻ</span><a><i class="ri-close-line"></i></a></div>
                     <h6 class="title">Chọn đích đến</h6>
                     <div class="modal_move-content">
                         <div class="btn select_list">
                             <p>Danh sách</p>
-                            <div v-for="(card, index) in cards" :class="[`${currentTask.card_id == card.id ? 'active' : ''}`,'dropdown-item']" @click="moveTask($event, card.id)">
-                                {{ card_id }}
-                                {{ card.id }}
+                            <div role="button" v-for="(card, index) in cards" :class="[`${currentTask.card_id == card.id ? 'active' : ''}`,'dropdown-item']" @click="moveTask($event, card.id)">
                                 {{ card.title }}
                             </div>
                         </div>
                     </div>
                 </div>
-            </div> -->
+            </div>
         </b-list-group-item>
     </b-list-group>
 </template>
