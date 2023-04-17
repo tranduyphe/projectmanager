@@ -48,27 +48,26 @@ const router = createRouter({
     routes
 })
 
-// router.beforeEach((to, from, next) => {   
-//     console.log('name', to.name)
-//     console.log('isAuthenticated', isAuthenticated())
-//     if (isAuthenticated() || to.name === 'login') {
-//         next()
-//     } else {
-//         // Not logged in, redirect to login.
-//         next({name: 'login'})
-//     }
-// });
+router.beforeEach((to, from, next) => {  
+    console.log('isAuthenticated', isAuthenticated())
+    if (isAuthenticated() || to.name === 'login') {
+        next()
+    } else {
+        // Not logged in, redirect to login.
+        next({name: 'login'})
+    }
+});
   
-// function isAuthenticated() {
-//     // Check if the user is authenticated
-//     let output = undefined;
+function isAuthenticated() {
+    // Check if the user is authenticated
+    let output = undefined;
 
-//     if (sessionStorage.getItem('loginResponse')) {
-//         output = true;
-//     }else{
-//         output = false
-//     }
-//     return output;
-// }
+    if (sessionStorage.getItem('loginResponse')) {
+        output = true;
+    }else{
+        output = false
+    }
+    return output;
+}
 
 export default router
