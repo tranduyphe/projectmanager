@@ -16,6 +16,12 @@ export const routes = [
         component: Dashboard,
         meta: { requiresAuth: true }
     },
+    {
+        name: 'home',
+        path: '/',
+        component: Dashboard,
+        meta: { requiresAuth: true }
+    },
     // {
     //     name: 'dashboard',
     //     path: '/',
