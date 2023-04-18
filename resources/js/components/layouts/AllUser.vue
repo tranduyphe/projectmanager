@@ -228,7 +228,7 @@ export default {
     createNewUser() {
       console.log(this.newUser);
       this.axios
-        .post("/api/project/create-new-user", this.newUser)
+        .post("/api/user/create", this.newUser)
         .then((response) => {
           if (response.data.status === 200 && response.data.success == true) {
             const newUser = response.data.data.user_created;
@@ -261,7 +261,7 @@ export default {
     updateRolesUser() {
       console.log("check userForm:", this.userForm);
       this.axios
-        .post(`/api/project/change-role-user/${this.userForm.id}`, this.userForm)
+        .post(`/api/user/change-role-user/${this.userForm.id}`, this.userForm)
         .then((response) => {
           if (response.data.status === 200) {
             this.updateRowData(
@@ -292,7 +292,7 @@ export default {
     updatePasswordUser() {
       this.axios
         .post(
-          `/api/project/change-password-user/${this.userPasswwordForm.id}`,
+          `/api/user/change-password-user/${this.userPasswwordForm.id}`,
           this.userPasswwordForm
         )
         .then((response) => {
@@ -420,7 +420,6 @@ export default {
       ];
     },
     fetchData() {
-      console.log("check fetchData");
       this.axios
         .get("/api/allusers")
         .then((response) => {
@@ -430,8 +429,6 @@ export default {
           ) {
             this.dataTableData = response.data.data.users;
             this.roles = response.data.data.roles;
-
-            console.log("check:", response);
             this.setColumns();
             this.table = $(this.$refs.myTable).DataTable({
               data: this.dataTableData,
@@ -446,11 +443,9 @@ export default {
     },
     isRolesChecked(roles, roleId) {
       // return true;
-      console.log("check isRolesChecked roles", roles);
       if (Array.isArray(roles)) {
         const isCheck = roles.some((role) => role.id === roleId);
         this.userForm["role_" + roleId] = isCheck;
-        console.log("check isCheck : roleId", roleId, isCheck);
         return isCheck;
       } else {
         console.log("check isCheck: roleId", roleId, false);

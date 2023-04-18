@@ -27,30 +27,13 @@ export default {
                             <i class="bx ri-dashboard-line"></i><span>Dashboard</span>
                         </router-link>
                     </li>
-                    <li>
-                    <router-link :to="{
-                        name: 'dashboard',
-                    }" class="side-nav-link-ref">
-                        <i class="bx ri-artboard-2-line"></i><span>Kanban Board</span>
-                    </router-link>
-                </li>
-                <li v-if="checkRolesAccess(['administrator', 'leader'])">
-                    <router-link :to="{
-                        name: 'alluser',
-                    }" class="side-nav-link-ref">
-                            <i class="bx ri-artboard-2-line"></i><span>User Manager</span>
-                        </router-link>
+                    <li v-if="checkRolesAccess(['administrator', 'leader'])">
+                        <router-link :to="{
+                            name: 'alluser',
+                        }" class="side-nav-link-ref">
+                                <i class="ri-user-fill"></i><span>User Manager</span>
+                            </router-link>
                     </li>
-                    <!-- <li>
-                                                <router-link
-                                                            :to="{
-                                                                name: 'dashboard',
-                                                            }"
-                                                            class="side-nav-link-ref"
-                                                        >
-                                                            <i class="bx ri-artboard-2-line"></i><span>Kanban Board</span>
-                                                        </router-link>
-                                                    </li> -->
                 </ul>
             </div>
             <!-- Sidebar -->

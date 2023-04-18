@@ -52,13 +52,10 @@ export default {
                     this.listTaskDraggable[newCardId] = [];
                 }
                 this.listTaskDraggable[newCardId].push(taskId);
-                console.log('listTassk', this.listTasks)
             }
         },
     },
     created() {
-        // console.log(this.card_id)
-        // console.log(this.currentTask)
     },
     mounted() {
     },
@@ -69,7 +66,7 @@ export default {
     <b-list-group>
         <b-list-group-item class="btn_move">
             <div class="btn-group">
-                <button type="button" class="item btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                <button type="button" class="item btn dropdown-toggle border-none" data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="ri-arrow-right-line" role="button"></i>
                     Di chuyển
                 </button>
@@ -78,8 +75,7 @@ export default {
                     <h6 class="title">Chọn đích đến</h6>
                     <div class="modal_move-content">
                         <div class="btn select_list">
-                            <p>Danh sách</p>
-                            <div role="button" v-for="(card, index) in cards" :class="[`${currentTask.card_id == card.id ? 'active' : ''}`,'dropdown-item']" @click="moveTask($event, card.id)">
+                            <div  class="button" role="button" v-for="(card, index) in cards" :class="[`${currentTask.card_id == card.id ? 'active' : ''}`,'dropdown-item']" @click="moveTask($event, card.id)">
                                 {{ card.title }}
                             </div>
                         </div>

@@ -109,7 +109,7 @@ export default {
     ...mapActions(["storeUpdateUser"]),
     updateUser() {
       this.axios
-        .post(`/api/project/update`, this.UserForm)
+        .post(`/api/user/update`, this.UserForm)
         .then((response) => {
           if (response.data.status === 200) {
             this.storeUpdateUser();

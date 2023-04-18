@@ -22,11 +22,11 @@ export default {
             slug:this.$route.params.slug,
             title: "",
             items: [],
-            results:[],
+            results:[],            
         };
     },
     computed: {
-        ...projectGetters
+        ...projectGetters,
     },
     methods: {
         ...projectMethods,
@@ -37,9 +37,21 @@ export default {
         analyticProject(){
             return staticProject.statisticalProject(this.currentProject.departments)
         },
-        // analyticProject : () => staticProject.statisticalProject(this.currentProject.departments),  
+        updateProjectData(data){
+            this.title = this.currentProject.title;
+            this.items = [
+                {
+                    text: "Gosu",
+                    href: "/",
+                },
+                {
+                    text: this.currentProject.title,
+                    active: true,
+                },
+            ];
+        }  
     },
-    async created() {
+    async created() {        
         await this.getProject(this.slug);
         this.title = this.currentProject.title;
         this.items = [
@@ -52,7 +64,7 @@ export default {
                 active: true,
             },
         ];
-        this.results = this.analyticProject();        
+        this.results = this.analyticProject();  
     },
     async mounted() {
     },
@@ -63,7 +75,7 @@ export default {
         <PageHeader :title="title" :items="items" />
         <div class="row">
             <div class="col-xl-4">
-                <AnalyticsProject :results="results" :title="currentProject.title"></AnalyticsProject>
+                <AnalyticsProject @updateProject="updateProjectData" :results="results" :title="currentProject.title" :project="currentProject"></AnalyticsProject>
             </div>
             <div class="col-xl-8">
                 <AnalyticsDep :results="results.results" :id="currentProject.id" :slug="currentProject.slug"></AnalyticsDep>

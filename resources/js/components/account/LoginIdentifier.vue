@@ -21,7 +21,6 @@ export default {
       axios
         .post('/api/check-login', this.loginData)
         .then(response => {
-          console.log(response.data);
           if (response.data.success === true) {
             this.userExist = response.data.data.is_user;
             this.$router.push({
@@ -44,15 +43,15 @@ export default {
 
         })
         .catch((error) => {
-          console.log(error);
-          // this.$swal.fire({
-          //   icon: 'error',
-          //   title: 'Oops...',
-          //   text: `Error ${error.response.status}: ${error.response.data.message}`,
-          //   showConfirmButton: false,
-          //   timer: this.$config.notificationTimer ?? 1000
-          // })
-          alert(`Error ${error.response.status}: ${error.response.data.message}`);
+            console.log(error);
+            // this.$swal.fire({
+            //   icon: 'error',
+            //   title: 'Oops...',
+            //   text: `Error ${error.response.status}: ${error.response.data.message}`,
+            //   showConfirmButton: false,
+            //   timer: this.$config.notificationTimer ?? 1000
+            // })
+            alert(`Error ${error.response.status}: ${error.response.data.message}`);
         })
         .finally();
 

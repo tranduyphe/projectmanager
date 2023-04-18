@@ -51,7 +51,7 @@ export default {
 
         formatDate(date){
             return moment(date).format('DD-MM-YYYY');
-        }
+        },        
     },
     async created() {       
         this.auth();
