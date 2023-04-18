@@ -71,29 +71,23 @@ export default {
                 <i class="ri-attachment-2"></i><span>Các tập tin đính kèm</span>
             </h6>
             <div v-for="attachment in currentTask.list_files" :class="['attachment-item']" class="mt-3">
-                <div v-if="attachment.type === 'link'">
+                <div v-if="attachment.type === 'link'" class="attachment_link">
                     <a :href="attachment.name_file" :target="['_blank']">
                         <span><i class="ri-attachment-2"></i></span>
                     </a>
-                    <div class="ms-4 ">
-                        <strong>{{ attachment.title }}</strong>
-                        <div class="action">
-                            <!-- <span>{{ convertDate(attachment.updated_at) }}</span> -->
+                    <div class="ms-4 d-flex align-items-center  w-calc justify-content-between">
+                        <div>
+                            <strong>{{ attachment.title }}</strong>
                             <p>Đã thêm vào lúc {{ convertDate(attachment.updated_at) }} </p>
-                            <p class="d-flex align-items-center">
-                               
-                                <a @click="removeFiles(attachment.id)">Xóa</a>
-                                
-                            </p>
-                            <!-- <b-button variant="danger" @click="removeFiles(attachment.id)">Xóa</b-button> -->
-                        </div>
+                        </div>                
+                            <b-button variant="danger"  @click="removeFiles(attachment.id)" class="ms-4">Xóa</b-button>
                     </div>
                 </div>
                 <div v-else-if="attachment.type === 'pdf'" class="attachment_pdf">
                     <a :href="publicPath+attachment.name_file" class="image" data-fancybox>
                         <span>{{ attachment.type }}</span>
                     </a>
-                    <div class="ms-4 d-flex align-items-center">
+                    <div class="ms-4 d-flex align-items-center w-calc justify-content-between">
                         <div>
                             <strong>{{ attachment.title }}</strong>
                             <p>Đã thêm vào lúc {{ convertDate(attachment.updated_at) }} </p>
@@ -106,7 +100,7 @@ export default {
                     <a :href="publicPath+attachment.name_file" data-fancybox>
                         <img :src="publicPath+attachment.name_file" :alt="attachment.title">
                     </a>
-                    <div class="ms-4 d-flex align-items-center">
+                    <div class="ms-4 d-flex align-items-center  w-calc justify-content-between">
                         <div>
                             <strong>{{ attachment.title }}</strong>
                             <p>Đã thêm vào lúc {{ convertDate(attachment.updated_at) }} </p>

@@ -52,6 +52,7 @@ export default {
                     this.listTaskDraggable[newCardId] = [];
                 }
                 this.listTaskDraggable[newCardId].push(taskId);
+                console.log('listTassk', this.listTasks)
             }
         },
     },
@@ -66,7 +67,7 @@ export default {
 <template>
     <h6>Thao tác</h6>
     <b-list-group>
-        <b-list-group-item>
+        <b-list-group-item class="btn_move">
             <div class="btn-group">
                 <button type="button" class="item btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="ri-arrow-right-line" role="button"></i>

@@ -109,7 +109,7 @@ class TaskController extends Controller
 
         $data['labels'] = $labels;
         $data['cards'] = $cards;
-        $data['project_id'] = $project_id;
+        $data['project'] = $project;
 
         return response()->json($data);
     }

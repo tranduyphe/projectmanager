@@ -95,7 +95,7 @@ class CheckListController extends Controller
         if (!empty($data)) {
             $results = CheckList::where('id', $id)->update($data);
         }
-        return response()->json($results);
+        return response()->json(CheckList::find($id));
     }
 
     /**

@@ -28,8 +28,9 @@ export default {
             :month-change-on-scroll="false"                                    
         >
             <template #trigger #action-select>
-                <i class="ri-time-line"></i> Ngày hết hạn
-                
+                <div class="d-flex">
+                    <i class="ri-time-line me-1"></i> Ngày hết hạn
+                </div> 
             </template>
             <template #action-select="{ value }">
                 <b-button variant="primary" @click="updateDataCurrentTask(

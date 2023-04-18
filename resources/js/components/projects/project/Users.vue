@@ -68,7 +68,7 @@ export default {
                 <div
                     v-for="(user, index) in resultUsers"
                     :key="user.id"
-                    :class="['list_member d-flex flex-row align-items-center']"
+                    :class="['list_member d-flex flex-row align-items-center w-100']"
                     @click="
                         updateDataCurrentTask({
                             action: currentTask.members
@@ -90,19 +90,15 @@ export default {
                             : 'active'
                     }`"
                 >
-                    <div
-                        :class="[
-                            'list_member d-flex flex-row align-items-center',
-                        ]"
-                    >
-                        <div class="avatar">
-                            <div class="image">
-                                <img
-                                    src="/images/avatar-2.jpg?feb0f89de58f0ef9b424b1beec766bd2"
-                                    alt=""
-                                />
-                            </div>
+                    <div class="avatar">
+                        <div class="image">
+                            <img
+                                src="/images/avatar-2.jpg?feb0f89de58f0ef9b424b1beec766bd2"
+                                alt=""
+                            />
                         </div>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between w-100">
                         <div class="name">
                             <p>{{ user.name }}</p>
                         </div>
@@ -115,7 +111,7 @@ export default {
                         
                             <i class="ri-check-line"></i>
                         </span>
-                    </div>
+                    </div> 
                 </div>
             </div>
         </div>
