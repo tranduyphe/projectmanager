@@ -61,9 +61,14 @@ export default {
             }
             
         },
-        onSetShowModal(){          
-            this.$emit('showModalPopup', 'files');
-        }
+        // hidden modal 
+        hideModalPopup(data){
+            this.$emit('hideModalPopup', 'files')
+        },
+        // hidden modal 
+        showModalPopup(data){
+            this.$emit('showModalPopup', 'files')
+        },
     },
     created() {
     },
@@ -73,7 +78,7 @@ export default {
 </script>
 <template>
     <b-list-group-item class="btn_add_file">
-        <div class="item" @click="onSetShowModal">
+        <div class="item" @click="showModalPopup">
             <i class="ri-attachment-2"></i> File đính
             kèm
         </div>
@@ -85,9 +90,7 @@ export default {
             >
                 <span>Đính kèm từ</span>
                 <a
-                    @click.stop="
-                        popupFiles = !popupFiles
-                    "
+                    @click.stop="hideModalPopup"
                     ><i class="ri-close-line"></i
                 ></a>
             </div>

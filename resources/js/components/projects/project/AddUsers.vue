@@ -87,8 +87,12 @@ export default {
             <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                 <i class="mdi mdi-plus me-1"></i>
             </button>
-            <div class="dropdown-menu">
-                <div><input type="text" v-model="searchUsers" placeholder="Tìm kiếm các thành viên" /></div>
+            <div class="dropdown-menu dropdown_add_user">
+                <div>
+                    <div class="modal_move-header d-flex flex-row align-items-center justify-content-center"><span>Thêm thành viên</span><a><i class="ri-close-line"></i></a></div>
+                    <input type="text" v-model="searchUsers" placeholder="Tìm kiếm các thành viên" />
+                </div>
+                <p>Thành viên của project</p>
                 <div class="member_of_table">
                     <div
                         role="button"
@@ -105,16 +109,18 @@ export default {
                                 />
                             </div>
                         </div>
-                        <div class="name">
-                            <p>{{ user.name }}</p>
+                        <div class="d-flex align-items-center justify-content-between w-100">
+                            <div class="name">
+                                <p>{{ user.name }}</p>
+                            </div>
+                            <span
+                                v-if="
+                                    projectUsers[user.id]
+                                "
+                            >
+                                <i class="ri-check-line"></i>
+                            </span>
                         </div>
-                        <span
-                            v-if="
-                                projectUsers[user.id]
-                            "
-                        >
-                            <i class="ri-check-line"></i>
-                        </span>
                     </div>
                 </div>
             </div>

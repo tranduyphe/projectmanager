@@ -211,18 +211,21 @@ export default {
         }
         await this.auth();
         await this.getListTasks(this.data);
-        this.project_id = this.$store.getters.projectId;
-        // title: "",
-        //     items: [
-        //     {
-        //         text: "Gosu",
-        //         href: "/",
-        //     },
-        //     {
-        //         text: "Gosu Board",
-        //         active: true,
-        //     },
-        // ],
+        this.project_id = this.$store.getters.projectInfo.id;
+        this.title = this.$store.getters.projectInfo.title,
+        this.items = [
+            {
+                text: "Gosu",
+                href: "/",
+            },
+            {
+                text: this.title ,
+                active: true,
+            },
+        ]
+        document.body.addEventListener("click", function (evt) {
+            console.log(evt.target.className);
+        });
     },
 
     async mounted() {
@@ -272,7 +275,7 @@ export default {
                             @hideModalPopup="hideModalPopup"
                             :popupFiles="allPopUp['editor']"
                         ></Description>
-                        <CheckList :works="currentTask.works"></CheckList>
+                        <CheckList />
                         <FilesTask
                             @showModalPopup="showModalPopup"
                             @hideModalPopup="hideModalPopup"
@@ -466,7 +469,7 @@ export default {
                     </div>
                 </div>
             </div>
-            <div class="col-lg-6">                
+            <div class="col-lg-6 add_user">                
                 <AddUser :projectId="project_id"/>
             </div>
         </div>

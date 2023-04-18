@@ -3,15 +3,7 @@
 import { taskHelper } from "@/js/helpers/helptask";
 import { taskMethods, taskGetters } from "@/js/store/helpers";
 import moment from "moment";
-export default {
-    props: {
-        works: {
-            type: Object,
-            default: () => {
-                return {};
-            },
-        },
-    },
+export default {   
     data() {
         return {
             showActiveChecklist: false,
@@ -68,9 +60,9 @@ export default {
 
         // update check list
         async updateData(data) {
-            if (this.works[data["work_id"]].check_list[data["id"]].title) {
+            if (this.currentTask.works[data["work_id"]].check_list[data["id"]].title) {
                 var _data = {
-                    title: this.works[data["work_id"]].check_list[data["id"]]
+                    title: this.currentTask.works[data["work_id"]].check_list[data["id"]]
                         .title,
                 };
                 if (typeof data["data"] != "undefined") {
@@ -79,7 +71,7 @@ export default {
                     );
                 }
                 if (typeof data["status"] != "undefined") {
-                    _data["status"] = !this.works[data["work_id"]].check_list[
+                    _data["status"] = !this.currentTask.works[data["work_id"]].check_list[
                         data["id"]
                     ].status
                         ? 1
@@ -88,12 +80,15 @@ export default {
 
                 data["data"] = _data;
                 var result = await taskHelper.updatedDataChecklist(data);
-                if (result == 200) {
+                if (result) {
                     this.activeEditChecklist = {};
                     if (typeof _data["deadline"] != "undefined") {
                         this.currentTask.works[data["work_id"]].check_list[
                             data["id"]
                         ]["deadline"] = _data["deadline"];
+                    }
+                    if (typeof data["status"] != "undefined") {
+                        this.listTasks[this.currentTask.id]['works'][data["work_id"]]['check_list'][result.id] = result;
                     }
                 }
             }
@@ -113,7 +108,7 @@ export default {
 </script>
 <template>
     <div class="list_work_todo">
-        <div class="work-todo" v-for="work in works">
+        <div class="work-todo" v-for="work in currentTask.works">
             <div class="work-todo-header d-flex flex-row align-items-center">
                 <div :class="['d-flex flex-row align-items-center name']">
                     <i class="ri-checkbox-line"></i>
@@ -124,12 +119,12 @@ export default {
                 >
             </div>
             <div class="d-flex align-items-center">
-                <span>{{ percent(works)["percent"][work.id] + "%" }}</span>
+                <span>{{ percent(currentTask.works)["percent"][work.id] + "%" }}</span>
                 <b-progress
-                    :value="percent(works)['percent'][work.id]"
+                    :value="percent(currentTask.works)['percent'][work.id]"
                     :max="100"
                     :variant="`${
-                        percent(works)['percent'][work.id] == 100
+                        percent(currentTask.works)['percent'][work.id] == 100
                             ? 'success'
                             : ''
                     }`"

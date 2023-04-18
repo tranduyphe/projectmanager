@@ -6,7 +6,7 @@ const state = {
     listTaskDraggable: {}, // get list task add drag,
     listUserProject: {}, // get list user of project,
     listItemLabels: {}, // get list label of task,
-    projectId: false,
+    projectInfo: false,
     loadingStatus: false,
 };
 const getters = {
@@ -17,7 +17,7 @@ const getters = {
     listTaskDraggable: state => state.listTaskDraggable,
     projectUsers: state => state.listUserProject,
     listItemLabels: state => state.listItemLabels,
-    projectId: state => state.projectId,
+    projectInfo: state => state.projectInfo,
     loadingStatus: state => state.loadingStatus,
 };
 const actions = {   
@@ -31,7 +31,7 @@ const actions = {
             commit('setCard', res.data.cards);
             commit('setListUsers', res.data.list_user);
             commit('setLabels', res.data.labels); 
-            commit('setProjectId', res.data.project_id); 
+            commit('setProjectInfo', res.data.project); 
             if (res.data.project_users.length == 0) {
                 commit('setListProjectUsers', {});
             } else{
@@ -85,7 +85,7 @@ const actions = {
     // update check list
     async updatedChecklist({ commit }, data){
         let res = await axios.post(`/api/checklist/update/${data['id']}`, data);
-        return res.status;
+        return res.data;
     },
     // remove check in work todo
     async removeCheckList({commit}, id){
@@ -138,7 +138,7 @@ const mutations = {
         state.listItemLabels = payload;
     },
     loadingStatus: (state, payload) => (state.loadingStatus = payload),
-    setProjectId: (state, payload) => (state.projectId = payload),
+    setProjectInfo: (state, payload) => (state.projectInfo = payload),
 };
 
 export default {
