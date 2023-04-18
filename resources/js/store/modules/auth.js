@@ -3,8 +3,8 @@ import Router from '../../router';
 const state = {
     loginResponse: {}, // check login 
     authUser: {}, // get user data
-    authUserData : {}, // user data
-    departmentId :  false// 
+    authUserData: {}, // user data
+    departmentId: false// 
 };
 
 const getters = {
@@ -31,14 +31,50 @@ const actions = {
                     if (getters.getLoginResponse.response_type == 'success') {
                         axios.get('/api/user').then(response => {
                             if (response.status == 200) {
-                                commit('mutateAuthUser', response.data);                                
+                                commit('mutateAuthUser', response.data);
                                 sessionStorage.setItem(
                                     'authUser',
                                     JSON.stringify(response.data)
                                 );
-                                Router.push('/dashboard');
+                                // Router.push('/dashboard');
+                                window.location.replace('/dashboard');
                             }
                         });
+                    } else {
+                        alert(getters.getLoginResponse.response_data[0]);
+                    }
+                });
+        });
+    },
+    firstLogin({ commit, getters }, loginData) {
+        axios.get('/sanctum/csrf-cookie').then(() => {
+            axios
+                .post('/api/first-login', {
+                    email: loginData.email,
+                    password: loginData.password,
+                    repassword: loginData.repassword,
+                    is_first_login: loginData.is_first_login
+                })
+                .then(response => {
+                    commit('mutateLoginResponse', response.data);
+                    sessionStorage.setItem(
+                        'loginResponse',
+                        JSON.stringify(response.data)
+                    );
+                    if (getters.getLoginResponse.response_type == 'success') {
+                        axios.get('/api/user').then(response => {
+                            if (response.status == 200) {
+                                commit('mutateAuthUser', response.data);
+                                sessionStorage.setItem(
+                                    'authUser',
+                                    JSON.stringify(response.data)
+                                );
+                                // Router.push('/dashboard');
+                                window.location.replace('/dashboard');
+                            }
+                        });
+                    } else {
+                        alert(getters.getLoginResponse.response_data[0]);
                     }
                 });
         });
@@ -48,7 +84,7 @@ const actions = {
         commit('mutateAuthUserData', JSON.parse(sessionStorage.getItem('authUser')));
     },
 
-    logout() {        
+    logout() {
         document.getElementById("preloader").style.display = "block";
         document.getElementById("status").style.display = "block";
         axios.get('/api/logout').then((response) => {
@@ -58,17 +94,32 @@ const actions = {
             setTimeout(() => {
                 window.location.reload('/')
             }, 100);
-            
+
+        });
+    },
+
+    storeUpdateUser({ commit, getters }) {
+        axios.get('/sanctum/csrf-cookie').then(() => {
+            axios.get('/api/user').then(response => {
+
+                if (response.status === 200) {
+                    commit('mutateAuthUser', response.data);
+                    sessionStorage.setItem(
+                        'authUser',
+                        JSON.stringify(response.data)
+                    );
+                }
+            });
         });
     },
 
     //add department id when role admin
-    department({commit}, id) {
+    department({ commit }, id) {
         commit('mutateDepartmentId', id);
         sessionStorage.setItem(
             'departmentId', id
         );
-    }, 
+    },
 };
 
 const mutations = {

@@ -24,6 +24,10 @@ use App\Http\Controllers\ProjectUserController;
 
 
 Route::post( '/login', array( AuthController::class, 'login' ) );
+Route::post('/check-login', [AuthController::class, 'checkLogin']);
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/first-login', [AuthController::class, 'firstLogin']);
+Route::get('/allusers' , [ProjectUserController::class, 'allusers'])->middleware('auth:sanctum');
 Route::group(
 	array( 'middleware' => array( 'auth:sanctum', 'admin' ) ),
 	function() {
@@ -39,6 +43,11 @@ Route::group(
 				Route::post( 'create', array( ProjectController::class, 'create' ) );
 				Route::post( 'show', array( ProjectController::class, 'show' ) );
 				Route::post( 'adduser', array( ProjectUserController::class, 'create' ) );
+				Route::post('create-new-user', [ProjectUserController::class, 'createNewUser']);
+				Route::post('change-role-user/{id}', [ProjectUserController::class, 'changeRoleUser']);
+				Route::post('change-password-user/{id}', [ProjectUserController::class, 'changePasswordUser']);
+				Route::post('update', [ProjectUserController::class, 'updateUser']);
+				Route::post('change-password', [ProjectUserController::class, 'changePassword']);
 			}
 		);
 
