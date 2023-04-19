@@ -162,6 +162,9 @@ body.page-task {
         @media (max-width: 850px) {
             flex-wrap: wrap;
         }
+        p{
+            margin-bottom: 0 !important;
+        }
 
         .member {
             .list_user {
@@ -284,6 +287,9 @@ body.page-task {
             width: 152px;
             text-align: center;
             margin-top: 16px;
+            .modalFile{
+                text-align: left;
+            }
         }
 
         .textarea {
@@ -1494,4 +1500,25 @@ body.page-task {
 
 .w-calc {
     width: calc(100% - 136px) !important;
+}
+
+.user_manager{
+    .dataTables_paginate{
+        .current{
+            background: #f89b02 !important;
+        }
+    }
+}
+
+.deadline{
+    background: #eaecf0;
+    border-radius: 7px;
+    padding: 5px 8px;
+    span{
+        color: #ae2a19;
+        background: #ffedeb;
+        padding: 0 3px;
+        margin-left: 4px;
+        border-radius: 3px;
+    }
 }

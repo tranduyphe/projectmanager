@@ -3,7 +3,7 @@
     <div class="row position-relative">
       <div class="col-md-12">
         <div class="card show border border-0">
-          <button ref="myModalAddUserBtn" type="button" class="btn btn-all-add-edit my-3 mx-3 position-absolute"
+          <button ref="myModalAddUserBtn" type="button" class="btn btn-all-add-edit my-3 mx-3 position-absolute btn-primary"
             data-bs-toggle="modal" data-bs-target="#ModalAddUser">
             Add user
           </button>
@@ -38,15 +38,16 @@
                   <div class="col-md-12">
                     <div class="form-group">
                       <label>Email</label>
-                      <input type="email" placeholder="Enter description" class="form-control" v-model="userForm.email"
+                      <input type="email" placeholder="Enter description" class="form-control mt-1" v-model="userForm.email"
                         disabled required />
                     </div>
-                    <div class="form-group">
+                    <div class="form-group mt-3">
                       <label>Username</label>
-                      <input type="text" placeholder="Enter description" class="form-control" v-model="userForm.name"
+                      <input type="text" placeholder="Enter description" class="form-control mt-1" v-model="userForm.name"
                         required disabled />
                     </div>
-                    <div v-if="showCheckbox" class="form-check" v-for="(role, index) in roles"
+                    <div class="mt-3">
+                      <div v-if="showCheckbox" class="form-check" v-for="(role, index) in roles"
                       :key="`checkbox_${role.id}`">
                       <label class="form-check-label">
                         <input type="checkbox" class="form-check-input" value="" :key="`checkbox_${role.id}`"
@@ -55,10 +56,11 @@
                           " />{{ role.name }}
                       </label>
                     </div>
+                    </div>             
                   </div>
                 </div>
                 <div class="d-flex justify-content-center">
-                  <button type="submit" class="btn btn-all-add-edit py-2 px-5">
+                  <button type="submit" class="btn btn-all-add-edit py-2 px-5 btn-primary">
                     Change
                   </button>
                 </div>
@@ -90,28 +92,28 @@
                     <div class="col-md-12">
                       <div class="form-group">
                         <label>Email</label>
-                        <input type="email" placeholder="Enter description" class="form-control"
+                        <input type="email" placeholder="Enter description" class="form-control mt-1"
                           v-model="userPasswwordForm.email" required disabled />
                       </div>
-                      <div class="form-group">
+                      <div class="form-group mt-2">
                         <label>Username</label>
-                        <input type="text" placeholder="Enter description" class="form-control"
+                        <input type="text" placeholder="Enter description" class="form-control mt-1"
                           v-model="userPasswwordForm.name" required disabled />
                       </div>
-                      <div class="form-group">
+                      <div class="form-group mt-2">
                         <label>Password</label>
-                        <input type="password" placeholder="Enter description" class="form-control"
+                        <input type="password" placeholder="Enter description" class="form-control mt-1"
                           v-model="userPasswwordForm.password" required />
                       </div>
-                      <div class="form-group">
+                      <div class="form-group mt-2">
                         <label>Repassword</label>
-                        <input type="password" placeholder="Enter description" class="form-control"
+                        <input type="password" placeholder="Enter description" class="form-control mt-1"
                           v-model="userPasswwordForm.repassword" required />
                       </div>
                     </div>
                   </div>
                   <div class="d-flex justify-content-center">
-                    <button type="submit" class="btn btn-all-add-edit py-2 px-5">
+                    <button type="submit" class="btn btn-all-add-edit py-2 px-5 btn-primary mt-4">
                       Change
                     </button>
                   </div>
@@ -138,12 +140,12 @@
                     <div class="col-md-12">
                       <div class="form-group">
                         <label>Email</label>
-                        <input type="email" placeholder="Enter description" class="form-control" v-model="newUser.email"
+                        <input type="email" placeholder="Enter description" class="form-control mt-1" v-model="newUser.email"
                           required />
                       </div>
-                      <div class="form-group">
+                      <div class="form-group mt-2">
                         <label>Username</label>
-                        <input type="text" placeholder="Enter description" class="form-control" v-model="newUser.name"
+                        <input type="text" placeholder="Enter description" class="form-control mt-1" v-model="newUser.name"
                           required />
                       </div>
                       <!-- <div class="form-group">
@@ -151,9 +153,9 @@
                       <input type="password" placeholder="Enter password" class="form-control" v-model="newUser.password"
                         required />
                     </div> -->
-                      <div class="form-group">
+                      <div class="form-group mt-2">
                         <label>Role</label>
-                        <select class="form-select" aria-label="Default select example" v-model="newUser.role" required>
+                        <select class="form-select mt-1" aria-label="Default select example" v-model="newUser.role" required>
                           <option v-for="role in roles" :key="role.id" :value="`${role.id}`">
                             {{ role.name }}
                           </option>
@@ -162,8 +164,8 @@
                     </div>
                   </div>
 
-                  <div class="d-flex justify-content-center">
-                    <button type="submit" class="btn btn-all-add-edit py-2 px-5">
+                  <div class="d-flex">
+                    <button type="submit" class="btn btn-all-add-edit py-2 px-3 btn-primary mt-3">
                       Add User
                     </button>
                   </div>
