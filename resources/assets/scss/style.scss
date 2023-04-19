@@ -1522,3 +1522,24 @@ body.page-task {
         border-radius: 3px;
     }
 }
+.profile{
+     .card-body-user{
+        border: 1px solid #cfcfcf!important;
+        border-radius: 11px;
+       
+     }
+     .profile-card-body{
+        border: 1px solid #cfcfcf!important;
+       border-radius: 11px;
+       border-bottom: 5px solid #cfcfcf !important;
+     }
+     .avatar{
+        .choose_avatar{
+            display: block;
+            width: 120px;
+            height: 100%;
+            opacity: 0;
+            position: absolute;
+        }
+     }
+}
