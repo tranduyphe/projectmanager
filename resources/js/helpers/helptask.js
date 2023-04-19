@@ -199,8 +199,8 @@ function calculateDate(dateTasks){
     var duration = moment.duration(dateTasks.diff(today));
     var days     = Math.round(duration.asDays());
     var timeTask = ' [at] '+moment(dateTasks).format('HH:ss')
-    var danger = "[<span class='danger'>out of date</span>]";
-    var warning = "[<span class='warning'>near due</span>]";
+    var danger = "[<span class='danger' style='background:#ffedeb'>out of date</span>]";
+    var warning = "[<span class='warning' style='background:#e2b203;color:#000'>near due</span>]";
     var results = moment().add(days, 'days').calendar({
         sameDay: '[Today]'+ timeTask,
         nextDay: '[Tomorrow]' + timeTask + warning,
