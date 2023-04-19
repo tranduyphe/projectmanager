@@ -38,6 +38,6 @@ export default {
     <div v-if="deadline">
         <!-- {{ showDateDeadLine(deadline) }} -->
         <p>Ngày hết hạn</p>
-        <div v-bind:innerHTML="showDateDeadLine(deadline)"></div>
+        <div v-bind:innerHTML="showDateDeadLine(deadline)" class="deadline"></div>
     </div>
 </template>

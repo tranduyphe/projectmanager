@@ -334,7 +334,7 @@ export default {
                         </div>
                     </div>
                 </div>
-                <div :class="['col-3']">
+                <div :class="['col-3 content_rigth']">
                     <div :class="['list-item']">
                         <h6>Thêm vào thẻ</h6>
                         <b-list-group>
