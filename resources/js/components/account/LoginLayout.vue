@@ -1,22 +1,5 @@
 <script>
-import { mapGetters, mapMutations, mapActions } from "vuex";
 export default {
-    data() {
-        return {
-            // loginData: {
-            //   email: "admin@gmail.com",
-            //   // password: "123456",
-            //   submitted: false,
-            // },
-        };
-    },
-    computed: {
-        // ...mapGetters({
-        //   loginResponse: "getLoginResponse",
-        //   getUser: "getUser",
-        //   getAge: "getAge",
-        // }),
-    },
     created() {
         document.body.classList.add("auth-body-bg");
     },
