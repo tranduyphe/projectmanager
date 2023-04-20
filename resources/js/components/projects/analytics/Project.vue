@@ -3,9 +3,9 @@ import { VueEditor } from "vue3-editor";
 import {
     authGetters,
     projectMethods
-} from "../../../store/helpers";
-import { checkRolesAccess, checkPermissionAccess } from '../../../middleware/access.js';
-import { optionChart } from "../../../helpers/chart";
+} from "@/js/store/helpers";
+import { checkRolesAccess, checkPermissionAccess } from '@/js/middleware/access.js';
+import { optionChart } from "@/js/helpers/chart";
 import moment from "moment";
 export default {
     components: {

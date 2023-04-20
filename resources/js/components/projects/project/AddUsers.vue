@@ -1,5 +1,6 @@
 <script>
 import { taskHelper } from "@/js/helpers/helptask";
+import { userHelper } from "@/js/helpers/users";
 import { taskMethods, taskGetters, projectMethods} from "@/js/store/helpers";
 export default {
     props: {
@@ -21,6 +22,7 @@ export default {
             searchUsers : "",
             loading : false,
             path : '',
+
         };
     },
     computed: {
@@ -35,7 +37,7 @@ export default {
             }else{
                 return dataUsers;
             }
-        },
+        },        
     },
     methods: {
         ...taskMethods,   
@@ -59,9 +61,16 @@ export default {
                     }
                 }
             }
-        }    
+        },  
+        showAvatar(url){
+            return userHelper.avatar(url);
+        },
+        fullName(user){
+            return userHelper.fullName(user);
+        }
     },
-    created() {},
+    created() {
+    },
     mounted() {},
 }
 </script>
@@ -76,9 +85,9 @@ export default {
                     :title="user.name"
                 >
                     <img
-                        src="@/assets/images/users/avatar-2.jpg"
+                        :src="`${showAvatar(user.avatar)}`"
                         class="rounded-circle avatar-xs"
-                        alt
+                        :alt = "`${fullName(user)}`"
                     />
                 </a>
             </li>
@@ -104,14 +113,14 @@ export default {
                         <div class="avatar">
                             <div class="image">
                                 <img
-                                    src="/images/avatar-2.jpg"
-                                    alt=""
+                                    :src="`${showAvatar(user.avatar)}`"
+                                    :alt = "`${fullName(user)}`"
                                 />
                             </div>
                         </div>
                         <div class="d-flex align-items-center justify-content-between w-100">
                             <div class="name">
-                                <p>{{ user.name }}</p>
+                                <p>{{ fullName(user) }}</p>
                             </div>
                             <span
                                 v-if="

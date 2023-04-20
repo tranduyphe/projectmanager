@@ -80,7 +80,7 @@ trait TaskProject {
         if (!is_dir($path)) {
             mkdir($path, 0755);
         }
-        $id = false;
+        $result = false;
         if ($request->input('url')) {
             $title     = $request->input('name');
             $url       = $request->input('url');
@@ -98,7 +98,7 @@ trait TaskProject {
                 'updated_at'    => date('Y-m-d H:i:s'),
             ]);
             $media->save();
-            $id = $media->id;
+            $result = $media;
         }else{
             if ($request->hasFile('file')) {
                 $file       = $request->file('file');
@@ -107,8 +107,18 @@ trait TaskProject {
                 $title      = current( $checkFiles );
                 $extension  = end( $checkFiles );
                 $fileName   = Str::slug($title.time()).'.'.$extension;
-                $file->move(public_path('uploads'), $fileName);  
-                $url = public_path('uploads').'/'.$fileName;          
+
+                if ($request->input('type') == 'avatar') {
+                    $folderName = 'users';
+                    $path = public_path() . '/' . $folderName;
+                    if (!is_dir($path)) {
+                        mkdir($path, 0755);
+                    }
+                    $file->move(public_path('users'), $fileName); 
+                }else{
+                    $file->move(public_path('uploads'), $fileName);  
+                    $url = public_path('uploads').'/'.$fileName;   
+                }     
                 $slug      = Str::slug($title);
                 if (Media::where('slug', $slug)->exists()) {
                     $slug = $slug . '-' . uniqid();
@@ -122,10 +132,10 @@ trait TaskProject {
                     'updated_at'    => date('Y-m-d H:i:s'),
                 ]);
                 $media->save();
-                $id = $media->id;
+                $result = $media;
             }    
         }
-        return $id;
+        return $result;
     }
 
     /**

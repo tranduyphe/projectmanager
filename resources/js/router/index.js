@@ -95,12 +95,11 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-    const roles = to.meta.roles
+    const roles = to.meta.roles;
     let authUser = undefined
     authUser = JSON.parse(sessionStorage.getItem('authUser'))
-    if (roles && roles.length > 0) {
+    if (roles && roles.length > 0 && authUser) {
         const userRoles = authUser.roles;
-        
         const hasAccess = userRoles.some(role => roles.includes(role.name));
         if (!hasAccess) {
             next('/error');

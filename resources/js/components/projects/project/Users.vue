@@ -1,5 +1,6 @@
 <script>
 import { taskHelper } from "@/js/helpers/helptask";
+import { userHelper } from "@/js/helpers/users";
 import { taskMethods, taskGetters} from "@/js/store/helpers";
 export default {
     props: {
@@ -42,7 +43,13 @@ export default {
         //updated data task
         async updateDataCurrentTask( obj ) {
             await taskHelper.updateDataTask( obj )
-        },          
+        }, 
+        showAvatar(url){
+            return userHelper.avatar(url);
+        },
+        fullName(user){
+            return userHelper.fullName(user);
+        }         
     },
     created() {
     },
@@ -93,8 +100,8 @@ export default {
                     <div class="avatar">
                         <div class="image">
                             <img
-                                src="/images/avatar-2.jpg?feb0f89de58f0ef9b424b1beec766bd2"
-                                alt=""
+                                :src="`${showAvatar(user.avatar)}`"
+                                :alt="`${fullName(user)}`"
                             />
                         </div>
                     </div>

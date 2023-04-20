@@ -1,10 +1,10 @@
 <script>
-import { optionChart } from "../../../helpers/chart";
-import Router from '../../../router';
+import { optionChart } from "@/js/helpers/chart";
+import Router from '@/js/router';
 import {
     authMethods,
     authGetters
-} from "../../../store/helpers";
+} from "@/js/store/helpers";
 export default {
     props: {
         results: {

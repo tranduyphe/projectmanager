@@ -1,12 +1,12 @@
 <script>
-import { staticProject } from "../../helpers/statisproject";
+import { staticProject } from "@/js/helpers/statisproject";
 import {
     projectMethods,
     projectGetters,
     authMethods,
     authGetters
-} from "../../store/helpers";
-import PageHeader from "../layouts/page-header.vue";
+} from "@/js/store/helpers";
+import PageHeader from "@/js/components/layouts/page-header.vue";
 import VueApexCharts from "vue3-apexcharts";
 import AnalyticsDep from "./analytics/Depart.vue"
 import AnalyticsProject from "./analytics/Project.vue"

@@ -9,10 +9,14 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use App\Models\DepartmentUser;
+use App\Models\Department;
 use App\Models\Role;
+use App\Models\Media;
+use App\Http\Traits\TaskProject;
 
 class AuthController extends Controller
 {
+    use TaskProject;
     /**
      * Xử lý yêu cầu đăng nhập.
      *
@@ -248,12 +252,12 @@ class AuthController extends Controller
             }
         }
         $roles = Role::where('status', 1)->get()->toArray();
-
+        $deparments = Department::all();
         $responseData = [
             'status' => 200,
             'success'=>true,
             'message' => 'success',
-            'data' => ['users'=>$users,'roles'=>$roles]
+            'data' => ['users'=>$users,'roles'=>$roles, 'deparments'=> $deparments ]
         ];
         return response()->json($responseData);
     }
@@ -293,6 +297,14 @@ class AuthController extends Controller
                 'message' => 'The user successfully created',
                 'data'=>['user_created'=>$user]
             ];
+            if ($request->input('deparment')) {
+                $id_deparment = (int) $request->input('deparment');
+                $user_id = $user->id; 
+                $pepartmentUser = DepartmentUser::create([
+                    'user_id' => $user_id,
+                    'department_id' => $id_deparment,
+                ]);
+            }
             return response()->json($responseData);
         }else{
             $responseData = [
@@ -313,6 +325,28 @@ class AuthController extends Controller
     public function store(Request $request)
     {
         //
+    }
+
+     /**
+     * upload avatar user
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function upload(Request $request)
+    {
+        //        
+        $result = $this->upLoadFiles($request);
+        $user     = Auth::user();
+        $user_id  = $user->id;
+        $user->avatar = $result->name_file;
+        $user->save();
+        $user['roles'] = $user->getRoleNames()->first();
+        $responseData = [
+            'message' => 'Change avatar successfully',
+            'data'    => $user
+        ];
+        return response()->json($responseData);
     }
 
     /**
@@ -346,8 +380,7 @@ class AuthController extends Controller
      */
     public function update(Request $request)
     {
-        $user = $request->user();
-        $userUpdate = User::find($user->id);
+        $userUpdate     = Auth::user();
         $userUpdate->last_name = $request->input('last_name');
         $userUpdate->first_name = $request->input('first_name');
         $userUpdate->phone = $request->input('phone');
@@ -356,7 +389,9 @@ class AuthController extends Controller
         $responseData = [
             'status' => 200,
             'success'=>true,
-            'message' => 'The user successfully updated'];
+            'message' => 'The user successfully updated',
+            'data' => $userUpdate,
+        ];
         return response()->json($responseData);
     }
     /**

@@ -45,6 +45,7 @@ Route::group(
             function () {
                 Route::post('update', [AuthController::class, 'update']);
                 Route::post('create', [AuthController::class, 'create']);
+                Route::post('upload', [AuthController::class, 'upload']);
                 Route::post('change-role-user/{id}', [AuthController::class, 'changeRoleUser']);
                 Route::post('change-password-user/{id}', [AuthController::class, 'changePasswordUser']);
                 Route::post('change-password', [AuthController::class, 'changePassword']);

@@ -1,6 +1,6 @@
 <script>
 import simplebar from "simplebar-vue";
-import { checkRolesAccess, checkPermissionAccess } from '../../middleware/access.js';
+import { checkRolesAccess, checkPermissionAccess } from '@/js/middleware/access.js';
 export default {
     components: {
         simplebar,

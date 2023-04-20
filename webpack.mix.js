@@ -1,5 +1,6 @@
 const mix = require("laravel-mix");
 var path = require('path');
+const webpack = require('webpack');
 /*
  |--------------------------------------------------------------------------
  | Mix Asset Management
@@ -15,7 +16,15 @@ mix.webpackConfig({
         alias: {
             '@': path.resolve(__dirname, 'resources/')
         }
-    }
+    },
+    plugins: [
+        new webpack.DefinePlugin({
+            'process.env': {
+                APP_URL: JSON.stringify(process.env.APP_URL),
+                PUBLIC_URL: JSON.stringify(process.env.PUBLIC_URL),
+            }
+        })
+    ]
 });
 mix.js("resources/js/app.js", "public/js")
     .vue()

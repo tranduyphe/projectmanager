@@ -177,7 +177,8 @@ class TaskController extends Controller
     {
         $task_id = $request->input('task_id');
         $task = Tasks::find($task_id);
-        $id = $this->upLoadFiles($request);
+        $media = $this->upLoadFiles($request);
+        $id = $media->id;
         if ($id) {
             if (!empty($task->list_files)) {
                 $files = explode(',',$task->list_files);

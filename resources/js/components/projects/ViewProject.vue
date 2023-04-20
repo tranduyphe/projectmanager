@@ -1,14 +1,15 @@
 <script>
 import { VueDraggableNext } from "vue-draggable-next";
-import PageHeader from "../layouts/page-header.vue";
+import PageHeader from "@/js/components/layouts/page-header.vue";
+import { userHelper } from "@/js/helpers/users";
 import moment from "moment";
-import { taskHelper } from "../../helpers/helptask";
+import { taskHelper } from "@/js/helpers/helptask";
 import {
     taskMethods,
     authMethods,
     taskGetters,
     authGetters
-} from "../../store/helpers";
+} from "@/js/store/helpers";
 import MoveCard from "./project/MoveCard.vue";
 import CheckList from "./project/CheckLists.vue";
 import TaskDeadline from "./project/TaskDeadline.vue";
@@ -203,6 +204,12 @@ export default {
         fileTasks(data) {
             return taskHelper.countFileTasks(data);
         },
+        showAvatar(url){
+            return userHelper.avatar(url);
+        },
+        fullName(user){
+            return userHelper.fullName(user);
+        }
     },
     async created() {
         this.data = {
@@ -378,7 +385,7 @@ export default {
     <div class="container-fluid min-vh-100">
         <PageHeader :title="title" :items="items" />
         <!-- nav -->
-        <div class="layoutview-header">
+        <!-- <div class="layoutview-header">
             <div class="layoutview-header-left">
                 <h4 class="name_project">PROJECT</h4>
                 <div
@@ -452,7 +459,7 @@ export default {
                     <i class="ri-more-line"></i>
                 </a>
             </div>
-        </div>
+        </div> -->
         <div class="row mb-2">
             <div class="col-lg-6">
                 <div class="media">
@@ -614,10 +621,13 @@ export default {
                                                             data-placement="top"
                                                             :title="member.name"
                                                         >
+                                                        
+                                                        <!-- {{ member }} -->
                                                             <img
-                                                                src="@/assets/images/users/avatar-2.jpg"
+                                                                :src="`${showAvatar(member.avatar)}`"
+                                                                :alt="`${fullName(member)}`"
+                                                                :title="`${fullName(member)}`"
                                                                 class="rounded-circle avatar-xs"
-                                                                alt
                                                             />
                                                         </a>
                                                     </div>
