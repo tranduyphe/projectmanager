@@ -17,7 +17,9 @@
     --#{$prefix}card-img-overlay-padding: #{$card-img-overlay-padding};
     --#{$prefix}card-group-margin: #{$card-group-margin};
 }
-
+html{
+    overflow: hidden;
+}
 body.page-task {
     margin: 0;
     font-family: "Nunito", sans-serif;
