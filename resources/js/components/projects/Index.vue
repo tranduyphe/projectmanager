@@ -51,7 +51,14 @@ export default {
 
         formatDate(date){
             return moment(date).format('DD-MM-YYYY');
-        },        
+        },   
+        
+        trimString(str){
+            var content = str.replace(/(<([^>]+)>)/ig, '')
+            content = content.replace(/&nbsp;/g, ' ');   
+            content = content.replace(/^(.{20}[^\s]*).*/, "$1...");   
+            return content;
+        }
     },
     async created() {       
         this.auth();
@@ -156,13 +163,16 @@ export default {
                                         params: { slug: project.slug, id: project.id },
                                     }"                                                                                      
                                 >
-                                    <p>{{ project.title }}</p>  
-                                    <span class="date">
-                                        Start: {{ formatDate(project.start_time) }}
-                                    </span>
-                                    <span class="date">
-                                        End: {{ formatDate(project.end_time) }}
-                                    </span>                     
+                                    <div>
+                                        <h6>{{ project.title }}</h6>  
+                                        <p v-if="project.description">{{ trimString(project.description) }}</p>
+                                        <span class="date">
+                                            Start: {{ formatDate(project.start_time) }}
+                                        </span>
+                                        <span class="date">
+                                            End: {{ formatDate(project.end_time) }}
+                                        </span>
+                                    </div>            
                                 </router-link>
                             </div>
                             <div class="item-project" v-else>
@@ -172,14 +182,17 @@ export default {
                                         params: { slug: project.slug, id: project.id },
                                     }"                                     
                                 >
-                                    <p>{{ project.title }}</p>
-                                    <span class="badge badge-primary">{{ statisticalProject(project.data_task)+'%' }}</span>
-                                    <span class="date">
-                                        Start: {{ formatDate(project.start_time) }}
-                                    </span>
-                                    <span class="date">
-                                        End: {{ formatDate(project.end_time) }}
-                                    </span>
+                                    <div>
+                                        <h6>{{ project.title }}</h6>
+                                        <span class="badge badge-primary">{{ statisticalProject(project.data_task)+'%' }}</span>
+                                        <p v-if="project.description">{{ trimString(project.description) }}</p>
+                                        <span class="date">
+                                            Start: {{ formatDate(project.start_time) }}
+                                        </span>
+                                        <span class="date">
+                                            End: {{ formatDate(project.end_time) }}
+                                        </span>
+                                    </div>
                                 </router-link>
                             </div>
                             <div class="item-icon">
