@@ -163,8 +163,8 @@ export default {
                                         params: { slug: project.slug, id: project.id },
                                     }"                                                                                      
                                 >
+                                    <h6>{{ project.title }}</h6>  
                                     <div>
-                                        <h6>{{ project.title }}</h6>  
                                         <p v-if="project.description">{{ trimString(project.description) }}</p>
                                         <span class="date">
                                             Start: {{ formatDate(project.start_time) }}
@@ -172,7 +172,7 @@ export default {
                                         <span class="date">
                                             End: {{ formatDate(project.end_time) }}
                                         </span>
-                                    </div>            
+                                    </div>       
                                 </router-link>
                             </div>
                             <div class="item-project" v-else>
@@ -185,13 +185,15 @@ export default {
                                     <div>
                                         <h6>{{ project.title }}</h6>
                                         <span class="badge badge-primary">{{ statisticalProject(project.data_task)+'%' }}</span>
-                                        <p v-if="project.description">{{ trimString(project.description) }}</p>
-                                        <span class="date">
-                                            Start: {{ formatDate(project.start_time) }}
-                                        </span>
-                                        <span class="date">
-                                            End: {{ formatDate(project.end_time) }}
-                                        </span>
+                                        <div>
+                                            <p v-if="project.description">{{ trimString(project.description) }}</p>
+                                            <span class="date">
+                                                Start: {{ formatDate(project.start_time) }}
+                                            </span>
+                                            <span class="date">
+                                                End: {{ formatDate(project.end_time) }}
+                                            </span>
+                                        </div>
                                     </div>
                                 </router-link>
                             </div>
