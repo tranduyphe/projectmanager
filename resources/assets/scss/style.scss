@@ -1571,6 +1571,11 @@ body.page-task {
             position: absolute;
             cursor: pointer;
         }
+        img{
+            width: 120px;
+            height: 120px;
+            padding: 0 !important;
+        }
     }
 }
 .ul-list {
@@ -1580,5 +1585,17 @@ body.page-task {
     p{
         margin: 0;
         text-transform: capitalize;
+    }
+}
+#exampleModal{
+     .word_default{
+        .form-check-label{
+            text-transform:capitalize;
+        }
+     }
+}
+#ModalAddUser{
+    .form-select{
+        text-transform:capitalize;
     }
 }
