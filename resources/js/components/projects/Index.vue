@@ -1,8 +1,8 @@
 <script>
 // import { mapGetters, mapActions, mutations } from "vuex";
 import { VueEditor } from "vue3-editor";
-import { staticProject } from "../../helpers/statisproject";
-import PageHeader from "../layouts/page-header.vue";
+import { staticProject } from "@/js/helpers/statisproject";
+import PageHeader from "@/js/components/layouts/page-header.vue";
 import moment from "moment";
 import {
     projectMethods,
@@ -51,7 +51,7 @@ export default {
 
         formatDate(date){
             return moment(date).format('DD-MM-YYYY');
-        }
+        },        
     },
     async created() {       
         this.auth();

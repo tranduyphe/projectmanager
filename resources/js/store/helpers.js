@@ -3,5 +3,5 @@ export const taskMethods = mapActions(['createNewTask', 'getListTasks', 'updateT
 export const taskGetters = mapGetters(['listUsers', 'currentTask', 'listTasks', 'listCard', 'listTaskDraggable', 'projectUsers', 'listItemLabels', 'projectInfo']);
 export const authMethods = mapActions(['auth', 'logout', 'department']);
 export const authGetters = mapGetters(['authUserData', 'departmentId']);
-export const projectMethods = mapActions(['addRemoveUserInProject', 'getProjects', 'createProject', 'getProject']);
+export const projectMethods = mapActions(['addRemoveUserInProject', 'getProjects', 'createProject', 'getProject', 'updateProject']);
 export const projectGetters = mapGetters(['listProjects', 'projectData', 'currentProject']);

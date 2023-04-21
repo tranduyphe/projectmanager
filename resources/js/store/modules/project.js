@@ -57,6 +57,14 @@ const actions = {
         if (res.status == 200) {
             commit('setCurrentProject', res.data);
         }
+    },
+    /**
+     * update project
+     * @param {data} 
+     */
+    async updateProject({commit}, data){
+        let res = await axios.post(`/api/project/update`, data);
+        return res;
     }
 };
 

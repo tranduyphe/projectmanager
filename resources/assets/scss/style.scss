@@ -34,6 +34,11 @@ body.page-task {
     align-items: flex-start;
 }
 
+// .page-task .card-body {
+//     flex: 1 1 auto;
+//     min-height: 1px;
+//     padding: 1.25rem;
+// }
 .card-title {
     font-size: 15px;
     margin: 0 0 7px 0;
@@ -525,7 +530,7 @@ body.page-task {
 .member_of_table {
     .list_member {
         margin-top: 8px;
-
+        cursor: pointer;
         .avatar {
             img {
                 width: 32px;
@@ -946,6 +951,11 @@ body.page-task {
     border-radius: 3px;
     padding-bottom: 20px;
     padding: 15px 25px !important;
+
+    .button {
+        background: #ecedf0;
+        margin-top: 5px !important;
+    }
 
     .title {
         margin-left: 0px;
@@ -1502,6 +1512,9 @@ body.page-task {
     width: calc(100% - 136px) !important;
 }
 
+.border-none {
+    border: none !important;
+}
 .user_manager{
     .dataTables_paginate{
         .current{
@@ -1509,7 +1522,6 @@ body.page-task {
         }
     }
 }
-
 .deadline{
     background: #eaecf0;
     border-radius: 7px;
@@ -1520,5 +1532,53 @@ body.page-task {
         padding: 0 3px;
         margin-left: 4px;
         border-radius: 3px;
+    }
+}
+.profile{
+    .card-body-user{
+       border: 1px solid #cfcfcf!important;
+       border-radius: 11px;
+
+    }
+    .profile-card-body{
+       border: 1px solid #cfcfcf!important;
+        border-radius: 11px;
+        border-bottom: 5px solid #cfcfcf !important;
+    }
+    .wrap-img {
+        width: 120px;
+        height: 120px;
+        overflow: hidden;
+        border-radius: 100%;
+        position: relative;
+        padding: 0;
+        img{
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            left: 0;
+            top: 0;
+            border-radius: 100%;
+            object-fit: cover;
+        }        
+    }
+    .avatar{
+        .choose_avatar{
+            display: block;
+            width: 120px;
+            height: 100%;
+            opacity: 0;
+            position: absolute;
+            cursor: pointer;
+        }
+    }
+}
+.ul-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    p{
+        margin: 0;
+        text-transform: capitalize;
     }
 }

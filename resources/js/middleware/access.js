@@ -8,7 +8,6 @@ export function checkRolesAccess(roles) {
         return false;
     }
     const userRoles = authUser.roles;
-    console.log("check roles user:", userRoles);
     return userRoles.some((role) => roles.includes(role.name));
 }
 
@@ -22,7 +21,6 @@ export function checkPermissionAccess(permissions) {
         return false;
     }
     const userRoles = authUser.roles;
-    console.log("check roles user:", userRoles);
     let hasAccess = false;
 
     for (const role of userRoles) {
