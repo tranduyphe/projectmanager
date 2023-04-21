@@ -68,6 +68,7 @@ export default {
                     active: true,
                 },
             ],
+            publicPath : process.env.PUBLIC_URL
         };
     },
     computed: {
@@ -460,19 +461,18 @@ export default {
                 </a>
             </div>
         </div> -->
-        <div class="row mb-2">
+        <div class="row mb-4">
             <div class="col-lg-6">
-                <div class="media">
+                <div class="media d-flex align-items-center">
                     <div class="me-3">
                         <img
-                            src="@/assets/images/logo-sm-light.png"
+                            :src="`${publicPath+'images/icon.png'}`"
                             alt
                             class="avatar-xs"
                         />
                     </div>
                     <div class="media-body">
-                        <h5>Gosu Dashboard</h5>
-                        <span class="badge badge-soft-success">Open</span>
+                        <h5 class="mb-0">Gosu Dashboard</h5>
                     </div>
                 </div>
             </div>

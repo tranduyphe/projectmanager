@@ -7,6 +7,7 @@ export default {
             loginData: {
                 email: this.$route.query.email ?? "admin@gmail.com",
             },
+            publicPath : process.env.PUBLIC_URL
         };
     },
 
@@ -51,7 +52,7 @@ export default {
                 <div>
                     <a href="/" class="logo">
                         <img
-                            src="../../../assets/images/logo.png"
+                            :src="`${publicPath+'/images/logo.png'}`"
                             height="50"
                             alt="logo"
                         />

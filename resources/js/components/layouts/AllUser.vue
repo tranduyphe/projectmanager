@@ -96,9 +96,9 @@
                                             >
                                                 <label class="form-check-label">
                                                     <input
-                                                        type="checkbox"
+                                                        type="radio"
                                                         class="form-check-input"
-                                                        value=""
+                                                        :value="role.id"
                                                         :key="`checkbox_${role.id}`"
                                                         :checked="
                                                             isRolesChecked(
@@ -108,11 +108,13 @@
                                                         "
                                                         @click="
                                                             handleCheckboxClick(
+                                                                $event,
                                                                 role.id,
                                                                 $event.target
                                                                     .checked
                                                             )
                                                         "
+                                                        name="checkRoles"
                                                     />{{ role.name }}
                                                 </label>
                                             </div>
@@ -422,7 +424,8 @@ export default {
                 .finally(() => (this.loading = false));
         },
         updateRolesUser() {
-            console.log("check userForm:", this.userForm);
+            // console.log("check userForm:", this.userForm);
+            // return;
             this.axios
                 .post(
                     `/api/user/change-role-user/${this.userForm.id}`,
@@ -628,8 +631,9 @@ export default {
             }
             // return true;
         },
-        handleCheckboxClick(roleId, checked) {
-            this.userForm["role_" + roleId] = checked;
+        handleCheckboxClick(event, roleId, checked) {
+            this.userForm["role"] = event.target.value;
+            console.log(event.target.value);
         },
         updateRowData(id, userUpdate) {
             let elementToUpdate = this.dataTableData.find(

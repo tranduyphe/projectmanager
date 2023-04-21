@@ -410,7 +410,7 @@ class AuthController extends Controller
             ]);
             $roles = Role::where('status', 1)->get();
             foreach ($roles as $role) {
-                if ($request->has('role_'. $role->id) && $request->input('role_'. $role->id) == true){
+                if ($request->has('role') && $request->input('role') == $role->id){
                     $user->assignRole($role->name);
                 }else{
                     $user->removeRole($role->name);
