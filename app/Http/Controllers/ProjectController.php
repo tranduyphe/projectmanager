@@ -148,9 +148,18 @@ class ProjectController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
-        //
+        $data = $request->input('data');
+        $id = $request->input('id');
+        // $_data = array(
+        //     'title' => $data['title'],
+        //     'start_time' => $data['start_time'],
+        //     'end_time' => $data['end_time'],
+        //     'description' => $data['description']
+        // );
+        $result = Project::where('id', $id)->update($data);
+        return response()->json($result);
     }
 
     /**

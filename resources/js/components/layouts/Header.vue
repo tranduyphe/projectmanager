@@ -1,59 +1,54 @@
 <script>
-import { mapGetters, mapMutations, mapActions } from "vuex";
-
+import { mapActions } from "vuex";
+import { userHelper } from '../../helpers/users'
 export default {
+    props: {
+        infoAuth: {
+            type: Object,
+            default: () => {
+                return false
+            },
+        },
+    },
     data() {
         return {
             languages: [
                 {
-                    flag: require("@/assets/images/flags/us.jpg"),
+                    flag: 'images/us.jpg',
                     language: "en",
                     title: "English",
                 },
                 {
-                    flag: require("@/assets/images/flags/french.jpg"),
+                    flag: 'images/french.jpg',
                     language: "fr",
                     title: "French",
                 },
                 {
-                    flag: require("@/assets/images/flags/spain.jpg"),
+                    flag: 'images/spain.jpg',
                     language: "es",
                     title: "spanish",
                 },
-                {
-                    flag: require("@/assets/images/flags/chaina.png"),
-                    language: "zh",
-                    title: "Chinese",
-                },
-                {
-                    flag: require("@/assets/images/flags/arabic.png"),
-                    language: "ar",
-                    title: "Arabic",
-                },
             ],
             current_language: "en",
+            avatar: 'images/avatar.png',
+            publicPath: process.env.PUBLIC_URL
         };
     },
-    // components: { simplebar },
     computed: {
-        ...mapGetters(["authUserData"]),
-        authUser() {
-            if (this.$store.getters.getAuthUser.id !== undefined) {
-                return this.$store.getters.getAuthUser;
-            }
-            return JSON.parse(sessionStorage.getItem("authUser"));
-        },
+        fullName() {
+            return userHelper.fullName(this.infoAuth)
+        }
     },
     methods: {
         ...mapActions(["logout", "auth"]),
+        
         toggleMenu() {
             // this.$parent.toggleMenu();
         },
     },
-    create() {
-        this.auth();
-    },
-    mounted() {
+    created() {},
+    async mounted() {
+        await this.auth();
     },
 };
 </script>
@@ -64,21 +59,12 @@ export default {
             <div class="d-flex">
                 <!-- LOGO -->
                 <div class="navbar-brand-box">
-                    <a href="index.htms" class="logo logo-dark">
+                    <a href="/" class="logo logo-light">
                         <span class="logo-sm">
-                            <img src="@/assets/images/logo-sm-dark.png" alt height="22" />
+                            <img :src="`${publicPath+'images/logo.png'}`" alt height="22" />
                         </span>
                         <span class="logo-lg">
-                            <img src="@/assets/images/logo-dark.png" alt height="20" />
-                        </span>
-                    </a>
-
-                    <a href="index.htms" class="logo logo-light">
-                        <span class="logo-sm">
-                            <img src="@/assets/images/logo.png" alt height="22" />
-                        </span>
-                        <span class="logo-lg">
-                            <img src="@/assets/images/logo.png" alt height="20" />
+                            <img :src="`${publicPath+'images/logo.png'}`" alt height="20" />
                         </span>
                     </a>
                 </div>
@@ -98,31 +84,30 @@ export default {
             <div class="d-flex">
                 <b-dropdown variant="white" right toggle-class="header-item">
                     <template v-slot:button-content>
-                        <img class src="@/assets/images/flags/us.jpg" alt="Header Language" height="16" />
+                        <img class :src="`${publicPath+'images/us.jpg'}`" alt="Header Language" height="16" />
                     </template>
                     <b-dropdown-item class="notify-item" v-for="(entry, i) in languages" :key="`Lang${i}`" :value="entry"
                         :link-class="{
                             active: entry.language === current_language,
                         }">
-                        <img :src="`${entry.flag.default}`" alt="user-image" class="me-1" height="12" />
+                        <img :src="`${publicPath+entry.flag}`" alt="user-image" class="me-1" height="12" />
                         <span class="align-middle">{{ entry.title }}</span>
                     </b-dropdown-item>
                 </b-dropdown>
                 <b-dropdown right variant="black" toggle-class="header-item" class="d-inline-block user-dropdown">
                     <template v-slot:button-content>
-                        <img class="rounded-circle header-profile-user" src="@/assets/images/users/avatar-2.jpg"
-                            alt="Header Avatar" />
+                        <img class="rounded-circle header-profile-user"
+                            alt="Header Avatar" 
+                            :src="`${ infoAuth.avatar ? publicPath+'users/'+infoAuth.avatar : publicPath+avatar}`"
+                        />
                         <span class="d-none d-xl-inline-block ms-1">
-                            {{ authUserData.name }}
+                            {{ fullName }}
                         </span>
                     </template>
                     <!-- item-->
-                    <a class="dropdown-item" href="#">
-                        <i class="ri-user-line align-middle me-1"></i>
-                        Profile
-                    </a>
-                    <router-link class="dropdown-item" :to="{ name: 'Profile User' }"><i
-                            class="ri-user-line align-middle mr-1"></i> Profile</router-link>
+                    <router-link class="dropdown-item" :to="{ name: 'Profile User' }">
+                        <i class="ri-user-line align-middle mr-1"></i> Profile
+                    </router-link>
                     <a class="dropdown-item" href="#">
                         <i class="ri-wallet-2-line align-middle me-1"></i>
                         My Wallet

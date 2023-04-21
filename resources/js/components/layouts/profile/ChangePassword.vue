@@ -71,7 +71,7 @@ export default {
     updatePasswordUser() {
       this.userForm.email = "admin@gmail.com";
       this.axios
-        .post(`/api/project/change-password`, this.userForm)
+        .post(`/api/user/change-password`, this.userForm)
         .then((response) => {
           if (response.data.status === 200) {
             // this.$swal.fire({

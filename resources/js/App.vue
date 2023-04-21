@@ -18,6 +18,11 @@ export default {
         Footer,
         SideBar
     },
+    data() {
+        return {
+            infoAuth : {},
+        }
+    },
     computed: {
         loginResponse() {
             let output = undefined;
@@ -59,19 +64,29 @@ export default {
             }
 
             return this.authUser.roles[0]['name'];
-        }
+        },
+    },
+    methods: {
+        getInfoAuth(){
+            this.infoAuth = this.$store.getters.authUserData;
+        }, 
+        updateInfoAuth(data){
+            this.infoAuth = data;
+        },
     },
     created: () => {
         document.body.removeAttribute("data-layout", "horizontal");
         document.body.removeAttribute("data-topbar", "dark");
         document.body.setAttribute("data-sidebar", "dark");
+        // this.getInfoAuth();      
+        // console.log(this.infoAuth)
     },
     mounted() {
+        
         // document.body.classList.remove("auth-body-bg");
         // if (this.loader === true) {
         //     document.getElementById("preloader").style.display = "block";
         //     document.getElementById("status").style.display = "block";
-
         setTimeout(function () {
             document.getElementById("preloader").style.display = "none";
             document.getElementById("status").style.display = "none";
@@ -80,6 +95,7 @@ export default {
         //     document.getElementById("preloader").style.display = "none";
         //     document.getElementById("status").style.display = "none";
         // }
+        this.getInfoAuth();
     }
 }
 </script>
@@ -100,7 +116,7 @@ export default {
         </div>
         <!-- Begin page -->
         <div id="layout-wrapper">
-            <Header />
+            <Header :infoAuth="infoAuth"/>
             <SideBar />
             <!-- ============================================================== -->
             <!-- Start right Content here -->
@@ -108,7 +124,7 @@ export default {
             <div class="main-content">
                 <div class="page-content">
                     <!-- <dashboard /> -->
-                    <router-view />
+                    <router-view @updateInfoAuth="updateInfoAuth"/>
                 </div>
                 <!-- End Page-content -->
             </div>

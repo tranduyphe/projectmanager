@@ -1,5 +1,5 @@
 <script>
-import { taskHelper } from "@/js/helpers/helptask";
+import { userHelper } from "@/js/helpers/users";
 import { taskMethods, taskGetters} from "@/js/store/helpers";
 export default {
     props: {
@@ -18,7 +18,13 @@ export default {
         ...taskGetters,
     },
     methods: {
-        ...taskMethods,      
+        ...taskMethods, 
+        showAvatar(url){
+            return userHelper.avatar(url);
+        },
+        fullName(user){
+            return userHelper.fullName(user);
+        }     
     },
     created() {
     },
@@ -39,8 +45,9 @@ export default {
                     :key="index"
                 >
                     <img
-                        src="/images/avatar-2.jpg"
-                        :title="userTask.name"
+                        :src="`${showAvatar(userTask.avatar)}`"
+                        :alt="`${fullName(userTask)}`"
+                        :title="`${fullName(userTask)}`"
                     />
                 </div>
             </div>

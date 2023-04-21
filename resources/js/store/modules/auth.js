@@ -101,9 +101,9 @@ const actions = {
     storeUpdateUser({ commit, getters }) {
         axios.get('/sanctum/csrf-cookie').then(() => {
             axios.get('/api/user').then(response => {
-
                 if (response.status === 200) {
                     commit('mutateAuthUser', response.data);
+                    commit('mutateAuthUserData', response.data);
                     sessionStorage.setItem(
                         'authUser',
                         JSON.stringify(response.data)
@@ -119,6 +119,44 @@ const actions = {
         sessionStorage.setItem(
             'departmentId', id
         );
+    },
+
+    // upload change avata
+    // upload file 
+    async uploadAvatar({commit}, data){
+        // axios.get('/sanctum/csrf-cookie').then((res) => {
+        //     var config = {
+        //         headers: {
+        //             'Content-Type': 'multipart/form-data',
+        //         },
+        //     }
+        //     axios
+        //         .post('/api/user/upload', data, config)
+        //         .then(response => {
+        //             commit('mutateAuthUser', response.data.data);
+        //             sessionStorage.setItem(
+        //                 'authUser',
+        //                 JSON.stringify(response.data.data)
+        //             );
+        //         });
+        // })
+        var config = {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        }
+        let res = await axios.post(`/api/user/upload`, data, config);
+        let results = false;
+        if (res.status == 200 && res.data) {
+            commit('mutateAuthUser', res.data.data);
+            commit('mutateAuthUserData', res.data.data);
+            sessionStorage.setItem(
+                'authUser',
+                JSON.stringify(res.data.data)
+            );
+            results = res.data.data;
+        }
+        return results;
     },
 };
 

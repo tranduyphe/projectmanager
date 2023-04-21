@@ -27,13 +27,30 @@ Route::post( '/login', array( AuthController::class, 'login' ) );
 Route::post('/check-login', [AuthController::class, 'checkLogin']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/first-login', [AuthController::class, 'firstLogin']);
-Route::get('/allusers' , [ProjectUserController::class, 'allusers'])->middleware('auth:sanctum');
 Route::group(
+	array( 'middleware' => array( 'auth:sanctum' ) ), function(){
+        Route::get('allusers' , [AuthController::class, 'index']);
+    },
+);
+Route::group(
+	// array( 'middleware' => array( 'auth:sanctum' ) ), function(){
+    //     Route::get('allusers' , [AuthController::class, 'index']);
+    // },
 	array( 'middleware' => array( 'auth:sanctum', 'admin' ) ),
 	function() {
-
 		Route::get('/logout', [AuthController::class, 'logout']);
 		Route::get( '/user', array( AuthController::class, 'logged' ) );
+        Route::group(
+            array( 'prefix' => 'user' ),
+            function () {
+                Route::post('update', [AuthController::class, 'update']);
+                Route::post('create', [AuthController::class, 'create']);
+                Route::post('upload', [AuthController::class, 'upload']);
+                Route::post('change-role-user/{id}', [AuthController::class, 'changeRoleUser']);
+                Route::post('change-password-user/{id}', [AuthController::class, 'changePasswordUser']);
+                Route::post('change-password', [AuthController::class, 'changePassword']);
+            }
+        );
 		// Get all project
 		Route::post( 'store', array( ProjectController::class, 'store' ) );
 		Route::group(
@@ -42,12 +59,8 @@ Route::group(
 				Route::post( 'index', array( ProjectController::class, 'index' ) );
 				Route::post( 'create', array( ProjectController::class, 'create' ) );
 				Route::post( 'show', array( ProjectController::class, 'show' ) );
-				Route::post( 'adduser', array( ProjectUserController::class, 'create' ) );
-				Route::post('create-new-user', [ProjectUserController::class, 'createNewUser']);
-				Route::post('change-role-user/{id}', [ProjectUserController::class, 'changeRoleUser']);
-				Route::post('change-password-user/{id}', [ProjectUserController::class, 'changePasswordUser']);
-				Route::post('update', [ProjectUserController::class, 'updateUser']);
-				Route::post('change-password', [ProjectUserController::class, 'changePassword']);
+				Route::post( 'update', array( ProjectController::class, 'update' ) );
+				Route::post( 'adduser', array( ProjectUserController::class, 'create' ) );					
 			}
 		);
 
