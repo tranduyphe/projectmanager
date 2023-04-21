@@ -356,7 +356,8 @@ import DataTable from "datatables.net-vue3";
 import DataTablesCore from "datatables.net";
 import $ from "jquery";
 import { createApp, h } from "vue";
-// DataTable.use(DataTablesCore);
+import { userHelper } from "@/js/helpers/users";
+import Swal from "sweetalert2";
 export default {
     data() {
         return {
@@ -389,6 +390,9 @@ export default {
     computed: {
     },
     methods: {
+        fullName(user){
+            return userHelper.fullName(user);
+        },
         // thêm mới người dùng
         addUser() {
             // thực hiện các xử lý để thêm mới người dùng vào danh sách
@@ -412,14 +416,27 @@ export default {
                         if (newUser) {
                             this.addRowData(newUser);
                         }
-                        alert(response.data.message);
+                        Swal.fire({
+                            position: 'bottom-start',
+                            icon: 'success',
+                            title: response.data.message,
+                            showConfirmButton: false,
+                            timer: 2000,
+                            timerProgressBar: true,
+                        })
                         this.newUser = {}
                     }
                 })
                 .catch((error) => {
-                    alert(
-                        `Error ${error.response.status}: ${error.response.data.message}`
-                    );
+                    Swal.fire({
+                        position: 'bottom-start',
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: error,
+                        showConfirmButton: false,
+                        timer: 2000,
+                        timerProgressBar: true,
+                    })
                 })
                 .finally(() => (this.loading = false));
         },
@@ -437,26 +454,26 @@ export default {
                             this.userForm.id,
                             response.data.data.user_update
                         );
-                        // this.$swal.fire({
-                        //   position: "top-end",
-                        //   icon: "success",
-                        //   title: `Change role ${this.userForm.name} Success`,
-                        //   showConfirmButton: false,
-                        //   timer: this.$config.notificationTimer ?? 1000,
-                        // });
-
-                        alert(response.data.message);
+                        Swal.fire({
+                            position: 'bottom-start',
+                            icon: 'success',
+                            title: response.data.message,
+                            showConfirmButton: false,
+                            timer: 2000,
+                            timerProgressBar: true,
+                        })
                     }
                 })
                 .catch((error) => {
-                    // this.$swal.fire({
-                    //   icon: "error",
-                    //   title: "Oops...",
-                    //   text: `Error ${error.response.status}: ${error.response.data.message}`,
-                    // });
-                    alert(
-                        `Error ${error.response.status}: ${error.response.data.message}`
-                    );
+                    Swal.fire({
+                        position: 'bottom-start',
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: error,
+                        showConfirmButton: false,
+                        timer: 2000,
+                        timerProgressBar: true,
+                    })
                 })
                 .finally(() => (this.loading = false));
         },
@@ -468,23 +485,65 @@ export default {
                 )
                 .then((response) => {
                     if (response.data.status === 200) {
-                        alert(response.data.message);
+                        Swal.fire({
+                            position: 'bottom-start',
+                            icon: 'success',
+                            title: response.data.message,
+                            showConfirmButton: false,
+                            timer: 2000,
+                            timerProgressBar: true,
+                        })
                         this.userPasswwordForm.password = null;
                         this.userPasswwordForm.repassword = null;
                     }
                 })
                 .catch((error) => {
-                    alert(
-                        `Error ${error.response.status}: ${error.response.data.message}`
-                    );
-                })
+                    Swal.fire({
+                        position: 'bottom-start',
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: error,
+                        showConfirmButton: false,
+                        timer: 2000,
+                        timerProgressBar: true,
+                    })
+                })   
                 .finally(() => (this.loading = false));
         },
         setColumns() {
             const self = this;
             this.columns = [
                 { data: "id", title: "ID" },
-                { data: "name", title: "Name" },
+                {
+                    data: "id",
+                    title: "FullName",
+                    class: "columns-list",
+                    createdCell: function (
+                        cell,
+                        cellData,
+                        rowData,
+                        rowIndex,
+                        colIndex
+                    ) {
+                        
+                        const app = createApp({
+                            render() {                              
+                                return h(
+                                    "span",
+                                    { class: "fullname" },
+                                    self.fullName(rowData)
+                                );
+                            },
+                            data() {
+                                return {
+                                    rowData: rowData,
+                                };
+                            },
+                        });
+                        app.mount(cell);
+                    },
+                },
+                { data: "name", title: "UserName" },
                 { data: "email", title: "Email" },
                 {
                     data: "id",
@@ -498,7 +557,7 @@ export default {
                         colIndex
                     ) {
                         const app = createApp({
-                            render() {
+                            render() {                                
                                 return h(
                                     "ul",
                                     { class: "ul-list" },
@@ -633,7 +692,6 @@ export default {
         },
         handleCheckboxClick(event, roleId, checked) {
             this.userForm["role"] = event.target.value;
-            console.log(event.target.value);
         },
         updateRowData(id, userUpdate) {
             let elementToUpdate = this.dataTableData.find(
@@ -652,7 +710,6 @@ export default {
         },
         addRowData(userUpdate) {
             this.dataTableData.push(userUpdate);
-
             $(this.$refs.myTable).DataTable().destroy();
             this.table = $(this.$refs.myTable).DataTable({
                 data: this.dataTableData,
