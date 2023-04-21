@@ -28,7 +28,7 @@ export default {
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-8">
+                    <div class="col-lg-8 ps-0">
                         <div class="authentication-bg">
                             <div class="bg-overlay"></div>
                         </div>
