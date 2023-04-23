@@ -23,6 +23,7 @@ import Description from "./project/Description.vue";
 import AddUser from "./project/AddUsers.vue";
 import MemberTask from "./project/MemberTask.vue";
 import LabelTask from "./project/LabelTask.vue";
+import FilterTasks from "./filter/FilterTasks.vue";
 export default {
     page: {
         title: "Gosu Board",
@@ -43,7 +44,8 @@ export default {
         Description,
         AddUser,
         MemberTask,
-        LabelTask
+        LabelTask,
+        FilterTasks
     },
     data() {
         return {
@@ -210,6 +212,47 @@ export default {
         },
         fullName(user){
             return userHelper.fullName(user);
+        },
+        //filter tasks
+        onFilterTask(data){
+            try {       
+                var results = this.$store.getters.listTasks; 
+                var resultsDraggable = this.$store.getters.listTaskDraggable; 
+                const asArray = Object.values(results);
+                if (data) {
+                     // update data task
+                    var _data = asArray.filter(function(e) {
+                        if (data['users']) {
+                            if (data['users']['no']) {
+                                return !e.members || e.members.length == 0;
+                            }
+                        }
+                    });    
+
+                    var __data = _data.reduce((a, v) => (
+                        { ...a, [v.id]: v}                        
+                    ), {})    
+                              
+                    results = __data;
+                    // update data task in card
+                    var _resultsDraggable = {}
+                    for (const key in resultsDraggable) {
+                        _resultsDraggable[key] = []
+                        var __resultsDraggable = resultsDraggable[key];
+                        resultsDraggable[key].filter(function(e) {
+                            if (typeof results[e] != 'undefined') {
+                                _resultsDraggable[key].push(e)
+                            }
+                            return e; 
+                        });         
+                    }
+                }
+                this.$store.commit('setTask', results);
+                this.$store.commit('setTaskDraggable',_resultsDraggable);
+            } catch (error) {
+                console.log('error filter task', error)
+            }
+            
         }
     },
     async created() {
@@ -231,9 +274,9 @@ export default {
                 active: true,
             },
         ]
-        document.body.addEventListener("click", function (evt) {
-            console.log(evt.target.className);
-        });
+        // document.body.addEventListener("click", function (evt) {
+        //     console.log(evt.target.className);
+        // });
     },
 
     async mounted() {
@@ -386,7 +429,7 @@ export default {
     <div class="container-fluid min-vh-100">
         <PageHeader :title="title" :items="items" />
         <!-- nav -->
-        <!-- <div class="layoutview-header">
+        <div class="layoutview-header">
             <div class="layoutview-header-left">
                 <h4 class="name_project">PROJECT</h4>
                 <div
@@ -412,7 +455,7 @@ export default {
                 </div>
             </div>
             <div class="layoutview-header-right">
-                <a class="btn_add-ons">
+                <!-- <a class="btn_add-ons">
                     <div class="icon">
                         <i class="ri-rocket-2-line"></i>
                     </div>
@@ -421,12 +464,13 @@ export default {
                 <a class="btn_automation">
                     <i class="ri-flashlight-line"></i>
                     <p>Tự động hóa</p>
-                </a>
+                </a> -->
+                <FilterTasks :labels="listItemLabels" :users="projectUsers" @filterTask="onFilterTask"/>
                 <a class="btn_filter">
                     <div class="icon"><i class="ri-filter-3-line"></i></div>
                     <p>Lọc</p>
                 </a>
-                <div class="list_user">
+                <!-- <div class="list_user">
                     <div class="avatar">
                         <img
                             src="/images/avatar-1.jpg"
@@ -451,16 +495,16 @@ export default {
                             alt=""
                         />
                     </div>
-                </div>
-                <a class="btn_share">
+                </div> -->
+                <!-- <a class="btn_share">
                     <div class="icon"><i class="ri-user-add-line"></i></div>
                     <p>Chia sẻ</p>
                 </a>
                 <a class="btn_menu">
                     <i class="ri-more-line"></i>
-                </a>
+                </a> -->
             </div>
-        </div> -->
+        </div>
         <div class="row mb-4">
             <div class="col-lg-6">
                 <div class="media d-flex align-items-center">
@@ -511,7 +555,6 @@ export default {
                                     :id="`${'task_' + task}`"
                                     @click="showTask(listTasks[task])"
                                 >
-                                    <!-- <pre>{{ JSON.stringify(task, undefined, 4) }}</pre> -->
                                     <b-progress
                                         :value="
                                             calulateCheckList(
