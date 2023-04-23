@@ -17,7 +17,9 @@
     --#{$prefix}card-img-overlay-padding: #{$card-img-overlay-padding};
     --#{$prefix}card-group-margin: #{$card-group-margin};
 }
-
+html{
+    overflow: hidden;
+}
 body.page-task {
     margin: 0;
     font-family: "Nunito", sans-serif;
@@ -1598,4 +1600,73 @@ body.page-task {
     .form-select{
         text-transform:capitalize;
     }
+}
+.page-content .wrap-item .item-project{
+    background: url("https://anhdepfree.com/wp-content/uploads/2022/11/background-2d-dep-cho-photoshop_63710488652.jpg") no-repeat center;
+    background-size: 100% 100%;
+    min-height: 350px !important;
+    text-align: center;
+    p{
+        padding-right: 0;
+    }
+    a{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+  
+    h6{
+        color: #fff;
+        font-size: 16px;
+        font-weight: bold;
+        line-height: 1.2;
+        margin-top: 240px;
+       
+    }
+    .date_time{
+        transform: translateY(260px);
+        font-size: 16px;
+        span{
+            display: block;
+        }
+    }
+    .badge{
+        top: 5px;
+    }    
+        a p{
+        white-space: nowrap;
+        font-size: 14px;
+    }
+    .btn_view{
+        display: block;
+        padding: 5px 25px;
+        margin-top: 3px;
+        margin-inline: auto;
+        background: #c7820f;
+        margin-top: 10px;
+
+    }
+}
+.item-project:hover{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    a{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+    h6{
+       margin-top: 0 !important;
+       transition-duration: 0.5s;
+    }
+    .date_time{
+        transform: translateY(0px) !important;
+        transition-duration: 0.5s;
+    }
+   
+
 }
