@@ -101,8 +101,15 @@ export default {
                     ) {
                         this.listTaskDraggable[newTask.card_id] = [];
                     }
+                    if (
+                        typeof this.taskDraggableStore[newTask.card_id] ==
+                        "undefined"
+                    ) {
+                        this.taskDraggableStore[newTask.card_id] = [];
+                    }
                     this.listTasks[newTask.id] = newTask;
                     this.listTaskDraggable[newTask.card_id].push(newTask.id);
+                    this.taskDraggableStore[newTask.card_id].push(newTask.id);
                 }
                 this.newTasks = {};
             }
@@ -217,28 +224,51 @@ export default {
         onFilterTask(data){
             try {       
                 var results = this.$store.getters.listTasks; 
-                var resultsDraggable = this.$store.getters.listTaskDraggable; 
+                var resultsDraggable = this.$store.getters.taskDraggableStore; 
                 const asArray = Object.values(results);
-                if (data) {
+                console.log('data',Object.keys(data).length)
+                if (Object.keys(data).length > 0) {
+                    console.log(data['users'])
                      // update data task
                     var _data = asArray.filter(function(e) {
                         if (data['users']) {
-                            if (data['users']['no']) {
+                            if (typeof data['users']['no'] != 'undefined' && typeof data['users']['list_user'] == 'undefined') {
                                 return !e.members || e.members.length == 0;
+                            }else if(typeof data['users']['no'] == 'undefined' && typeof data['users']['list_user'] != 'undefined'){
+                                for (const key in data['users']['list_user']) {
+                                    const idUser = data['users']['list_user'][key];
+                                    if (e.members) {
+                                        if (e.members[idUser]) {
+                                            return e
+                                        }
+                                    }
+                                }
+                            }else if(typeof data['users']['no'] != 'undefined' && typeof data['users']['list_user'] != 'undefined'){                               
+                                for (const key in data['users']['list_user']) {
+                                    const idUser = data['users']['list_user'][key];
+                                    if (e.members) {                                        
+                                        if (e.members[idUser]){
+                                            return e
+                                        }
+                                    }
+                                }
+                                if (!e.members || e.members.length == 0) {
+                                    return e;
+                                }
+                            }else{
+                                return e
                             }
                         }
                     });    
 
                     var __data = _data.reduce((a, v) => (
                         { ...a, [v.id]: v}                        
-                    ), {})    
-                              
+                    ), {});      
                     results = __data;
                     // update data task in card
                     var _resultsDraggable = {}
                     for (const key in resultsDraggable) {
-                        _resultsDraggable[key] = []
-                        var __resultsDraggable = resultsDraggable[key];
+                        _resultsDraggable[key] = [];
                         resultsDraggable[key].filter(function(e) {
                             if (typeof results[e] != 'undefined') {
                                 _resultsDraggable[key].push(e)
@@ -246,9 +276,11 @@ export default {
                             return e; 
                         });         
                     }
+                    this.$store.commit('setTaskDraggable',_resultsDraggable);
+                }else{
+                    this.$store.commit('setTaskDraggable', resultsDraggable); 
                 }
-                this.$store.commit('setTask', results);
-                this.$store.commit('setTaskDraggable',_resultsDraggable);
+                
             } catch (error) {
                 console.log('error filter task', error)
             }
