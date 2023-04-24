@@ -58,7 +58,8 @@ export default {
                     this.taskDraggableStore[newCardId] = [];
                 }
                 this.listTaskDraggable[newCardId].push(taskId);
-                this.taskDraggableStore[newCardId].push(taskId);
+                // console.log('taskDraggableStore', taskDraggableStore);
+                // this.taskDraggableStore[newCardId].push(taskId);
             }
         },
     },

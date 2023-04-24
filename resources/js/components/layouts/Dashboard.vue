@@ -11,19 +11,19 @@ export default {
         };
     },
     methods: {     
-        createNewTask() {
-            this.loading = true;
-            axios
-                .post('/api/tasks/create', this.task)
-                .then(response => {
-                    //console.log(response);
-                    this.product = response.data;
-                    this.loading = false;
-                })
-                .catch(error => {
-                    console.log(error);
-                });
-        },
+        // createNewTask() {
+        //     this.loading = true;
+        //     axios
+        //         .post('/api/tasks/create', this.task)
+        //         .then(response => {
+        //             //console.log(response);
+        //             this.product = response.data;
+        //             this.loading = false;
+        //         })
+        //         .catch(error => {
+        //             console.log(error);
+        //         });
+        // },
     },
     // created: () => {
     //     document.body.removeAttribute("data-layout", "horizontal");
