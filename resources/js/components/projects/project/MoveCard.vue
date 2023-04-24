@@ -39,7 +39,9 @@ export default {
             if (oldCardId != newCardId) {
                 this.listTasks[taskId]['card_id'] = newCardId;
                 var listOldCards = this.listTaskDraggable[oldCardId];
+                var listOldCardsStore = this.taskDraggableStore[oldCardId];
                 var listNewCards = listOldCards.filter(v => v !== taskId);
+                var listNewCardsStore = listOldCardsStore.filter(v => v !== taskId);
                 var data = {
                     'task_id' : taskId,
                     'info_task' : {
@@ -48,10 +50,15 @@ export default {
                 }
                 await this.updateTask(data);
                 this.listTaskDraggable[oldCardId] = listNewCards;
+                this.taskDraggableStore[oldCardId] = listNewCardsStore;
                 if (typeof this.listTaskDraggable[newCardId] == 'undefined') {
                     this.listTaskDraggable[newCardId] = [];
                 }
+                if (typeof this.taskDraggableStore[newCardId] == 'undefined') {
+                    this.taskDraggableStore[newCardId] = [];
+                }
                 this.listTaskDraggable[newCardId].push(taskId);
+                this.taskDraggableStore[newCardId].push(taskId);
             }
         },
     },

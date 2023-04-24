@@ -4,6 +4,7 @@ const state = {
     currentTask: {}, // get current task of project
     listUsers: {}, // get list user of department
     listTaskDraggable: {}, // get list task add drag,
+    taskDraggableStore: {}, // get list task add drag,
     listUserProject: {}, // get list user of project,
     listItemLabels: {}, // get list label of task,
     projectInfo: false,
@@ -15,6 +16,7 @@ const getters = {
     currentTask: state => state.currentTask,
     listUsers: state => state.listUsers,
     listTaskDraggable: state => state.listTaskDraggable,
+    taskDraggableStore: state => state.taskDraggableStore,
     projectUsers: state => state.listUserProject,
     listItemLabels: state => state.listItemLabels,
     projectInfo: state => state.projectInfo,
@@ -28,6 +30,7 @@ const actions = {
         if (res.status == 200) {
             commit('setTask', res.data.list_task); 
             commit('setTaskDraggable', res.data.list_draggable);
+            commit('setTaskDraggableStore', res.data.list_draggable);
             commit('setCard', res.data.cards);
             commit('setListUsers', res.data.list_user);
             commit('setLabels', res.data.labels); 
@@ -139,6 +142,7 @@ const mutations = {
     },
     loadingStatus: (state, payload) => (state.loadingStatus = payload),
     setProjectInfo: (state, payload) => (state.projectInfo = payload),
+    setTaskDraggableStore: (state, payload) => (state.taskDraggableStore = payload),
 };
 
 export default {

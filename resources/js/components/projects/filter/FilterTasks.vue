@@ -52,7 +52,7 @@ export default {
                     icon : 'ri-time-line'
                 }
             ],
-            filterData: [],
+            filterData: {},
         };
     },
     computed: {  
@@ -81,6 +81,9 @@ export default {
                     if (this.filterData['label']['id'].length == 0) {
                         delete this.filterData['label']['id'];
                     }
+                    if (typeof this.filterData['label']['no'] == 'undefined' && typeof this.filterData['label']['id'] == 'undefined') {
+                        delete this.filterData['label']
+                    }
                 }
                 this.filter();
             } catch (error) {
@@ -105,7 +108,10 @@ export default {
                         delete this.filterData['users']['list_user'];
                         $('#checkAllUsers').prop('checked',false)
                     }
-                }
+                    if (typeof this.filterData['users']['no'] == 'undefined' && typeof this.filterData['users']['list_user'] == 'undefined') {
+                        delete this.filterData['users']
+                    }
+                }                
                 this.filter();
             } catch (error) {
                 console.log(error)
@@ -159,13 +165,16 @@ export default {
                     }
                     $this.prop('checked',false);
                     if (nameValue == 'no') {
-                        delete ref.filterData['users']['no'];
+                        delete ref.filterData['users']['no'];                        
                     }else{
                         delete ref.filterData['users']['list_user'];
                         var childrenElement = $this.parents('.item').find('.list-user input[type="checkbox"]');
                         childrenElement.each(function (index, element) {
                             $(this).prop('checked',false);                            
                         }); 
+                    }
+                    if (typeof ref.filterData['users']['no'] == 'undefined' && typeof ref.filterData['users']['list_user'] == 'undefined') {
+                        delete ref.filterData['users']
                     }
                 }
             }    
@@ -181,7 +190,7 @@ export default {
                     ref.filterData['date'] = nameValue
                 }else{
                     $(this).prop('checked',false); 
-                    delete ref.filterData['date']
+                    delete ref.filterData['date'];
                 }
             }
 
@@ -199,6 +208,9 @@ export default {
                     $(this).prop('checked',false); 
                     if (nameValue == 'no') {
                         delete ref.filterData['label']['no'] 
+                    }
+                    if (typeof ref.filterData['label']['no'] == 'undefined' && typeof ref.filterData['label']['id'] == 'undefined') {
+                        delete ref.filterData['label']
                     }
                 }
             }
@@ -245,23 +257,24 @@ export default {
                                     <span>Chọn thành viên</span>
                                     <span class="icon icon-down"><i class="ri-arrow-down-s-line"></i></span>
                                 </button>
-                                <div class="dropdown-menu">
+                                <!-- <div class="dropdown-menu"> -->
                                     <ul class="list-user">
                                         <li class="item" v-for="user in users">
                                             <span>
                                                 <input class="input" type="checkbox" name="choose_user" :value="user.id" @click="addUserIdFilter">
+                                                {{ `${fullName(user)}` }}
                                             </span>
-                                            <span class="name">
+                                            <!-- <span class="name">
                                                 <img
                                                     :src="`${showAvatar(user.avatar)}`"
                                                     :alt="`${fullName(user)}`"
                                                     :title="`${fullName(user)}`" 
                                                 />
                                                 {{ `${fullName(user)}` }}
-                                            </span>
+                                            </span> -->
                                         </li> 
                                     </ul>
-                                </div>
+                                <!-- </div> -->
                             </span>
                         </li>                        
                     </ul>                   

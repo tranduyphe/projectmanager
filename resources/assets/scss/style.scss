@@ -17,7 +17,7 @@
     --#{$prefix}card-img-overlay-padding: #{$card-img-overlay-padding};
     --#{$prefix}card-group-margin: #{$card-group-margin};
 }
-html{
+.login_register{
     overflow: hidden;
 }
 body.page-task {
@@ -35,12 +35,6 @@ body.page-task {
     display: flex;
     align-items: flex-start;
 }
-
-// .page-task .card-body {
-//     flex: 1 1 auto;
-//     min-height: 1px;
-//     padding: 1.25rem;
-// }
 .card-title {
     font-size: 15px;
     margin: 0 0 7px 0;
