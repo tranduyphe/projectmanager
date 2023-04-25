@@ -4,6 +4,8 @@ import PageHeader from "@/js/components/layouts/page-header.vue";
 import { userHelper } from "@/js/helpers/users";
 import moment from "moment";
 import { taskHelper } from "@/js/helpers/helptask";
+import { dateHelper } from "@/js/helpers/datehelper";
+import { filterDataProject } from "@/js/helpers/filter";
 import {
     taskMethods,
     authMethods,
@@ -93,6 +95,7 @@ export default {
             this.newTasks["project_id"] = this.project_id;
             this.newTasks["department_id"] = parseInt(sessionStorage.getItem('departmentId'));
             if (this.newTasks && this.newTasks["title_" + $id]) {
+                // console.log('taskDraggableStore', this.taskDraggableStore);
                 var newTask = await this.createNewTask(this.newTasks);
                 if (typeof newTask != "undefined") {
                     if (
@@ -109,7 +112,9 @@ export default {
                     }
                     this.listTasks[newTask.id] = newTask;
                     this.listTaskDraggable[newTask.card_id].push(newTask.id);
-                    this.taskDraggableStore[newTask.card_id].push(newTask.id);
+                                        
+                    // this.taskDraggableStore[newTask.card_id].push(newTask.id);
+                    // console.log('taskDraggableStore1', this.taskDraggableStore);
                 }
                 this.newTasks = {};
             }
@@ -220,30 +225,42 @@ export default {
         fullName(user){
             return userHelper.fullName(user);
         },
+        // show date deadline
+        dateDeadLine(date){
+            var dataDate = {
+                'date': date,
+                'format': 'DD/MM/YYYY'
+            }
+            return dateHelper.formatDate(dataDate);
+        },
         //filter tasks
         onFilterTask(data){
             try {       
                 var results = this.$store.getters.listTasks; 
                 var resultsDraggable = this.$store.getters.taskDraggableStore; 
                 const asArray = Object.values(results);
-                console.log('data',Object.keys(data).length)
                 if (Object.keys(data).length > 0) {
-                    console.log(data['users'])
                      // update data task
                     var _data = asArray.filter(function(e) {
-                        if (data['users']) {
+                        let dataFilter = {
+                            'dataTask' : e,
+                        }
+                        if (data['users'] && !data['date']) {
+                            // filter data task using user in task and not using date
                             if (typeof data['users']['no'] != 'undefined' && typeof data['users']['list_user'] == 'undefined') {
-                                return !e.members || e.members.length == 0;
-                            }else if(typeof data['users']['no'] == 'undefined' && typeof data['users']['list_user'] != 'undefined'){
+                                return !e.members;
+                            } else if (typeof data['users']['no'] == 'undefined' && typeof data['users']['list_user'] != 'undefined') {
+                                var results
                                 for (const key in data['users']['list_user']) {
                                     const idUser = data['users']['list_user'][key];
                                     if (e.members) {
                                         if (e.members[idUser]) {
-                                            return e
+                                            results = e
                                         }
                                     }
                                 }
-                            }else if(typeof data['users']['no'] != 'undefined' && typeof data['users']['list_user'] != 'undefined'){                               
+                                return results;
+                            } else {
                                 for (const key in data['users']['list_user']) {
                                     const idUser = data['users']['list_user'][key];
                                     if (e.members) {                                        
@@ -252,12 +269,20 @@ export default {
                                         }
                                     }
                                 }
-                                if (!e.members || e.members.length == 0) {
+                                if (!e.members) {
                                     return e;
                                 }
-                            }else{
-                                return e
                             }
+                        } else if (data['users'] && data['date']) {
+                            // filter data task using date and user in tasks
+                            dataFilter['checkDate'] = data['date'];
+                            dataFilter['users'] = data['users'];
+                            return filterDataProject.filterTaskProject(dataFilter);
+
+                        } else if (!data['users'] && data['date']){
+                            //filter data task in date not using user
+                            dataFilter['checkDate'] = data['date'];
+                            return filterDataProject.filterTaskProject(dataFilter);
                         }
                     });    
 
@@ -641,6 +666,19 @@ export default {
                                             </h5>
                                         </div>
                                         <div class="d-flex team mb-0">
+                                            <div
+                                                :class="[
+                                                    'd-flex align-items-center',
+                                                ]"
+                                                v-if="
+                                                    listTasks[task].deadline
+                                                "
+                                            >
+                                                <i class="ri-time-line"></i>
+                                                {{
+                                                    dateDeadLine(listTasks[task].deadline)
+                                                }}
+                                            </div>
                                             <div
                                                 :class="[
                                                     'd-flex align-items-center',
