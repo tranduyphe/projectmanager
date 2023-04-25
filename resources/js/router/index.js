@@ -10,7 +10,9 @@ import LoginIdentifier from '../components/account/LoginIdentifier.vue';
 
 import LoginChallengeComponent from '../components/account/LoginChallengeComponent.vue';
 import ViewProject from '../components/projects/ViewProject.vue';
-import Analytics from '../components/projects/Analytics.vue'
+import Analytics from '../components/projects/Analytics.vue';
+import Create from '@/js/components/projects/Create.vue';
+
 const ErrorPage = {
     template: '<div>403 - Access denied</div>'
 };
@@ -86,6 +88,12 @@ export const routes = [
         path: '/error',
         name: 'error',
         component: ErrorPage
+    },
+    {
+        path: '/create-project',
+        name: 'create-project',
+        meta: { requiresAuth: true, roles: ['administrator', 'manager'] },
+        component: Create
     }
 
 ];
@@ -96,7 +104,7 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
     const roles = to.meta.roles;
-    let authUser = undefined
+    let authUser = undefined;
     authUser = JSON.parse(sessionStorage.getItem('authUser'))
     if (roles && roles.length > 0 && authUser) {
         const userRoles = authUser.roles;
