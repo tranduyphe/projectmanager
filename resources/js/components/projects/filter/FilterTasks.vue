@@ -244,41 +244,7 @@ export default {
                 <div class="item-dropdown">
                     <span>Từ khóa</span>
                     <input type="text" @input="onSearch" placeholder="Nhập từ khóa" />
-                </div>
-                <div class="item-dropdown">
-                    <span>Ngày hết hạn</span>
-                    <ul class="list">
-                        <li v-for="data in filterDates" :class="[data.nclass , 'item']">
-                            <span class="checkbox">
-                                <input type="checkbox" name="date" :value="data.value">
-                            </span>
-                            <span :class="data.class">
-                                <span class="icon"><i :class="data.icon"></i></span>
-                                {{ data.title }}
-                            </span>
-                        </li>
-                    </ul>
-                </div>
-                <div class="item-dropdown">
-                    <span>Nhãn</span>
-                    <ul class="list">
-                        <li class="item">
-                            <span class="checkbox">
-                                <input type="checkbox" name="label" :value="'no'">
-                            </span>
-                            <span>
-                                <i class="ri-price-tag-3-line"></i>
-                                <span>Không có Nhãn</span>
-                            </span>
-                        </li>   
-                        <li class="item" v-for="label in labels">
-                            <span class="checkbox">
-                                <input type="checkbox" :name="'label'" :value="label.id" @click="addLabelFilter">
-                            </span>
-                            <span class="name">{{ label.name }}</span>
-                        </li> 
-                    </ul>
-                </div>
+                </div>                
                 <div class="item-dropdown">
                     <span>Thành viên</span> 
                     <ul class="list">
@@ -322,7 +288,40 @@ export default {
                         </li>                        
                     </ul>                   
                 </div>
-                
+                <div class="item-dropdown">
+                    <span>Ngày hết hạn</span>
+                    <ul class="list">
+                        <li v-for="data in filterDates" :class="[data.nclass , 'item']">
+                            <span class="checkbox">
+                                <input type="checkbox" name="date" :value="data.value">
+                            </span>
+                            <span :class="data.class">
+                                <span class="icon"><i :class="data.icon"></i></span>
+                                {{ data.title }}
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="item-dropdown">
+                    <span>Nhãn</span>
+                    <ul class="list">
+                        <li class="item">
+                            <span class="checkbox">
+                                <input type="checkbox" name="label" :value="'no'">
+                            </span>
+                            <span>
+                                <i class="ri-price-tag-3-line"></i>
+                                <span>Không có Nhãn</span>
+                            </span>
+                        </li>   
+                        <li class="item" v-for="label in labels">
+                            <span class="checkbox">
+                                <input type="checkbox" :name="'label'" :value="label.id" @click="addLabelFilter">
+                            </span>
+                            <span class="name">{{ label.name }}</span>
+                        </li> 
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
