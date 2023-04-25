@@ -39,13 +39,14 @@ class ProjectController extends Controller
         }
         
         if ( $roles === 'administrator' || $roles === 'leader' ) {
-            $projects = Project::all();
+            // $projects = Project::all();
+            $projects = Project::paginate(8);
         } elseif ($roles === 'manager') {
             $user     = User::with('projects')->find($user_id);
-            $projects = $user->projects;
+            $projects = $user->projects()->paginate(8);
         } else {
             $user     = User::with('projects_user')->find($user_id);
-            $project_user = $user->projects_user;
+            $project_user = $user->projects_user()->paginate(8);
             // // $user_details = ProjectUser::find(20)->details_user;
             // $user_details = ProjectUser::with('details_user')->find(20);
             // var_dump($user_details->details_user);

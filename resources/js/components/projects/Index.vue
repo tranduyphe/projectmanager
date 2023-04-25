@@ -21,9 +21,12 @@ export default {
             items: [],
             projectData: this.$store.getters.projectData,
             authData: this.$store.getters.getAuthUserData,
+            currentPage:"",
+            totalPage:"",
             show: false,
             images: null,
-            publicPath : process.env.PUBLIC_URL
+            publicPath : process.env.PUBLIC_URL,
+            load: true
         };
     },
     computed: {
@@ -89,6 +92,35 @@ export default {
                 active: true,
             },
         ];
+        this.currentPage = this.$store.getters.paginateProject;
+        this.totalPage = this.$store.getters.totalPageProject;
+        const $this = this;
+        window.addEventListener('scroll', function() {
+            if (document.documentElement.scrollTop + window.innerHeight >= document.documentElement.scrollHeight) {
+                if ($this.load) {
+                    if ($this.currentPage < $this.totalPage) {                       
+                        $this.load = false;
+                        $this.currentPage++;
+                        $this.axios
+                            .get(`/api/project/index?page=${$this.currentPage}`)
+                            .then((response) => {
+                                if (response.status == 200) {
+                                    if (response.data.data) {
+                                        for (const key in response.data.data) {
+                                            const project = response.data.data[key];
+                                            $this.listProjects.push(project);
+                                        }
+                                    }
+                                }                                
+                            })
+                            .catch((error) => {
+                                console.log('error', error)
+                            })
+                            .finally(() => ($this.load = true));
+                    }
+                }
+            }
+        });
     },
 };
 </script>
@@ -185,8 +217,9 @@ export default {
                                         params: { slug: project.slug, id: project.id },
                                     }"                                                                                      
                                 >
-                                <div>
-                                    <h6>{{ project.title }}</h6>  
+                                <div> 
+                                    <h6>{{ project.title }}</h6>    
+                                    <span class="badge badge-primary">{{ statisticalProject(project.data_task)+'%' }}</span>
                                     <div class="date_time">
                                         <p v-if="project.description">{{ trimString(project.description) }}</p>
                                         <span class="date">
@@ -195,11 +228,12 @@ export default {
                                         <span class="date">
                                             End: {{ formatDate(project.end_time) }}
                                         </span>
+                                        <b-button class="btn-primary btn_view">View</b-button>
                                     </div>
                                 </div>       
                                 </router-link>
                             </div>
-                            <div :style="`${project.url_image ? 'background:url('+publicPath+'projects/'+project.url_image+')' : '' }`" class="item-project" v-else>
+                            <div :style="`${project.url_image ? 'background-image:url('+publicPath+'projects/'+project.url_image+')' : '' }`" class="item-project" v-else>
                                 <router-link
                                     :to="{
                                         name: 'project',
@@ -233,7 +267,15 @@ export default {
                                 >
                                     <i class="ri-star-line"></i>
                                 </div>
-                            </div>
+                            </div>                            
+                            <!-- <div class="spinner-border m-5" role="status" v-if="!load">
+                                <span class="visually-hidden">Loading...</span>
+                            </div> -->
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-center mt-3" v-if="!load">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Loading...</span>
                         </div>
                     </div>
                 </div>

@@ -57,6 +57,7 @@ Route::group(
 			array( 'prefix' => 'project' ),
 			function () {
 				Route::post( 'index', array( ProjectController::class, 'index' ) );
+				Route::get( 'index', array( ProjectController::class, 'index' ) );
 				Route::post( 'create', array( ProjectController::class, 'create' ) );
 				Route::post( 'show', array( ProjectController::class, 'show' ) );
 				Route::post( 'update', array( ProjectController::class, 'update' ) );
