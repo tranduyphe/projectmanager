@@ -53,6 +53,7 @@ export default {
                 }
             ],
             filterData: {},
+            nameSearch:""
         };
     },
     computed: {  
@@ -85,7 +86,7 @@ export default {
                         delete this.filterData['label']
                     }
                 }
-                this.filter();
+                this.onFilter();
             } catch (error) {
                 console.log(error)
             }
@@ -112,13 +113,21 @@ export default {
                         delete this.filterData['users']
                     }
                 }                
-                this.filter();
+                this.onFilter();
             } catch (error) {
                 console.log(error)
             }
         },
-        filter(){
+        onFilter(){
             this.$emit('filterTask',this.filterData);            
+        },
+        onSearch(e){
+            if (e.target.value) {
+                this.filterData['search'] = e.target.value;
+            }else{
+                delete this.filterData['search']
+            }
+            this.onFilter();
         }
     },
     watch: {
@@ -214,7 +223,7 @@ export default {
                     }
                 }
             }
-            ref.filter();
+            ref.onFilter();
         }); 
         
          
@@ -234,8 +243,8 @@ export default {
                 </div>
                 <div class="item-dropdown">
                     <span>Từ khóa</span>
-                    <input type="text" v-model="searchUsers" placeholder="Nhập từ khóa" />
-                </div>
+                    <input type="text" @input="onSearch" placeholder="Nhập từ khóa" />
+                </div>                
                 <div class="item-dropdown">
                     <span>Thành viên</span> 
                     <ul class="list">
