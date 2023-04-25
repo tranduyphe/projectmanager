@@ -139,6 +139,10 @@ export default {
                                     :month-change-on-scroll="false"
                                 />
                             </b-form-group>
+                            <div class="btn_add_image">
+                                  <label for="add_image">Add Image</label>
+                                   <input type="file" id="add_image">
+                            </div>
                             <div :class="['modal-footer']">
                                 <b-button type="submit" variant="primary"
                                     >Create</b-button
@@ -270,5 +274,18 @@ export default {
                 }
             }
         }
+    }
+    .btn_add_image{
+             input{
+                display: none;
+             }
+             label{
+                padding: 8px;
+                background: #dcdee2;
+                border-radius: 3px;
+             }
+        }
+    .modal-footer{
+        border: 0;
     }
 </style>
