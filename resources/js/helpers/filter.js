@@ -1,7 +1,20 @@
 import { dateHelper } from "@/js/helpers/datehelper";
+import { forIn } from "lodash";
 export const filterDataProject = {
     filterTaskProject
 }
+// function return data by member;
+const dataInUser = (dataUser, dataTask) => {
+    var results
+    for (const key in dataUser) {
+        const idUser = dataUser[key];
+        if (dataTask.members[idUser]) {
+            results = dataTask
+        }
+    }
+    return results;
+}
+
 /**
  * filter user
  * data[date] => checck dealine date of task => 
@@ -13,161 +26,110 @@ export const filterDataProject = {
  * @returns 
  */
 function filterTaskProject(data){
-    var dataTask = data['dataTask'];
-    var users = data['users'] ? data['users'] : false;
-    // user[no] => show all task not user
-    // user[list_user] => show user by user in task
-    let results;
+    var tasks = data['tasks'];
+    var types = data['types'];
+    if (tasks) {  
+        if (types['search']) {
+            var results = {};
+            tasks.filter((e)=>{
+                var check = types['search'].toLowerCase().split(' ').every( v => e.title.toLowerCase().includes(v) )
+                if (check) {
+                    results[e.id] = e
+                }
+            })
+        }else{
+             // filter task by user           
+            if (types['users']) {
+                var results = {};           
+                if (types['users']['no']) {
+                    tasks.filter((e) => {
+                        if (!e.members) {
+                            results[e.id] = e
+                        }
+                    })
+                }
+                if (types['users']['list_user']) {
+                    tasks.filter((e) => {
+                        if (e.members) {
+                            results[e.id] = dataInUser(types['users']['list_user'], e);
+                        }
+                    })
+                }
+            }
 
-    switch (data['checkDate']) {        
-        case 'no':
-            // filter task using user in task and not date deadline in task
-            if (users) {
-                if (typeof users['no'] == 'undefined' && typeof users['list_user'] != 'undefined') {
-                    if (!dataTask.deadline && typeof dataTask.members != 'undefined') {
-                        results = dataInUser(users['list_user'], dataTask);
-                    }
-                    return results;
-                }else if(typeof users['no'] != 'undefined' && typeof users['list_user'] == 'undefined'){
-                    if (!dataTask.deadline) {
-                        results = !dataTask.members                    
-                    }
-                    return results;
-                }else {
-                    if (!dataTask.deadline) {
-                        if (typeof dataTask.members != 'undefined') {
-                            for (const key in data['users']['list_user']) {
-                                const idUser = data['users']['list_user'][key];
-                                if (dataTask.members[idUser]) {
-                                    results = dataTask
+            // filter task by date
+            if (types['date']) {
+                if(results && Object.keys(results).length > 0) tasks = Object.values(results);
+                var results = {}
+                switch (types['date']) { 
+                    case 'no':
+                        tasks.filter((e) => {
+                            if (e && !e.deadline) {
+                                results[e.id] = e
+                            }
+                        })
+                        break;
+                    case 'out_date':
+                        tasks.filter((e) => {
+                            if (e && dateHelper.calculateDays(e.deadline) < 0 && e.deadline) {
+                                results[e.id] = e
+                            }  
+                        });
+                        break;
+                    case 'day_date':
+                        tasks.filter((e) => {
+                            if (e && e.deadline && dateHelper.calculateDays(e.deadline) > 0 && dateHelper.calculateDays(e.deadline) <= 1) {
+                                results[e.id] = e
+                            }  
+                        });
+                        break;
+                    case 'week_date': 
+                        tasks.filter((e) => {
+                            if (e && e.deadline && dateHelper.calculateDays(e.deadline) > 6 && dateHelper.calculateDays(e.deadline) <= 14) {
+                                results[e.id] = e
+                            }  
+                        });         
+                    case 'month_date':
+                        tasks.filter((e) => {
+                            if (e && e.deadline && dateHelper.calculateMonthTask(e.deadline)) {
+                                results[e.id] = e
+                            }  
+                        });
+                        break;
+                    // default:
+                    //     results = tasks
+                    //     break;
+                }
+            }
+
+            //filter task by labels
+            if (types['label']) {
+                console.log(types['label'])
+                if(results && Object.keys(results).length > 0) tasks = Object.values(results);
+                var results = {}
+                if (types['label']['no']) {
+                    tasks.filter((e) => {
+                        if (!e.task_labels) {
+                            results[e.id] = e
+                        }
+                    })
+                }
+
+                if (types['label']['id']) {
+                    tasks.filter((e) => {
+                        console.log(e.id, e.task_labels)
+                        if (e.task_labels) {
+                            for (const key in types['label']['id']) {
+                                const idLabel = types['label']['id'][key];
+                                if (e.task_labels[idLabel]) {
+                                    results[e.id] = e
                                 }
                             }
-                        }else{
-                            results = dataTask
-                        }                        
-                    }
-                    return results;
-                } 
-            } else {
-                return !dataTask.deadline;
+                        }
+                    })
+                }
             }
-        case 'out_date':
-            // filter task using user in task and expiration date in task
-            if (users) {
-                if (typeof users['no'] == 'undefined' && typeof users['list_user'] != 'undefined') {
-                    if ( dataTask.deadline && typeof dataTask.members != 'undefined' && dateHelper.calculateDays(dataTask.deadline) < 0 ) {
-                        results = dataInUser(users['list_user'], dataTask);
-                    }
-                    return results;
-                }else if(typeof users['no'] != 'undefined' && typeof users['list_user'] == 'undefined'){
-                    if (dataTask.deadline && dateHelper.calculateDays(dataTask.deadline) < 0) {
-                        results = !dataTask.members                    
-                    }
-                    return results;
-                }else {
-                    if (dataTask.deadline && dateHelper.calculateDays(dataTask.deadline) < 0) {
-                        if (typeof dataTask.members != 'undefined') {
-                            results = dataInUser(users['list_user'], dataTask);
-                        }else{
-                            results = dataTask
-                        }                        
-                    }
-                    return results;
-                } 
-            } else {
-                return dataTask.deadline && dateHelper.calculateDays(dataTask.deadline) < 0;
-            }
-        case 'day_date':
-            // filter task using user in task and date deadline in tomorrow            
-            if (users) {
-                if (typeof users['no'] == 'undefined' && typeof users['list_user'] != 'undefined') {
-                    if ( dataTask.deadline && typeof dataTask.members != 'undefined' && dateHelper.calculateDays(dataTask.deadline) > 0 && dateHelper.calculateDays(dataTask.deadline) <= 1) {
-                        results = dataInUser(users['list_user'], dataTask);
-                    }
-                    return results;
-                }else if(typeof users['no'] != 'undefined' && typeof users['list_user'] == 'undefined' ){
-                    if (dataTask.deadline && dateHelper.calculateDays(dataTask.deadline) > 0 && dateHelper.calculateDays(dataTask.deadline) <= 1) {
-                        results = !dataTask.members                    
-                    }
-                    return results;
-                }else {
-                    if (dataTask.deadline && dateHelper.calculateDays(dataTask.deadline) > 0 && dateHelper.calculateDays(dataTask.deadline) <= 1) {
-                        if (typeof dataTask.members != 'undefined') {
-                            results = dataInUser(users['list_user'], dataTask);
-                        }else{
-                            results = dataTask
-                        }                        
-                    }
-                    return results;
-                } 
-            } else {
-                return dataTask.deadline && dateHelper.calculateDays(dataTask.deadline) > 0 && dateHelper.calculateDays(dataTask.deadline) <= 1;
-            }
-        case 'week_date':
-            // filter task expiration date in next week
-            if (users) {
-                if (typeof users['no'] == 'undefined' && typeof users['list_user'] != 'undefined') {
-                    if ( dataTask.deadline && typeof dataTask.members != 'undefined' && dateHelper.calculateDays(dataTask.deadline) > 6 && dateHelper.calculateDays(dataTask.deadline) <= 14) {
-                        results = dataInUser(users['list_user'], dataTask);
-                    }
-                    return results;
-                }else if(typeof users['no'] != 'undefined' && typeof users['list_user'] == 'undefined' ){
-                    if (dataTask.deadline && dateHelper.calculateDays(dataTask.deadline) > 6 && dateHelper.calculateDays(dataTask.deadline) <= 14) {
-                        results = !dataTask.members                    
-                    }
-                    return results;
-                }else {
-                    if (dataTask.deadline && dateHelper.calculateDays(dataTask.deadline) > 6 && dateHelper.calculateDays(dataTask.deadline) <= 14) {
-                        if (typeof dataTask.members != 'undefined') {
-                            results = dataInUser(users['list_user'], dataTask);
-                        }else{
-                            results = dataTask
-                        }                        
-                    }
-                    return results;
-                } 
-            } else {
-                return dataTask.deadline && dateHelper.calculateDays(dataTask.deadline) > 6 && dateHelper.calculateDays(dataTask.deadline) <= 14;
-            }            
-        case 'month_date':
-            // filter task expiration date in next month
-            if (users) {
-                if (typeof users['no'] == 'undefined' && typeof users['list_user'] != 'undefined') {
-                    if ( dataTask.deadline && typeof dataTask.members != 'undefined' && dateHelper.calculateMonthTask(dataTask.deadline)) {
-                        results = dataInUser(users['list_user'], dataTask);
-                    }
-                    return results;
-                }else if(typeof users['no'] != 'undefined' && typeof users['list_user'] == 'undefined' ){
-                    if (dataTask.deadline && dateHelper.calculateMonthTask(dataTask.deadline)) {
-                        results = !dataTask.members                    
-                    }
-                    return results;
-                }else {
-                    if (dataTask.deadline && dateHelper.calculateMonthTask(dataTask.deadline)) {
-                        if (typeof dataTask.members != 'undefined') {
-                            results = dataInUser(users['list_user'], dataTask);
-                        }else{
-                            results = dataTask
-                        }                        
-                    }
-                    return results;
-                } 
-            } else {
-                return dataTask.deadline && dateHelper.calculateMonthTask(dataTask.deadline);
-            }           
-        default:
-            return dataTask;
-    } 
-}
-
-// function return data by member;
-const dataInUser = (dataUser, dataTask) => {
-    var results
-    for (const key in dataUser) {
-        const idUser = dataUser[key];
-        if (dataTask.members[idUser]) {
-            results = dataTask
         }
+        return results;
     }
-    return results;
 }

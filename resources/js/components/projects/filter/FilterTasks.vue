@@ -53,6 +53,7 @@ export default {
                 }
             ],
             filterData: {},
+            nameSearch:""
         };
     },
     computed: {  
@@ -85,7 +86,7 @@ export default {
                         delete this.filterData['label']
                     }
                 }
-                this.filter();
+                this.onFilter();
             } catch (error) {
                 console.log(error)
             }
@@ -112,13 +113,21 @@ export default {
                         delete this.filterData['users']
                     }
                 }                
-                this.filter();
+                this.onFilter();
             } catch (error) {
                 console.log(error)
             }
         },
-        filter(){
+        onFilter(){
             this.$emit('filterTask',this.filterData);            
+        },
+        onSearch(e){
+            if (e.target.value) {
+                this.filterData['search'] = e.target.value;
+            }else{
+                delete this.filterData['search']
+            }
+            this.onFilter();
         }
     },
     watch: {
@@ -214,7 +223,7 @@ export default {
                     }
                 }
             }
-            ref.filter();
+            ref.onFilter();
         }); 
         
          
@@ -234,7 +243,41 @@ export default {
                 </div>
                 <div class="item-dropdown">
                     <span>Từ khóa</span>
-                    <input type="text" v-model="searchUsers" placeholder="Nhập từ khóa" />
+                    <input type="text" @input="onSearch" placeholder="Nhập từ khóa" />
+                </div>
+                <div class="item-dropdown">
+                    <span>Ngày hết hạn</span>
+                    <ul class="list">
+                        <li v-for="data in filterDates" :class="[data.nclass , 'item']">
+                            <span class="checkbox">
+                                <input type="checkbox" name="date" :value="data.value">
+                            </span>
+                            <span :class="data.class">
+                                <span class="icon"><i :class="data.icon"></i></span>
+                                {{ data.title }}
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="item-dropdown">
+                    <span>Nhãn</span>
+                    <ul class="list">
+                        <li class="item">
+                            <span class="checkbox">
+                                <input type="checkbox" name="label" :value="'no'">
+                            </span>
+                            <span>
+                                <i class="ri-price-tag-3-line"></i>
+                                <span>Không có Nhãn</span>
+                            </span>
+                        </li>   
+                        <li class="item" v-for="label in labels">
+                            <span class="checkbox">
+                                <input type="checkbox" :name="'label'" :value="label.id" @click="addLabelFilter">
+                            </span>
+                            <span class="name">{{ label.name }}</span>
+                        </li> 
+                    </ul>
                 </div>
                 <div class="item-dropdown">
                     <span>Thành viên</span> 
@@ -279,40 +322,7 @@ export default {
                         </li>                        
                     </ul>                   
                 </div>
-                <div class="item-dropdown">
-                    <span>Ngày hết hạn</span>
-                    <ul class="list">
-                        <li v-for="data in filterDates" :class="[data.nclass , 'item']">
-                            <span class="checkbox">
-                                <input type="checkbox" name="date" :value="data.value">
-                            </span>
-                            <span :class="data.class">
-                                <span class="icon"><i :class="data.icon"></i></span>
-                                {{ data.title }}
-                            </span>
-                        </li>
-                    </ul>
-                </div>
-                <div class="item-dropdown">
-                    <span>Nhãn</span>
-                    <ul class="list">
-                        <li class="item">
-                            <span class="checkbox">
-                                <input type="checkbox" name="label" :value="'no'">
-                            </span>
-                            <span>
-                                <i class="ri-price-tag-3-line"></i>
-                                <span>Không có Nhãn</span>
-                            </span>
-                        </li>   
-                        <li class="item" v-for="label in labels">
-                            <span class="checkbox">
-                                <input type="checkbox" :name="'label'" :value="label.id" @click="addLabelFilter">
-                            </span>
-                            <span class="name">{{ label.name }}</span>
-                        </li> 
-                    </ul>
-                </div>
+                
             </div>
         </div>
     </div>

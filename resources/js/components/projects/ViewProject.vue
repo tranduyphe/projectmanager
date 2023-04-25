@@ -236,66 +236,23 @@ export default {
         //filter tasks
         onFilterTask(data){
             try {       
-                var results = this.$store.getters.listTasks; 
+                var allTasks = this.$store.getters.listTasks; 
                 var resultsDraggable = this.$store.getters.taskDraggableStore; 
-                const asArray = Object.values(results);
+                // const asArray = Object.values(results);
+                const dataTask = Object.values(allTasks);
                 if (Object.keys(data).length > 0) {
                      // update data task
-                    var _data = asArray.filter(function(e) {
-                        let dataFilter = {
-                            'dataTask' : e,
-                        }
-                        if (data['users'] && !data['date']) {
-                            // filter data task using user in task and not using date
-                            if (typeof data['users']['no'] != 'undefined' && typeof data['users']['list_user'] == 'undefined') {
-                                return !e.members;
-                            } else if (typeof data['users']['no'] == 'undefined' && typeof data['users']['list_user'] != 'undefined') {
-                                var results
-                                for (const key in data['users']['list_user']) {
-                                    const idUser = data['users']['list_user'][key];
-                                    if (e.members) {
-                                        if (e.members[idUser]) {
-                                            results = e
-                                        }
-                                    }
-                                }
-                                return results;
-                            } else {
-                                for (const key in data['users']['list_user']) {
-                                    const idUser = data['users']['list_user'][key];
-                                    if (e.members) {                                        
-                                        if (e.members[idUser]){
-                                            return e
-                                        }
-                                    }
-                                }
-                                if (!e.members) {
-                                    return e;
-                                }
-                            }
-                        } else if (data['users'] && data['date']) {
-                            // filter data task using date and user in tasks
-                            dataFilter['checkDate'] = data['date'];
-                            dataFilter['users'] = data['users'];
-                            return filterDataProject.filterTaskProject(dataFilter);
-
-                        } else if (!data['users'] && data['date']){
-                            //filter data task in date not using user
-                            dataFilter['checkDate'] = data['date'];
-                            return filterDataProject.filterTaskProject(dataFilter);
-                        }
-                    });    
-
-                    var __data = _data.reduce((a, v) => (
-                        { ...a, [v.id]: v}                        
-                    ), {});      
-                    results = __data;
+                    var _data = {
+                        'tasks' : dataTask,
+                        'types' : data
+                    }
+                    var resultsFilter = filterDataProject.filterTaskProject(_data);
                     // update data task in card
                     var _resultsDraggable = {}
                     for (const key in resultsDraggable) {
                         _resultsDraggable[key] = [];
                         resultsDraggable[key].filter(function(e) {
-                            if (typeof results[e] != 'undefined') {
+                            if (typeof resultsFilter[e] != 'undefined') {
                                 _resultsDraggable[key].push(e)
                             }
                             return e; 
