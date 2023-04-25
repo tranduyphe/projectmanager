@@ -18,6 +18,7 @@ class Project extends Model
         'user_id',         
         'title',
         'slug',
+        // 'url_image',
         'description',
         'start_time',
         'end_time',

@@ -12,9 +12,11 @@ use App\Models\Tasks;
 use App\Models\ProjectUser;
 use App\Models\Department;
 use Illuminate\Support\Str;
+use App\Http\Traits\TaskProject;
 
 class ProjectController extends Controller
 {
+    use TaskProject;
     /**
      * Display a listing of the resource.
      *
@@ -37,13 +39,14 @@ class ProjectController extends Controller
         }
         
         if ( $roles === 'administrator' || $roles === 'leader' ) {
-            $projects = Project::all();
+            // $projects = Project::all();
+            $projects = Project::paginate(8);
         } elseif ($roles === 'manager') {
             $user     = User::with('projects')->find($user_id);
-            $projects = $user->projects;
+            $projects = $user->projects()->paginate(8);
         } else {
             $user     = User::with('projects_user')->find($user_id);
-            $project_user = $user->projects_user;
+            $project_user = $user->projects_user()->paginate(8);
             // // $user_details = ProjectUser::find(20)->details_user;
             // $user_details = ProjectUser::with('details_user')->find(20);
             // var_dump($user_details->details_user);
@@ -87,13 +90,20 @@ class ProjectController extends Controller
         if (Project::where('slug', $slug)->exists()) {
             $slug = $slug . '-' . uniqid();
         }
+        $images = $this->upLoadFiles($request);
+        if (!empty($images)) {
+            $url_image = $images->name_file;
+        }else{
+            $url_image = null;
+        }
         $data        = array(  
             'user_id'     => $user_id,         
             'title'       => $title,
             'slug'        => $slug,
+            'url_image'   => $url_image,
             'description' => $description,
-            'start_time'   => date('Y-m-d H:i:s', strtotime($starttime)),
-            'end_time'     => date('Y-m-d H:i:s', strtotime($endtime)),
+            'start_time'  => date('Y-m-d H:i:s', strtotime($starttime)),
+            'end_time'    => date('Y-m-d H:i:s', strtotime($endtime)),
         );
         $project = new Project($data);
         $project->save();
@@ -150,16 +160,20 @@ class ProjectController extends Controller
      */
     public function update(Request $request)
     {
-        $data = $request->input('data');
+        
         $id = $request->input('id');
-        // $_data = array(
-        //     'title' => $data['title'],
-        //     'start_time' => $data['start_time'],
-        //     'end_time' => $data['end_time'],
-        //     'description' => $data['description']
-        // );
+        $images = $this->upLoadFiles($request);
+        if ( !empty($images) ) {            
+            $data['url_image'] = $images->name_file;
+            $data['title'] =  $request->input('title');
+            $data['description'] =  $request->input('description');
+            $data['end_time'] =  $request->input('end_time');
+            $data['start_time'] =  $request->input('start_time');
+        } else {
+            $data = $request->input('data');
+        }
         $result = Project::where('id', $id)->update($data);
-        return response()->json($result);
+        return response()->json(Project::find($id));
     }
 
     /**

@@ -7,6 +7,7 @@ import {
 import { checkRolesAccess, checkPermissionAccess } from '@/js/middleware/access.js';
 import { optionChart } from "@/js/helpers/chart";
 import moment from "moment";
+import Swal from "sweetalert2";
 export default {
     components: {
         VueEditor
@@ -36,7 +37,10 @@ export default {
             series: [],
             chartOption: {},
             data: {},
-            show:false
+            show:false,
+            images: null,
+            publicPath : process.env.PUBLIC_URL,
+            file:null
         };
     },
     computed: {
@@ -46,9 +50,21 @@ export default {
         ...projectMethods,
         options:() => optionChart.optionProject(),
         checkRolesAccess:(roles) => checkRolesAccess(roles),
+        onChangeImages(e){
+            let files = e.target.files || e.dataTransfer.files;
+            if (!files.length)
+                return;
+            this.file = e.target.files[0];
+            const reader = new FileReader()
+            reader.onload = (event) => {
+                this.images = event.target.result
+            }
+            reader.readAsDataURL(this.file)
+        },
         async onUpdateProject(){
             var data = {
                 'id':this.project.id,
+                'file': this.file,
                 'data': {
                     'title':this.project.title,
                     'end_time':moment(this.project.end_time).format('YYYY-MM-DD HH:mm:ss'),
@@ -58,8 +74,21 @@ export default {
             }
             var results = await this.updateProject(data);
             if (results) {
-                this.$emit('updateProject', data['data'] );
-                this.show = false
+                Swal.fire({
+                    position: 'bottom-start',
+                    icon: 'success',
+                    title: 'Update project successfully',
+                    showConfirmButton: false,
+                    timer: 2000,
+                    timerProgressBar: true,
+                });
+                // console.log('results', results)
+                // this.project = results;
+                this.$emit('updateProject', results );
+                setTimeout(() => {
+                    this.show = false
+                }, 2000);
+                
             }
         },
         onShowModal(){
@@ -76,8 +105,10 @@ export default {
                 this.chartOption['colors'] = '#7bd405';
                 this.chartOption['labels'] = ['Success'];   
             }
-        }
-    },    
+        },        
+    }, 
+    created() {
+    },   
 };
 </script>
 <template>
@@ -129,9 +160,17 @@ export default {
                     :month-change-on-scroll="false"
                 />
             </b-form-group>
+            <div class="wrap-img">
+                <div class="images-projects" v-if="images">
+                    <img :src="`${images}`" alt="">
+                </div>
+                <div class="images-projects" v-else-if="project.url_image">
+                    <img :src="`${publicPath+'projects/'+project.url_image}`" alt="">
+                </div>
+            </div>
             <div class="btn_edit_image">
                 <label for="edit_image">Add Image</label>
-                <input type="file" id="edit_image">
+                <input type="file" id="edit_image" role="button" accept="image/*"  @change="onChangeImages">
             </div>
             <div :class="['modal-footer']">
                 <b-button type="submit" variant="primary"
@@ -150,15 +189,26 @@ export default {
                 :series="series"
                 :options="chartOption"
             ></apexchart>
-            <div
-            v-if="project.description"
-            v-bind:innerHTML="`${
-                project.description
-                    ? project.description
-                    : ''
-            }`"
-            :class="['content-desc']"
-        ></div>
+            <div class="infomation">
+                <div class="wrap-img">
+                    <div class="images-projects" v-if="project.url_image">
+                        <img :src="`${publicPath+'projects/'+project.url_image}`" alt="">
+                    </div>
+                </div>
+                <div
+                    v-if="project.description"
+                    v-bind:innerHTML="`${
+                        project.description
+                            ? project.description
+                            : ''
+                    }`"
+                    :class="['content-desc mt-5']"
+                ></div>
+                <div class="date">
+                    <span><strong>Start date</strong>{{ project.start_time }}</span>
+                    <span><strong>End date</strong>{{ project.end_time }}</span>
+                </div>                
+            </div>
         </div>                    
     </div>
 </template>
@@ -176,4 +226,26 @@ export default {
     .modal-footer{
         border: 0;
     }
+    form {
+        .wrap-img {
+            .images-projects {
+                margin: 0 0 10px;
+            }
+        }
+    }
+    .wrap-img {
+        .images-projects {
+            width: 150px;
+            height: 200px;
+            position: relative;
+            margin: 0 auto;
+            img{
+                width: 100%;
+                height: 100%;
+                position: absolute;
+                object-fit: cover;
+            }
+        }
+    }
+    
 </style>

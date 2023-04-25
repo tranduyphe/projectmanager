@@ -115,7 +115,14 @@ trait TaskProject {
                         mkdir($path, 0755);
                     }
                     $file->move(public_path('users'), $fileName); 
-                }else{
+                } elseif ($request->input('type') == 'projects') {
+                    $folderName = 'projects';
+                    $path = public_path() . '/' . $folderName;
+                    if (!is_dir($path)) {
+                        mkdir($path, 0755);
+                    }
+                    $file->move(public_path('projects'), $fileName);
+                } else{
                     $file->move(public_path('uploads'), $fileName);  
                     $url = public_path('uploads').'/'.$fileName;   
                 }     

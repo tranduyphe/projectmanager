@@ -21,7 +21,12 @@ export default {
             items: [],
             projectData: this.$store.getters.projectData,
             authData: this.$store.getters.getAuthUserData,
+            currentPage:"",
+            totalPage:"",
             show: false,
+            images: null,
+            publicPath : process.env.PUBLIC_URL,
+            load: true
         };
     },
     computed: {
@@ -34,8 +39,21 @@ export default {
         showModalCreateProject() {
             this.show = true;
         },
+        onChangeImages(e){
+            let files = e.target.files || e.dataTransfer.files;
+            if (!files.length)
+                return;
+            this.projectData['file'] = e.target.files[0];
 
+            const reader = new FileReader()
+            reader.onload = (event) => {
+                this.images = event.target.result
+            }
+            reader.readAsDataURL(this.projectData['file'])
+        },
         async addProject() {
+            // console.log(this.projectData);
+            // return;
             var data = await this.createProject(this.projectData);
             this.listProjects.push(data);
             this.show = false;
@@ -74,6 +92,35 @@ export default {
                 active: true,
             },
         ];
+        this.currentPage = this.$store.getters.paginateProject;
+        this.totalPage = this.$store.getters.totalPageProject;
+        const $this = this;
+        window.addEventListener('scroll', function() {
+            if (document.documentElement.scrollTop + window.innerHeight >= document.documentElement.scrollHeight) {
+                if ($this.load) {
+                    if ($this.currentPage < $this.totalPage) {                       
+                        $this.load = false;
+                        $this.currentPage++;
+                        $this.axios
+                            .get(`/api/project/index?page=${$this.currentPage}`)
+                            .then((response) => {
+                                if (response.status == 200) {
+                                    if (response.data.data) {
+                                        for (const key in response.data.data) {
+                                            const project = response.data.data[key];
+                                            $this.listProjects.push(project);
+                                        }
+                                    }
+                                }                                
+                            })
+                            .catch((error) => {
+                                console.log('error', error)
+                            })
+                            .finally(() => ($this.load = true));
+                    }
+                }
+            }
+        });
     },
 };
 </script>
@@ -139,9 +186,12 @@ export default {
                                     :month-change-on-scroll="false"
                                 />
                             </b-form-group>
+                            <div class="mb-2 images_projects" v-if="images">
+                                <img :src="images" alt="">
+                            </div>
                             <div class="btn_add_image">
-                                  <label for="add_image">Add Image</label>
-                                   <input type="file" id="add_image">
+                                <label for="add_image">Add Image</label>
+                                <input type="file" id="add_image" accept="image/*" @change="onChangeImages" role="button">
                             </div>
                             <div :class="['modal-footer']">
                                 <b-button type="submit" variant="primary"
@@ -160,15 +210,16 @@ export default {
                         :class="['mb-4 col-lg-3']"
                     >
                         <div class="wrap-item">
-                            <div class="item-project" v-if="authUserData.roles[0].name === 'manager' || authUserData.roles[0].name === 'administrator'">
+                            <div :style="`${project.url_image ? 'background-image:url('+publicPath+'projects/'+project.url_image+')' : '' }`" class="item-project" v-if="authUserData.roles[0].name === 'manager' || authUserData.roles[0].name === 'administrator'">
                                 <router-link                                                
                                     :to="{
                                         name: 'analytics',
                                         params: { slug: project.slug, id: project.id },
                                     }"                                                                                      
                                 >
-                                <div>
-                                    <h6>{{ project.title }}</h6>  
+                                <div> 
+                                    <h6>{{ project.title }}</h6>    
+                                    <span class="badge badge-primary">{{ statisticalProject(project.data_task)+'%' }}</span>
                                     <div class="date_time">
                                         <p v-if="project.description">{{ trimString(project.description) }}</p>
                                         <span class="date">
@@ -177,11 +228,12 @@ export default {
                                         <span class="date">
                                             End: {{ formatDate(project.end_time) }}
                                         </span>
+                                        <b-button class="btn-primary btn_view">View</b-button>
                                     </div>
                                 </div>       
                                 </router-link>
                             </div>
-                            <div class="item-project" v-else>
+                            <div :style="`${project.url_image ? 'background-image:url('+publicPath+'projects/'+project.url_image+')' : '' }`" class="item-project" v-else>
                                 <router-link
                                     :to="{
                                         name: 'project',
@@ -215,7 +267,15 @@ export default {
                                 >
                                     <i class="ri-star-line"></i>
                                 </div>
-                            </div>
+                            </div>                            
+                            <!-- <div class="spinner-border m-5" role="status" v-if="!load">
+                                <span class="visually-hidden">Loading...</span>
+                            </div> -->
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-center mt-3" v-if="!load">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Loading...</span>
                         </div>
                     </div>
                 </div>
@@ -287,5 +347,16 @@ export default {
         }
     .modal-footer{
         border: 0;
+    }
+    .images_projects {
+        width: 150px;
+        height: 200px;
+        position: relative;
+        img{
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            object-fit: cover;
+        }
     }
 </style>

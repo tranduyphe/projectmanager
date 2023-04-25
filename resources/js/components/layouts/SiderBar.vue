@@ -34,6 +34,13 @@ export default {
                                 <i class="ri-user-fill"></i><span>User Manager</span>
                             </router-link>
                     </li>
+                    <li v-if="checkRolesAccess(['administrator', 'manager'])">
+                        <router-link :to="{
+                            name: 'create-project',
+                        }" class="side-nav-link-ref">
+                                <i class="ri-add-box-fill"></i><span>Create Project</span>
+                            </router-link>
+                    </li>                    
                 </ul>
             </div>
             <!-- Sidebar -->

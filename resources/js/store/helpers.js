@@ -4,4 +4,4 @@ export const taskGetters = mapGetters(['listUsers', 'currentTask', 'listTasks', 
 export const authMethods = mapActions(['auth', 'logout', 'department']);
 export const authGetters = mapGetters(['authUserData', 'departmentId']);
 export const projectMethods = mapActions(['addRemoveUserInProject', 'getProjects', 'createProject', 'getProject', 'updateProject']);
-export const projectGetters = mapGetters(['listProjects', 'projectData', 'currentProject']);
+export const projectGetters = mapGetters(['listProjects', 'projectData', 'currentProject', 'paginateProject', 'totalPageProject']);
