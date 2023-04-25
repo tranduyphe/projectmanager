@@ -22,7 +22,8 @@ export default {
             slug:this.$route.params.slug,
             title: "",
             items: [],
-            results:[],            
+            results:[],
+            dataProject: ""            
         };
     },
     computed: {
@@ -49,6 +50,7 @@ export default {
                     active: true,
                 },
             ];
+            this.dataProject = data
         }  
     },
     async created() {        
@@ -65,6 +67,7 @@ export default {
             },
         ];
         this.results = this.analyticProject();  
+        this.dataProject = this.currentProject;
     },
     async mounted() {
     },
@@ -75,7 +78,7 @@ export default {
         <PageHeader :title="title" :items="items" />
         <div class="row">
             <div class="col-xl-4">
-                <AnalyticsProject @updateProject="updateProjectData" :results="results" :title="currentProject.title" :project="currentProject"></AnalyticsProject>
+                <AnalyticsProject @updateProject="updateProjectData" :results="results" :title="currentProject.title" :project="dataProject"></AnalyticsProject>
             </div>
             <div class="col-xl-8">
                 <AnalyticsDep :results="results.results" :id="currentProject.id" :slug="currentProject.slug"></AnalyticsDep>
