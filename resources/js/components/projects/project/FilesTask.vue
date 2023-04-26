@@ -20,7 +20,7 @@ export default {
     data() {
         return {
             card_id: store.getters.currentTask.card_id,
-            publicPath: 'http://localhost/projectmanager/public/uploads/'
+            publicPath: process.env.PUBLIC_URL+'uploads/'
         };
     },
     computed: {
