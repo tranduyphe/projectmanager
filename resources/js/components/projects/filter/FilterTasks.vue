@@ -20,46 +20,58 @@ export default {
     },
     data() {
         return {
+          
             filterDates: [
+                
                 {
                     value: 'no',
                     title: 'Không có ngày hết hạn',
                     class: '',
-                    icon : 'ri-calendar-2-line'
+                    icon : 'ri-calendar-2-line',
+                    color:'#091e420f'
                 },
                 {
                     value : 'out_date',
                     title : 'Quá hạn',
                     nclass: 'danger',
-                    icon  : 'ri-time-line'
+                    icon  : 'ri-time-line',
+                    color:'#ca3521'
                 },
                 {
                     value: 'day_date',
                     title: 'Hết hạn vào ngày mai',
                     nclass: 'warning',
-                    icon : 'ri-time-line'
+                    icon : 'ri-time-line',
+                    color:'#F5A623'
                 },
                 {
                     value: 'week_date',
                     title: 'Hết hạn vào tuần sau',
                     nclass: '',
-                    icon : 'ri-time-line'
+                    icon : 'ri-time-line',
+                    color:'#e2b203'
                 },
                 {
                     value: 'month_date',
                     title: 'Hết hạn vào tháng sau',
                     nclass: '',
-                    icon : 'ri-time-line'
+                    icon : 'ri-time-line',
+                    color:'#7ED321'
                 }
             ],
             filterData: {},
-            nameSearch:""
+            nameSearch:"",
+            showModalFilter_Task:false,
         };
     },
     computed: {  
         ...taskGetters,       
     },
     methods: {
+        showModalFilter1() {
+            console.log(11111)
+            this.showModalFilter_Task =! this.showModalFilter_Task;
+        },
         showAvatar(url){
             return userHelper.avatar(url);
         },
@@ -231,59 +243,62 @@ export default {
 }
 </script>
 <template> 
-    <div class="text-end d-flex align-items-center justify-content-end">
+    <div class="text-end d-flex align-items-center justify-content-end" @click="showModalFilter1" >
         <div class="btn-group">
-            <button type="button" class="btn_filter dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+            <button type="button" class="btn_filter">
                 <span class="icon icon-close"><i class="ri-filter-3-line"></i></span>
-                <span>Lọc</span>
+                <span >Lọc</span>
             </button>
-            <div class="dropdown-menu dropdown_add_user" ref="myFilter" id="myFilter">
+            <div :class="[`${showModalFilter_Task ? 'showmodal' : 'aaaaa'}`,'dropdown_add_user']" ref="myFilter" id="myFilter" >
                 <div>
-                    <div class="modal_move-header d-flex flex-row align-items-center justify-content-center"><span>Lọc</span><a><i class="ri-close-line"></i></a></div>
+                    <div class="modal_move-header d-flex flex-row align-items-center justify-content-center"><span>Lọc</span><a @click.stop="showModalFilter1" ><i class="ri-close-line"></i></a></div>
                 </div>
-                <div class="item-dropdown">
+                <div class="backdrop" @click.stop="showModalFilter1"></div>
+                <div class="dropdown_content">
+                      <div class="dropdown_container">
+                        <div class="item-dropdown mt-3">
                     <span>Từ khóa</span>
-                    <input type="text" @input="onSearch" placeholder="Nhập từ khóa" />
+                    <input type="text" @input="onSearch" placeholder="Nhập từ khóa" class="mt-1"/>
                 </div>                
-                <div class="item-dropdown">
+                <div class="item-dropdown mt-1">
                     <span>Thành viên</span> 
                     <ul class="list">
                         <li class="item">
                             <span class="checkbox">
                                 <input class="input" type="checkbox" name="user" :value="'no'">
                             </span>
-                            <span>
+                            <span class="d-flex align-items-center">
                                 <i class="ri-price-tag-3-line"></i>
                                 <span>Không có thành viên</span>
                             </span>
                         </li>  
-                        <li class="item">
+                        <li class="item item_select_member">
                             <span class="checkbox">
                                 <input class="input" type="checkbox" id="checkAllUsers" name="user" :value="'check'">
                             </span>
                             <span>
-                                <button type="button" class="btn_filter dropdown-toggle">
+                                <button type="button" class="btn_filter dropdown-toggle d-flex align-items-center" data-bs-toggle="dropdown" aria-expanded="false">
                                     <span>Chọn thành viên</span>
                                     <span class="icon icon-down"><i class="ri-arrow-down-s-line"></i></span>
                                 </button>
-                                <!-- <div class="dropdown-menu"> -->
+                                <div class="dropdown-menu">
                                     <ul class="list-user">
                                         <li class="item" v-for="user in users">
                                             <span>
-                                                <input class="input" type="checkbox" name="choose_user" :value="user.id" @click="addUserIdFilter">
-                                                {{ `${fullName(user)}` }}
+                                                <input class="input choose_user" type="checkbox" name="choose_user" :value="user.id" @click="addUserIdFilter">
+                                                <!-- {{ `${fullName(user)}` }} -->
                                             </span>
-                                            <!-- <span class="name">
+                                            <span class="name">
                                                 <img
                                                     :src="`${showAvatar(user.avatar)}`"
                                                     :alt="`${fullName(user)}`"
                                                     :title="`${fullName(user)}`" 
                                                 />
                                                 {{ `${fullName(user)}` }}
-                                            </span> -->
+                                            </span>
                                         </li> 
                                     </ul>
-                                <!-- </div> -->
+                                </div>
                             </span>
                         </li>                        
                     </ul>                   
@@ -295,8 +310,8 @@ export default {
                             <span class="checkbox">
                                 <input type="checkbox" name="date" :value="data.value">
                             </span>
-                            <span :class="data.class">
-                                <span class="icon"><i :class="data.icon"></i></span>
+                            <span :class="data.class" class="d-flex align-items-center">
+                                <span class="icon"><i :class="data.icon" :style="{ background: data.color, color:'#fff' }"></i></span>
                                 {{ data.title }}
                             </span>
                         </li>
@@ -309,7 +324,7 @@ export default {
                             <span class="checkbox">
                                 <input type="checkbox" name="label" :value="'no'">
                             </span>
-                            <span>
+                            <span class="d-flex align-items-center">
                                 <i class="ri-price-tag-3-line"></i>
                                 <span>Không có Nhãn</span>
                             </span>
@@ -318,11 +333,160 @@ export default {
                             <span class="checkbox">
                                 <input type="checkbox" :name="'label'" :value="label.id" @click="addLabelFilter">
                             </span>
-                            <span class="name">{{ label.name }}</span>
+                            <span class="name" :style="{ background: label.color}">{{ label.name }}</span>
                         </li> 
                     </ul>
                 </div>
+                      </div>
+                </div>
+
             </div>
         </div>
     </div>
 </template>
+
+<style lang="scss">
+.showmodal{
+    display: block !important;
+}
+   .dropdown_add_user{
+    display: none;
+    position: absolute;
+    right: 0;
+    z-index: 1000;
+    top: 36px;
+    background: #fff;
+    .backdrop{
+        position: fixed;
+        top: 0;
+        right: 0;
+        left: 0;
+        bottom: 0;
+    }
+    .dropdown_content{
+        max-height: 571px;
+        overflow-y: scroll;
+        width: 100%;
+        display: flex;
+       flex-direction: column;
+        text-align: left;
+        position: relative;
+        z-index: 100;
+        .dropdown_container{
+            width: 93%;
+        }
+       
+    }
+    .modal_move-header{
+            position: relative;
+            z-index: 100;
+            a{
+                cursor: pointer;
+            }
+        }
+    .dropdown_content::-webkit-scrollbar-track
+{
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+	border-radius: 5px;
+	background-color: #F5F5F5;
+}
+
+.dropdown_content::-webkit-scrollbar
+{
+	width: 5px;
+	background-color: #F5F5F5;
+}
+
+.dropdown_content::-webkit-scrollbar-thumb
+{
+	border-radius: 5px;
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+	background-color:rgba(0, 0, 0, 0.1);
+}
+      .modal_move-header{
+        a{
+            background: none !important;
+        }
+      }
+      .item-dropdown{
+        span{
+            margin-left: 0;
+        }
+      }
+      ul{
+         list-style: none;
+         padding: 0;
+         li:first-child{
+            i{
+                color: #000 !important;
+            }
+         }
+         .item_select_member{
+            align-items: baseline !important;
+            .choose_user{
+                    width: 16px;
+                    height: 16px;
+                    margin-right: 10px;
+                }
+            span{
+                i{
+                    background: none !important;
+                }
+               
+            }
+            
+            span:nth-child(2){
+                width: 100%;
+                button{
+                    border: 0;
+                    width: 100%;
+                    padding: 5px;
+                    justify-content: space-between;
+                    .icon-down{
+                         width: 24px;
+                    }
+                
+                }
+                ul{
+                    padding: 7px;
+                    width: 223px;
+                }
+
+            }
+         }
+         .item{
+            display: flex;
+            align-items: center;
+            .name{
+                padding: 5px 10px;
+                width: 100%;
+            }
+            span{
+                i{
+                    margin-right: 5px;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    border-radius: 50%;
+                    width: 24px;
+                    height: 24px;
+                    background: #091e420f;
+                }
+            }
+            .checkbox{
+                margin: 0 10px;
+                input{
+                    width: 16px;
+                    height: 16px;
+                }
+            }
+            .name{
+                img{
+                    width: 25px;
+                    height: 25px;
+                }
+            }
+         }
+      }
+   }
+</style>

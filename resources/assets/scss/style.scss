@@ -18,7 +18,7 @@
     --#{$prefix}card-group-margin: #{$card-group-margin};
 }
 .login_register{
-    overflow-x: hidden;
+    overflow: hidden;
 }
 body.page-task {
     margin: 0;
@@ -1219,7 +1219,18 @@ body.page-task {
         @media (max-width: 1400px) {
             width: 100%;
         }
-
+        .btn_filter{
+            padding: 0px 5px;
+            height: 32px;
+            background: rgba(0, 0, 0, 0.1);
+            border: 0;
+            display: flex;
+            align-items: center;
+            i{
+                font-size: 20px;
+                margin-right: 3px;
+            }
+        }
         .btn_share {
             background: #0079bf;
             color: #fff;
@@ -1596,12 +1607,15 @@ body.page-task {
     }
 }
 .page-content .wrap-item .item-project{
-    background: url("https://anhdepfree.com/wp-content/uploads/2022/11/background-2d-dep-cho-photoshop_63710488652.jpg") no-repeat center;
-    background-size: 100% 100%;
+    background-image: url('../../images/default_project.jpg');
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
     min-height: 350px !important;
     text-align: center;
     p{
         padding-right: 0;
+        text-transform: none;
     }
     a{
         display: flex;
@@ -1616,6 +1630,7 @@ body.page-task {
         font-weight: bold;
         line-height: 1.2;
         margin-top: 240px;
+        text-transform: uppercase;
        
     }
     .date_time{
