@@ -23,7 +23,6 @@ export default {
             authData: this.$store.getters.getAuthUserData,
             currentPage:"",
             totalPage:"",
-            show: false,
             images: null,
             publicPath : process.env.PUBLIC_URL,
             load: true
@@ -36,32 +35,6 @@ export default {
     methods: {
         ...projectMethods,
         ...authMethods,
-        showModalCreateProject() {
-            this.show = true;
-        },
-        onChangeImages(e){
-            let files = e.target.files || e.dataTransfer.files;
-            if (!files.length)
-                return;
-            this.projectData['file'] = e.target.files[0];
-
-            const reader = new FileReader()
-            reader.onload = (event) => {
-                this.images = event.target.result
-            }
-            reader.readAsDataURL(this.projectData['file'])
-        },
-        async addProject() {
-            // console.log(this.projectData);
-            // return;
-            var data = await this.createProject(this.projectData);
-            this.listProjects.push(data);
-            this.show = false;
-        },
-
-        resetForm() {
-            this.projectData = {};
-        },
 
         statisticalProject(data){
             return staticProject.statisticalTasks(data);
@@ -130,80 +103,6 @@ export default {
         <div class="row no-gutters">
             <div class="col-lg-12">
                 <PageHeader :title="title" :items="items" />
-                <div
-                    v-if="
-                        authUserData.roles[0].name === 'manager' ||
-                        authUserData.roles[0].name === 'administrator'
-                    "
-                    class="mb-3"
-                >
-                    <b-modal
-                        v-model="show"
-                        title="New Project"
-                        size="xl"
-                        @hidden="resetForm"
-                        hide-footer
-                    >
-                        <form @submit.prevent="addProject">
-                            <b-form-group
-                                label="Title Project"
-                                label-for="title-input"
-                            >
-                                <b-form-input
-                                    id="title-project"
-                                    v-model="projectData.title"
-                                    required
-                                >
-                                </b-form-input>
-                            </b-form-group>
-                            <b-form-group
-                                label="Description"
-                                label-for="title-input"
-                            >
-                                <vue-editor
-                                    v-model="projectData.description"
-                                ></vue-editor>
-                            </b-form-group>
-                            <b-form-group
-                                label="Start Date"
-                                label-for="datetime-picker"
-                            >
-                                <VueDatePicker
-                                    required
-                                    v-model="projectData.start_time"
-                                    auto-apply
-                                    :month-change-on-scroll="false"
-                                />
-                            </b-form-group>
-                            <b-form-group
-                                label="End Date"
-                                label-for="datetime-picker"
-                            >
-                                <VueDatePicker
-                                    required
-                                    v-model="projectData.end_time"
-                                    auto-apply
-                                    :month-change-on-scroll="false"
-                                />
-                            </b-form-group>
-                            <div class="mb-2 images_projects" v-if="images">
-                                <img :src="images" alt="">
-                            </div>
-                            <div class="btn_add_image">
-                                <label for="add_image">Add Image</label>
-                                <input type="file" id="add_image" accept="image/*" @change="onChangeImages" role="button">
-                            </div>
-                            <div :class="['modal-footer']">
-                                <b-button type="submit" variant="primary"
-                                    >Create</b-button
-                                >
-                            </div>
-                        </form>
-                    </b-modal>
-                    <b-button variant="primary" @click="showModalCreateProject"
-                        >Add new project</b-button
-                    >
-                </div>
                 <div class="row">
                     <div
                         v-for="(project, index) in listProjects"
