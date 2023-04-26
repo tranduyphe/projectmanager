@@ -40,13 +40,13 @@ class ProjectController extends Controller
         
         if ( $roles === 'administrator' || $roles === 'leader' ) {
             // $projects = Project::all();
-            $projects = Project::paginate(8);
+            $projects = Project::paginate(12);
         } elseif ($roles === 'manager') {
             $user     = User::with('projects')->find($user_id);
-            $projects = $user->projects()->paginate(8);
+            $projects = $user->projects()->paginate(12);
         } else {
             $user     = User::with('projects_user')->find($user_id);
-            $project_user = $user->projects_user()->paginate(8);
+            $project_user = $user->projects_user()->paginate(12);
             // // $user_details = ProjectUser::find(20)->details_user;
             // $user_details = ProjectUser::with('details_user')->find(20);
             // var_dump($user_details->details_user);
@@ -91,10 +91,9 @@ class ProjectController extends Controller
             $slug = $slug . '-' . uniqid();
         }
         $images = $this->upLoadFiles($request);
+        $url_image = null;
         if (!empty($images)) {
             $url_image = $images->name_file;
-        }else{
-            $url_image = null;
         }
         $data        = array(  
             'user_id'     => $user_id,         
