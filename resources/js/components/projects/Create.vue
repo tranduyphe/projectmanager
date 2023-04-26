@@ -1,6 +1,6 @@
 <script>
 import { VueEditor } from "vue3-editor";
-import moment from "moment";
+import Swal from "sweetalert2";
 import {
     projectMethods,
     projectGetters,
@@ -30,7 +30,8 @@ export default {
                 'place_end': "Chọn thời gian kết thúc",
                 'add_image': "Thêm hình ảnh",
                 'name_button_create': "Tạo mới",
-            }
+            },
+            load: true
         };
     },
     computed: {
@@ -53,8 +54,29 @@ export default {
             reader.readAsDataURL(this.projectData['file'])
         },
         async addProject() {
-            var data = await this.createProject(this.projectData);
-            this.show = false;
+            if (this.load) {
+                this.load= false;
+                var data = await this.createProject(this.projectData);
+                if (data) {
+                    Swal.fire({
+                        position: 'bottom-start',
+                        icon: 'success',
+                        title: 'Created project successfully',
+                        showConfirmButton: false,
+                        timer: 2000,
+                        timerProgressBar: true,
+                    });
+                    // console.log('results', results)
+                    // this.project = results;
+                    setTimeout(() => {
+                        this.show = false
+                    }, 2000);
+                }
+                this.projectData = {};
+                this.images = null;
+                this.load = true
+            }
+            
         }, 
     },
     async created() {       
