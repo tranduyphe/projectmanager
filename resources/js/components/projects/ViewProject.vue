@@ -72,7 +72,8 @@ export default {
                     active: true,
                 },
             ],
-            publicPath : process.env.PUBLIC_URL
+            publicPath : process.env.PUBLIC_URL,
+            countFilter: {},
         };
     },
     computed: {
@@ -159,6 +160,7 @@ export default {
         calulateCheckList(data) {
             return taskHelper.calculateListWorkTodo(data);
         },
+
         async onPaste(pasteEvent, callback) {
             if (!this.allPopUp["editor"]) {
                 if (pasteEvent.clipboardData == false) {
@@ -258,8 +260,12 @@ export default {
                             return e; 
                         });         
                     }
+                    this.countFilter['check'] = true;
+                    this.countFilter['count'] = Object.keys(resultsFilter).length;
                     this.$store.commit('setTaskDraggable',_resultsDraggable);
                 }else{
+                    this.countFilter['check'] = false;
+                    this.countFilter['count'] = 0;
                     this.$store.commit('setTaskDraggable', resultsDraggable); 
                 }
                 
@@ -479,37 +485,7 @@ export default {
                     <i class="ri-flashlight-line"></i>
                     <p>Tự động hóa</p>
                 </a> -->
-                <FilterTasks :labels="listItemLabels" :users="projectUsers" @filterTask="onFilterTask"/>
-                <a class="btn_filter">
-                    <div class="icon"><i class="ri-filter-3-line"></i></div>
-                    <p>Lọc</p>
-                </a>
-                <!-- <div class="list_user">
-                    <div class="avatar">
-                        <img
-                            src="/images/avatar-1.jpg"
-                            alt=""
-                        />
-                    </div>
-                    <div class="avatar">
-                        <img
-                            src="/images/avatar-2.jpg"
-                            alt=""
-                        />
-                    </div>
-                    <div class="avatar">
-                        <img
-                            src="/images/avatar-3.jpg"
-                            alt=""
-                        />
-                    </div>
-                    <div class="avatar">
-                        <img
-                            src="/images/avatar-4.jpg"
-                            alt=""
-                        />
-                    </div>
-                </div> -->
+                <FilterTasks :labels="listItemLabels" :number="countFilter" :users="projectUsers" @filterTask="onFilterTask"/>
                 <!-- <a class="btn_share">
                     <div class="icon"><i class="ri-user-add-line"></i></div>
                     <p>Chia sẻ</p>

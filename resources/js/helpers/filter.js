@@ -104,7 +104,6 @@ function filterTaskProject(data){
 
             //filter task by labels
             if (types['label']) {
-                console.log(types['label'])
                 if(results && Object.keys(results).length > 0) tasks = Object.values(results);
                 var results = {}
                 if (types['label']['no']) {
